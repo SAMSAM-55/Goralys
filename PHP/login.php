@@ -1,7 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require __DIR__ . '/config.php';
 session_start();
 
@@ -33,7 +30,7 @@ if (password_verify($password, $hashed_password)) {
     $_SESSION['user-type'] = $user['role'];
     $_SESSION['logged-in'] = true;
 
-    $stmt -> close();
+    $stmt->close();
     $conn->close();
 
     show_toast('success',
@@ -41,16 +38,13 @@ if (password_verify($password, $hashed_password)) {
     "Vous avez bien été connecté à votre compte.");
 
 } else {
-    $stmt -> close();
+    $stmt->close();
     $conn->close();
 
     show_toast('error',
         "Echec de la connexion",
         "Email ou mot de passe invalide.",
         "login.html");
-    $test = password_verify($password, $hashed_password);
-    echo "<script>console.log('Password verify : ', '$test')</script>";
-
 }
 
 http_response_code(200);

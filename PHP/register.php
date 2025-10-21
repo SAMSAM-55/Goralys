@@ -52,7 +52,7 @@ $check_id_stmt->bind_param("s", $user_id);
 $check_id_stmt->execute();
 $res = $check_id_stmt->get_result();
 
-if (!$res || $res->num_rows > 0)
+if (!$res || $res->num_rows < 0)
 {
     show_toast('error',
     "Identifiant invalide",

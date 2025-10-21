@@ -6,7 +6,7 @@
 addEventListener("DOMContentLoaded", () => {
     const user_name_text = document.getElementById("user-name-text")
 
-    if (sessionStorage.getItem("logged-in"))
+    if (sessionStorage.getItem("logged-in") === 'true')
     {
         user_name_text.setAttribute("href", "account.html")
         user_name_text.innerHTML = "<i class=\"fa-solid fa-user\"></i> " + sessionStorage.getItem("user-name")

@@ -1,5 +1,5 @@
 addEventListener("DOMContentLoaded", async () => {
-    if (!sessionStorage.getItem("logged-in"))
+    if (!(sessionStorage.getItem("logged-in") === 'true'))
     {
         await fetch('./PHP/fetch_user_data.php', {
             credentials: "include"
