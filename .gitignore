@@ -1,0 +1,5 @@
+/PHP/vendor/
+/.idea/
+
+# Config file (filled)
+/PHP/config_secret.php
