@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Goralys - Acceuil</title>
+    <link rel="stylesheet" href="./CSS/style.css">
+    <link rel="stylesheet" href="./CSS/account.css">
+    
+    <script type="module" src="./JS/core.js"></script>
+    <script type="module" src="./JS/user.js"></script>
+    <script type="module" src="./JS/update-header.js"></script>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+    />
+</head>
+<script type="module">
+    import {get_user_data} from "./JS/user.js";
+
+    addEventListener("DOMContentLoaded", () => {
+        const user_data = get_user_data()
+
+        const user_email_text = document.getElementById("user-email")
+        const user_id_text = document.getElementById("user-id")
+
+        user_id_text.value = user_data['id']
+        user_email_text.value = user_data['email']
+    })
+
+    addEventListener("click", (event) => {
+        if (event.target.classList.contains("fas"))
+        {
+            navigator.clipboard.writeText(event.target.previousElementSibling.value)
+            event.target.classList.remove("fa-clipboard")
+            event.target.classList.add("fa-clipboard-check")
+
+            setTimeout(() => {
+                event.target.classList.remove("fa-clipboard-check")
+                event.target.classList.add("fa-clipboard")
+            }, 3500)
+        }
+    })
+</script>
+<body>
+<!-- Adding the toast notifications elements -->
+<div id="toast" class="feedback-container warning" style="display: none;">
+    <div class="toast-image">
+        <i class="fas"></i>
+    </div>
+    <div class="toast-content">
+    </div>
+</div>
+<!-- Main page -->
+<header class="header">
+    <div class="header-menu">
+        <a href="index.html" class="header-text">Menu</a>
+        <a href="" class="header-text">Vos sujets</a>
+    </div>
+    <div class="account-info">
+        <a href="" class="header-text" id="user-name-text"><i class="fa-solid fa-user"></i> Se connecter</a>
+    </div>
+</header>
+<main>
+    <div class="profile-info-container">
+        <h2>Votre Profil</h2>
+        <div class="profile-info-item">
+            <label for="user-id">Identifiant</label>
+            <span>
+                <input type="text" name="user-id" id="user-id" value="" disabled>
+                <i class="fas fa-clipboard clipboard-copy"></i>
+            </span>
+        </div>
+        <div class="profile-info-item">
+            <label for="user-email">Email</label>
+            <span>
+                <input type="email" name="user-email" id="user-email" value="" disabled>
+                <i class="fas fa-clipboard clipboard-copy"></i>
+            </span>
+        </div>
+        <!-- Buttons to delete account and log-out (not implemented yet)
+        <div class="profile-actions-container">
+            <button id="log-out" class="log-out">Se Déconnecter <i class="fa-solid fa-right-from-bracket"></i></button>
+            <button id="delete-account" class="action-button">Supprimer le Compte  <i class="fa-solid fa-trash-can"></i></button>
+        </div>
+        -->
+    </div>
+</main>
+</body>
+</html>

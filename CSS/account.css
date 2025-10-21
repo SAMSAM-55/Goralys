@@ -1,0 +1,111 @@
+/* This css file is only for the account.html file wich corresponds to the profile page */
+
+/* Main container of the page */
+.profile-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 450px;
+    padding: 20px;
+    position: relative;
+    right : calc(-50% + 225px);
+}
+
+/* Page title */
+.profile-info-container h2 {
+    font-size: 24px;
+    margin-bottom: 50px;
+}
+
+.profile-info-container h2::before {
+    content: "";
+    display: block;
+    width: 250px;
+    height: 3px;
+    position: relative;
+    bottom: -45px;
+    left: 0;
+    background-color: black;
+}
+
+/* Container for each information (email and password) */
+.profile-info-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+/* The inputs used to display the informations */
+.profile-info-item input {
+    padding: 2px;
+    border: 2px solid var(--theme-input-border-color);
+    outline: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    background-color: var(--theme-input-background-color);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* The container that holds the different actions for the profile (deletion and logging out of the site) */
+.profile-actions-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* The buttons used to delete the account and log out of the site */
+.profile-actions-container button {
+    background-color: var(--theme-background-color);
+    color: black;
+    width: 100%;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    padding: 10px 20px;
+    margin: 10px;
+    border: var(--border-color) 3px solid;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.profile-actions-container button i {
+    margin-left: 5px;
+}
+
+/* Style for the clipboard copy icons */
+
+.clipboard-copy {
+    cursor: pointer;
+    margin: auto auto auto 10px;
+    font-size: 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+.clipboard-copy.fa-clipboard {
+    color: black;
+}
+
+.clipboard-copy.fa-clipboard-check {
+    color: #22c55e;
+}
+
+@media (hover: hover) {
+    .profile-actions-container button:hover {
+        background-color: red;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .profile-actions-container button:hover i {
+        animation: icon-animation 1.5s infinite;
+    }
+}

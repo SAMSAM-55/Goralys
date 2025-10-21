@@ -1,0 +1,106 @@
+@import "config.css";
+@import "toast.css"; /* Stylesheet for the toast notifications */
+
+/* Enables smooth scrolling for anchor links */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Baseline, reset styles */
+
+* {
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
+body
+{
+    background: var(--theme-background-color);
+    margin: 0 auto;
+    font-family: var(--theme-font), serif;
+}
+
+/* Header menu */
+
+header {
+    background-color: var(--theme-header-color);
+    color: rgb(0, 0, 0);
+    align-content: center;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    width: 100vw;
+    box-sizing: border-box;
+    margin: 0;
+    position: sticky;
+    height: 70px;
+    top: 0;
+}
+
+.header-menu {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    list-style-type: none;
+    margin: 0;
+    padding: 15px 0;
+}
+
+
+.header-text {
+    color: rgb(0, 0, 0);
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.header-text::before {
+    /* Underline effect for the header text */
+    content: '';
+    background-color: rgb(0, 0, 0);
+    transform-origin: center;
+    border-radius: 2px;
+    width: var(--header-text-before-width);
+    height: 5px;
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - (var(--header-text-before-width) / 2));
+    transform: scaleX(0);
+    transition: transform 0.3s ease-in-out;
+}
+
+@media (hover: hover) {
+    .header-text:hover::before {
+        transform: scaleX(1);
+    }
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-logo img {
+    width: 150px;
+    height: 30px;
+    margin : 10px
+}
+
+.account-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+}
+
+.account-info .header-text {
+    font-size: 1.2em;
+    margin-right: 10px;
+    text-transform: none;
+}

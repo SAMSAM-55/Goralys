@@ -1,0 +1,108 @@
+/* Register and login style */
+
+/* Main container for the register and login forms */
+.connection-container {
+    position: relative;
+    width: 350px;
+    right: calc(-50% + 175px);
+    margin-top: 50px;
+    background-color: var(--theme-container-normal);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.connection-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form item styles */
+.form-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+
+.form-item label {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    color: black;
+}
+
+/* Input fields styles */
+.form-item input {
+    padding: 2px;
+    border: 2px solid var(--theme-input-border-color);
+    outline: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    background-color: var(--theme-input-background-color);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Password styles (different from other inputs) because of the visibility toggle icon */
+.form-item div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-item div input {
+    padding: 2px;
+    border: 2px solid var(--theme-input-border-color);
+    outline: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    background-color: var(--theme-input-background-color);
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    width: 285px;
+}
+
+/* Icon styles for the eye icon used to toggle password visibility */
+.form-item div i {
+    cursor: pointer;
+}
+
+/* Button styles for the submit button */
+.submit-button {
+    background-color: var(--theme-button-color-normal);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.submit-button i {
+    margin-left: 5px;
+}
+
+@media (hover: hover) {
+    .submit-button:hover {
+        background-color: var(--theme-button-color-hovered);
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .submit-button:hover i {
+        animation: arrow-animation 0.75s infinite;
+    }
+}
+
+/* Redirect link styles (login to register and register to login) */
+.connection-container p {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.85em;
+}
+
+.connection-container p a {
+    text-decoration: none;
+}

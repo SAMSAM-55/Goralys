@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Goralys - Acceuil</title>
     <link rel="stylesheet" href="./CSS/style.css">
+    <link rel="stylesheet" href="./CSS/login-register.css">
     <script type="module" src="./JS/core.js"></script>
     <script type="module" src="./JS/user.js"></script>
     <script type="module" src="./JS/update-header.js"></script>
@@ -35,6 +36,25 @@
         <a href="" class="header-text" id="user-name-text"><i class="fa-solid fa-user"></i> Se connecter</a>
     </div>
 </header>
-    <h1>Bienvenue sur Goralys !</h1>
+<main>
+    <div class="connection-container">
+        <h2>Connection à Goralys</h2>
+        <form action="PHP/login.php" class="connection-form" method="post">
+            <div class="form-item" id="user-id-container">
+                <label for="user-id">Identifiant</label>
+                <input type="text" name="user-id" id="user-id" autocomplete="username" required>
+            </div>
+            <div class="form-item" id="password-container">
+                <label for="password-login">Mot de Passe</label>
+                <div>
+                    <input type="password" name="password-login" id="password-login" autocomplete="current-password" required>
+                    <i class="fa-solid fa-eye" id="eye-icon"></i>
+                </div>
+            </div>
+            <button type="submit" class="submit-button">S'inscrire <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+        <p>Vous avez déjà un compte ? <a href="login.html">Connectez-vous</a></p>
+    </div>
+</main>
 </body>
 </html>

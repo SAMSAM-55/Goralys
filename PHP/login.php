@@ -1,0 +1,57 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require __DIR__ . '/config.php';
+session_start();
+
+$id = $_REQUEST['user-id'];
+$password = $_REQUEST['password-login'];
+
+$conn = connect_to_database();
+$sql = "SELECT * FROM saje5795_goralys.users WHERE user_id = ?;";
+$stmt = $conn -> prepare($sql);
+$stmt -> bind_param("s", $id);
+
+if ($stmt->execute()) {
+    $result = $stmt -> get_result();
+    $response = $result -> fetch_assoc();
+    $hashed_password = $response['password_hash'];
+} else {
+    http_response_code(403); // Access unauthorized
+    error_log("An error occured while trying to connect to database");
+    echo json_encode(["progress" => "No ID found"]);
+
+    exit(1);
+}
+
+if (password_verify($password, $hashed_password)) {
+    $user = $response;
+    $_SESSION['user-email'] = $user['email'];
+    $_SESSION['user-id'] = $user['user_id'];
+    $_SESSION['user-name'] = $user['full_name'];
+    $_SESSION['user-type'] = $user['role'];
+    $_SESSION['logged-in'] = true;
+
+    $stmt -> close();
+    $conn->close();
+
+    show_toast('success',
+    "Connexion réussie",
+    "Vous avez bien été connecté à votre compte.");
+
+} else {
+    $stmt -> close();
+    $conn->close();
+
+    show_toast('error',
+        "Echec de la connexion",
+        "Email ou mot de passe invalide.",
+        "login.html");
+    $test = password_verify($password, $hashed_password);
+    echo "<script>console.log('Password verify : ', '$test')</script>";
+
+}
+
+http_response_code(200);
+exit();
