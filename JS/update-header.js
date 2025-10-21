@@ -3,8 +3,10 @@
 // - Else -> login.html
 // Also displays the user's name
 
-addEventListener("DOMContentLoaded", () => {
+export function update_header() {
     const user_name_text = document.getElementById("user-name-text")
+
+    console.log("Session storage : ", sessionStorage)
 
     if (sessionStorage.getItem("logged-in") === 'true')
     {
@@ -13,4 +15,8 @@ addEventListener("DOMContentLoaded", () => {
     } else {
         user_name_text.setAttribute("href", "login.html")
     }
+}
+
+addEventListener("DOMContentLoaded", () => {
+    update_header()
 })

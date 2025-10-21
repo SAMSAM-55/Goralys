@@ -10,7 +10,7 @@ $mail_domain = "your mail domain here";
 $mail_user = "your mail user here";
 $mail_password = "your mail password here";
 
-$folder = "Goralys";
+$folder = "/Goralys"; // Just use for developpement,should be "" for production
 
 function connect_to_database()
 {
@@ -30,7 +30,6 @@ function show_toast(string $toast_type, string $toast_title, string $toast_messa
 {
     global $folder;
     echo "<script type='text/javascript'>
-        window.location.href = window.location.origin + '/$folder/$to_page?toast=" . urlencode('true') . "&toast-type=" . urlencode($toast_type) . "&toast-title=" . urlencode($toast_title) . "&toast-message=" . urlencode($toast_message) . "';
+        window.location.href = window.location.origin + '$folder/$to_page?toast=" . urlencode('true') . "&toast-type=" . urlencode($toast_type) . "&toast-title=" . urlencode($toast_title) . "&toast-message=" . urlencode($toast_message) . "';
     </script>";
 }
-

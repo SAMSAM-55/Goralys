@@ -1,3 +1,5 @@
+import {update_header} from "./update-header.js";
+
 addEventListener("DOMContentLoaded", async () => {
     if (!(sessionStorage.getItem("logged-in") === 'true'))
     {
@@ -17,8 +19,12 @@ addEventListener("DOMContentLoaded", async () => {
                             sessionStorage.setItem("user-email", data['user_email'])
                             sessionStorage.setItem("user-name", data['username'])
                         }
+
+                        update_header()
                     })
             })
+    } else {
+        update_header()
     }
 })
 
