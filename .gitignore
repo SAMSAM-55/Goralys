@@ -3,3 +3,6 @@
 
 # Config file (filled)
 /PHP/config_secret.php
+
+# Script to deploy on a local apache server
+deploy-local.bat
