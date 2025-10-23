@@ -6,8 +6,6 @@
 export function update_header() {
     const user_name_text = document.getElementById("user-name-text")
 
-    console.log("Session storage : ", sessionStorage)
-
     if (sessionStorage.getItem("logged-in") === 'true')
     {
         user_name_text.setAttribute("href", "account.html")

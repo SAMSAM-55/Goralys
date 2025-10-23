@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
 global $mail_domain, $mail_password, $mail_user, $folder; // Variables to connect to mail server
 
 require 'vendor/autoload.php';
