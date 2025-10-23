@@ -5,10 +5,12 @@
     <title>Goralys - Acceuil</title>
     <link rel="stylesheet" href="./CSS/style.css">
     <link rel="stylesheet" href="./CSS/login-register.css">
-    <script type="module" src="./JS/core.js"></script>
+    <link rel="stylesheet" href="./CSS/input.css">
+
     <script type="module" src="./JS/user.js"></script>
     <script type="module" src="./JS/update-header.js"></script>
     <script type="module" src="./JS/toast.js"></script>
+    <script type="module" src="./JS/input.js"></script>
 
     <!-- Font Awesome CDN -->
     <link rel="stylesheet"
@@ -31,7 +33,7 @@
 <header class="header">
     <div class="header-menu">
         <a href="index.html" class="header-text">Menu</a>
-        <a href="" class="header-text">Vos sujets</a>
+        <a href="PHP/subject_router.php" class="header-text">Vos sujets</a>
     </div>
     <div class="account-info">
         <a href="" class="header-text" id="user-name-text"><i class="fa-solid fa-user"></i> Se connecter</a>
@@ -41,16 +43,15 @@
     <div class="connection-container">
         <h2>Connection à Goralys</h2>
         <form action="PHP/login.php" class="connection-form" method="post">
-            <div class="form-item" id="user-id-container">
+            <div class="input" id="user-id-container">
+                <input type="text" placeholder=" " name="user-id" id="user-id" autocomplete="username" required>
                 <label for="user-id">Identifiant</label>
-                <input type="text" name="user-id" id="user-id" autocomplete="username" required>
+
             </div>
-            <div class="form-item" id="password-container">
+            <div class="input" id="password-container">
                 <label for="password-login">Mot de Passe</label>
-                <div>
-                    <input type="password" name="password-login" id="password-login" autocomplete="current-password" required>
-                    <i class="fa-solid fa-eye" id="eye-icon"></i>
-                </div>
+                <input type="password" name="password-login" id="password-login" autocomplete="current-password" required>
+                <i class="fa-solid fa-eye" id="eye-icon"></i>
             </div>
             <button type="submit" class="submit-button">Se connecter <i class="fa-solid fa-arrow-right"></i></button>
         </form>

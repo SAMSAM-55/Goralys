@@ -17,55 +17,6 @@
     flex-direction: column;
 }
 
-/* Form item styles */
-.form-item {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 5px;
-}
-
-.form-item label {
-    font-size: 1.2em;
-    margin-bottom: 5px;
-    color: black;
-}
-
-/* Input fields styles */
-.form-item input {
-    padding: 2px;
-    border: 2px solid var(--theme-input-border-color);
-    outline: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
-    background-color: var(--theme-input-background-color);
-    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-/* Password styles (different from other inputs) because of the visibility toggle icon */
-.form-item div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.form-item div input {
-    padding: 2px;
-    border: 2px solid var(--theme-input-border-color);
-    outline: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
-    background-color: var(--theme-input-background-color);
-    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    width: 285px;
-}
-
-/* Icon styles for the eye icon used to toggle password visibility */
-.form-item div i {
-    cursor: pointer;
-}
-
 /* Button styles for the submit button */
 .submit-button {
     background-color: var(--theme-button-color-normal);

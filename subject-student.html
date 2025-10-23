@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Goralys - Acceuil</title>
+    <link rel="stylesheet" href="./CSS/style.css">
+    <link rel="stylesheet" href="./CSS/subject.css">
+    <link rel="stylesheet" href="./CSS/input.css">
+
+    <script type="module" src="./JS/core.js"></script>
+    <script type="module" src="./JS/user.js"></script>
+    <script type="module" src="./JS/update-header.js"></script>
+    <script type="module" src="./JS/toast.js"></script>
+    <script type="module" src="./JS/input.js"></script>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+    />
+</head>
+<body>
+<!-- Adding the toast notifications elements -->
+<div id="toast" class="feedback-container warning" style="display: none;">
+    <div class="toast-image">
+        <i class="fas"></i>
+    </div>
+    <div class="toast-content">
+    </div>
+</div>
+<!-- Main page -->
+<header class="header">
+    <div class="header-menu">
+        <a href="index.html" class="header-text">Menu</a>
+        <a href="PHP/subject_router.php" class="header-text">Vos sujets</a>
+    </div>
+    <div class="account-info">
+        <a href="" class="header-text" id="user-name-text"><i class="fa-solid fa-user"></i> Se connecter</a>
+    </div>
+</header>
+<main class="main">
+    <h2 class="main-title">Vos sujets</h2>
+    <div class="subject-main-container">
+        <form class="subject-container" action="PHP/submit-student.php" method="post">
+                <div class="subject-info">
+                    <p class="topic-name" id="topic-1"></p>
+                    <p class="teacher-name" id="teacher-1"></p>
+                </div>
+                <div class="input" style="max-width: 100%">
+                    <label for="subject-1">Votre Sujet</label>
+                    <input type="text" name="subject-1" placeholder=" " id="subject-1" required>
+                </div>
+                <button type="submit" class="submit-button">Valider le sujet <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+        <form class="subject-container" action="./PHP/submit-student.php" method="post">
+                <div class="subject-info">
+                    <p class="topic-name" id="topic-2"></p>
+                    <p class="teacher-name" id="teacher-2"></p>
+                </div>
+                <div class="input" style="max-width: 100%">
+                    <label for="subject-2">Votre Sujet</label>
+                    <input type="text" name="subject-2" placeholder=" " id="subject-2" required>
+                </div>
+                <button type="submit" class="submit-button">Valider le sujet <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

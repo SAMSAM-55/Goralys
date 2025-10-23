@@ -57,6 +57,12 @@
     width: 100%;
 }
 
+.profile-actions-container form
+{
+    display: flex;
+    width: 100%;
+}
+
 /* The buttons used to delete the account and log out of the site */
 .profile-actions-container button {
     background-color: var(--theme-background-color);

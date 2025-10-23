@@ -15,16 +15,23 @@ addEventListener("DOMContentLoaded", async () => {
 
                         if (is_logged_in) {
                             sessionStorage.setItem("user-id", data['user_id'])
-                            sessionStorage.setItem("user-type", data['user_type'])
                             sessionStorage.setItem("user-email", data['user_email'])
                             sessionStorage.setItem("user-name", data['username'])
+                            sessionStorage.setItem("user-type", data['user_type'])
+
+                            sessionStorage.setItem("user-topic-1", data['user_topic_1'])
+                            sessionStorage.setItem("user-teacher-1", data['user_teacher_1'])
+                            sessionStorage.setItem("user-topic-2", data['user_topic_2'])
+                            sessionStorage.setItem("user-teacher-2", data['user_teacher_2'])
                         }
 
                         update_header()
+                        window.dispatchEvent(new Event("UserDataLoaded"))
                     })
             })
     } else {
         update_header()
+        window.dispatchEvent(new Event("UserDataLoaded"))
     }
 })
 
