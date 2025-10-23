@@ -1,0 +1,14 @@
+# htaccess file, requires a local apache server
+RewriteEngine on
+RewriteBase /goralys/
+
+# Remove index.html from URL for /goralys/ subfolder
+RewriteCond %{THE_REQUEST} /index\.html [NC]
+RewriteRule ^index\.html$ /goralys/ [R=301,L]
+
+# Remove the .html at the end of any other url
+RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+RewriteRule ^ /%1 [NC,L,R]
+
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^ %{REQUEST_URI}.html [NC,L]
