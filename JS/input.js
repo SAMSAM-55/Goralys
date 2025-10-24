@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const style = window.getComputedStyle(element, null);
                 const isAutofilled = style.getPropertyValue('appearance') === 'menulist-button';
                 resolve(isAutofilled);
-            }, 25); // wait for autofill to apply (the least I could make consistent
+            }, 600); // wait for autofill to apply (the least I could make consistent
         });
     }
 
