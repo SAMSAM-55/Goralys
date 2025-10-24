@@ -5,17 +5,18 @@ $database_id = "your db id here";
 $database_password = "your db password here";
 $database_name = "your db name here";
 
-// Configuration for the email used in the register and password reset process
+// Configuration for the email used in the register and password reset process (not implemented yet)
 $mail_domain = "your mail domain here";
 $mail_user = "your mail user here";
 $mail_password = "your mail password here";
 
-$folder = "/Goralys"; // Just use for developpement,should be "" for production
+$folder = "/goralys"; // Just use for development, should be "" for production
 
 function connect_to_database()
 {
     global $server_name, $database_id, $database_password, $database_name;
     $conn = new mysqli($server_name, $database_id, $database_password, $database_name);
+    $conn->set_charset('utf8mb4');
 
     if ($conn->connect_error) {
         http_response_code(500); // Internal Server Error
