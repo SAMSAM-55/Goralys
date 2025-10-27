@@ -5,6 +5,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 /* Baseline, reset styles */
@@ -18,6 +19,7 @@ body
 {
     background: var(--theme-background-color);
     margin: 0 auto;
+    width: auto;
     font-family: var(--theme-font), serif;
 }
 
@@ -36,6 +38,7 @@ header {
     position: sticky;
     height: 70px;
     top: 0;
+    z-index: 100;
 }
 
 .header-menu {

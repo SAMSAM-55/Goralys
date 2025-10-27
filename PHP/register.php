@@ -69,7 +69,7 @@ if ($conn -> query($create_account) === TRUE) {
     $conn->close();
 
     $mail = new PHPMailer(true);
-    $link = "https://" . $_SERVER["HTTP_HOST"] . "$folder/PHP/confirm-email.php?token=" . urlencode($token) . "&user-id=" . urlencode($user_id);
+    $link = "https://" . $_SERVER["HTTP_HOST"] . "$folder/PHP/confirm_email.php?token=" . urlencode($token) . "&user-id=" . urlencode($user_id);
 
     try {
         // Setup for the email (replace the placeholders values with valid ones)

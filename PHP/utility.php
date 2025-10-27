@@ -3,7 +3,8 @@ require_once __DIR__ . '/config.php';
 
 // Function to get the full name from the id (format : [firstinitial].[last name][0-9+]
 // eg : s.saubion5 -> SAUBION S.
-function format_user_id($user_id) {
+function format_user_id($user_id) : string
+{
     // Match: first letter, dot, last name, optional number
     if (preg_match('/^([a-z])\.([a-z]+)\d*$/i', $user_id, $matches)) {
         $first_initial = strtoupper($matches[1]);
@@ -16,7 +17,7 @@ function format_user_id($user_id) {
 }
 
 // Function to automatically cache the info for a specified topic id (topic index is either 1 or 2)
-function cache_student_topics_info(string $topic_id, int $topic_index)
+function cache_student_topics_info(string $topic_id, int $topic_index): void
 {
     $conn = connect_to_database();
 

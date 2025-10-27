@@ -21,6 +21,32 @@
           referrerpolicy="no-referrer"
     />
 </head>
+<script type="module">
+    import {student_save_draft, student_submit} from './JS/core.js'
+
+    // Little script to get dynamic form action
+    document.addEventListener("DOMContentLoaded", () => {
+        const forms = Array.from(document.getElementsByClassName("subject-container"))
+        forms.forEach((f) => {
+            let form_submit_buttons = Array.from(f.getElementsByClassName("submit-button"))
+            form_submit_buttons.forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                    event.preventDefault()
+
+                    const action = button.dataset.action
+                    const index = parseInt(button.getAttribute("subject-index"))
+
+                    if (action === "save_draft")
+                    {
+                        await student_save_draft(index)
+                    } else if (action === "submit") {
+                        await student_submit(index)
+                    }
+                })
+            })
+        })
+    })
+</script>
 <body>
 <!-- Adding the toast notifications elements -->
 <div id="toast" class="feedback-container warning" style="display: none;">
@@ -43,27 +69,31 @@
 <main class="main">
     <h2 class="main-title">Vos sujets</h2>
     <div class="subject-main-container">
-        <form class="subject-container" action="PHP/submit-student.php" method="post">
-                <div class="subject-info">
-                    <p class="topic-name" id="topic-1"></p>
-                    <p class="teacher-name" id="teacher-1"></p>
-                </div>
-                <div class="input" style="max-width: 100%">
-                    <label for="subject-1">Votre Sujet</label>
-                    <input type="text" name="subject-1" placeholder=" " id="subject-1" required>
-                </div>
-                <button type="submit" class="submit-button">Valider le sujet <i class="fa-solid fa-arrow-right"></i></button>
+        <form class="subject-container" action="" method="post">
+            <div class="subject-info">
+                <p class="topic-name" id="topic-1"></p>
+                <p class="teacher-name" id="teacher-1"></p>
+            </div>
+            <div class="input" style="max-width: 100%">
+                <label for="subject-1">Votre Sujet</label>
+                <input type="text" name="subject-1" placeholder=" " id="subject-1" required>
+                <p class="helper">*Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.</p>
+            </div>
+            <button type="button" class="submit-button" data-action="save_draft" subject-index="1">Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i></button>
+            <button type="button" class="submit-button" data-action="submit" subject-index="1">Soumettre le sujet <i class="fa-solid fa-arrow-right"></i></button>
         </form>
-        <form class="subject-container" action="./PHP/submit-student.php" method="post">
-                <div class="subject-info">
-                    <p class="topic-name" id="topic-2"></p>
-                    <p class="teacher-name" id="teacher-2"></p>
-                </div>
-                <div class="input" style="max-width: 100%">
-                    <label for="subject-2">Votre Sujet</label>
-                    <input type="text" name="subject-2" placeholder=" " id="subject-2" required>
-                </div>
-                <button type="submit" class="submit-button">Valider le sujet <i class="fa-solid fa-arrow-right"></i></button>
+        <form class="subject-container" action="PHP/subject/update_student.php" method="post">
+            <div class="subject-info">
+                <p class="topic-name" id="topic-2"></p>
+                <p class="teacher-name" id="teacher-2"></p>
+            </div>
+            <div class="input" style="max-width: 100%">
+                <label for="subject-2">Votre Sujet</label>
+                <input type="text" name="subject-2" placeholder=" " id="subject-2" required>
+                <p class="helper">*Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.</p>
+            </div>
+            <button type="button" class="submit-button" data-action="save_draft">Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i></button>
+            <button type="button" class="submit-button" data-action="submit">Soumettre le sujet <i class="fa-solid fa-arrow-right"></i></button>
         </form>
     </div>
 </main>

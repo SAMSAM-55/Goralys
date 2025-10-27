@@ -4,6 +4,7 @@
     right: calc(-50% + 30%);
     font-size: 35px;
     font-weight: bold;
+    max-width: 500px;
 }
 
 .main-title::before
@@ -83,6 +84,7 @@
     position: relative;
     width: 100%;
     align-self: center;
+    z-index: 2;
 
     color: white;
     border: none;
@@ -97,6 +99,11 @@
 
 .submit-button i {
     margin-left: 5px;
+}
+
+/* Just a small trick to avoid one button's shadow to be obstructed by the one "under" it */
+.submit-button + .submit-button {
+    z-index: 1;
 }
 
 @media (hover: hover) {

@@ -27,9 +27,31 @@ function connect_to_database()
 }
 
 // Utility function to easily show toast from php
-function show_toast(string $toast_type, string $toast_title, string $toast_message, string $to_page = "index.html"): void
+function show_toast(string $toast_type, string $toast_title, string $toast_message, string $to_page = "index.html", bool $js = false): void
 {
     global $folder;
+
+    // Normalize values
+    $toast_type = (string)$toast_type;
+    $toast_title = (string)$toast_title;
+    $toast_message = (string)$toast_message;
+
+    if ($js)
+    {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+        }
+
+        echo json_encode([
+            "toast" => true,
+            "toast_type" => $toast_type,
+            "toast_title" => $toast_title,
+            "toast_message" => $toast_message,
+            "redirect" => "$folder/$to_page"
+        ], JSON_UNESCAPED_UNICODE);
+        return;
+    }
+
     echo "<script type='text/javascript'>
         window.location.href = window.location.origin + '$folder/$to_page?toast=" . urlencode('true') . "&toast-type=" . urlencode($toast_type) . "&toast-title=" . urlencode($toast_title) . "&toast-message=" . urlencode($toast_message) . "';
     </script>";
