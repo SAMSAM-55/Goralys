@@ -37,6 +37,10 @@
     background-color: var(--theme-container-normal);
     border-radius: 10px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .subject-container:not(:last-child)
@@ -46,6 +50,7 @@
 
 .subject-info
 {
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -80,10 +85,12 @@
 
 /* Style for the submit button */
 .submit-button {
+    /* 1/c with c=1.05 (see scale on hover, line 112), multiplied by 100 to get percentage of width */
+    --coefficient: 95.238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095;
     background-color: var(--theme-button-color-normal);
     position: relative;
-    width: 100%;
-    align-self: center;
+    width: calc(var(--coefficient)*1% + (var(--coefficient)/100) * 30px); /* use the above coefficient and cancel the parent padding, make the button perfectly match its parent width when hovered */
+    transform-origin: center center;
     z-index: 2;
 
     color: white;
