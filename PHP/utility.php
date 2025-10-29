@@ -40,3 +40,19 @@ function cache_student_topics_info(string $topic_id, int $topic_index): void
     $stmt->close();
     $conn->close();
 }
+
+function verify_crf($token = null) : bool
+{
+    $csrf_token = isset($token) ? trim($token) : trim($_POST['csrf-token']) ?? null;
+    $csrf_token_verify = $_SESSION['csrf-token'] ?? null;
+
+    if (!hash_equals($csrf_token_verify, $csrf_token) || $csrf_token == null || $csrf_token_verify == null)
+    {
+        http_response_code(403); // Access denied
+        show_toast('error',
+            "Lien suspect",
+            "Ce lien semble provenir d'un site externe. Ne faites pas confiance à cette source.");
+        return false;
+    }
+    return true;
+}

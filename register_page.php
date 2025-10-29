@@ -64,7 +64,7 @@
             </div>
             <button type="submit" class="submit-button">S'inscrire <i class="fa-solid fa-arrow-right"></i></button>
         </form>
-        <p>Vous avez déjà un compte ? <a href="login.html">Connectez-vous</a></p>
+        <p>Vous avez déjà un compte ? <a href="login_page.php">Connectez-vous</a></p>
     </div>
 </main>
 </body>

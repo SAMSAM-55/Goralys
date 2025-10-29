@@ -24,7 +24,7 @@ if (!$stmt->execute()) {
     show_toast('error',
         "Création du compte",
         "Ce lien n'existe pas, veuillez réessayer",
-        "register.html");
+        "register_page.php");
     exit(1);
 }
 
@@ -40,7 +40,7 @@ if ($result->num_rows === 0 || !($row = $result->fetch_assoc())) {
     show_toast('error',
     "Création du compte",
     "ce lien n'existe pas, veuillez recommencer.",
-    "register.html");
+    "register_page.php");
 
     exit(1);
 }
@@ -57,7 +57,7 @@ if ($validation_token !== $token || $validation_token === "" || ((new DateTime()
     show_toast('error',
     "création du compte",
     "Le lien a expiré, veuillez recommencer.",
-    "register.html");
+    "register_page.php");
 
     exit(1);
 }
@@ -81,7 +81,7 @@ if ($stmt->execute()) {
     show_toast('success',
     "Création du compte",
     "Votre compte chez Goralys a bien été créé. Vous pouvez désormais vous connecter",
-    "login.html");
+    "login_page.php");
 
     exit(0);
 
@@ -95,7 +95,7 @@ if ($stmt->execute()) {
     show_toast('error',
         "Création du compte",
         "Une erreur est survenue lors de la création de votre compte, veuillez recommancer.",
-        "register.html");
+        "register_page.php");
 
     exit(1);
 }

@@ -41,3 +41,8 @@ export function get_user_data()
 {
     return {'id' : sessionStorage.getItem("user-id"), 'email' : sessionStorage.getItem("user-email")}
 }
+
+// Create a "CRF" token to validate all forms on the site later
+document.addEventListener("DOMContentLoaded", async () => {
+    await fetch("./PHP/create_form_token.php")
+})

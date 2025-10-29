@@ -63,8 +63,9 @@ export async function student_save_draft(subject_index = 0)
     if (!confirm("Voulez-vous écraser votre ancien brouillon ?"))
         return
 
-    const subject = document.getElementById("subject-" + subject_index).value.toString()
+    const subject = document.getElementById("subject-" + subject_index).value
     const old_subject = sessionStorage.getItem("old-subject-" + subject_index)
+    const token = document.getElementById("csrf-token-" + subject_index).value
 
     if (subject === old_subject)
     {
@@ -75,7 +76,8 @@ export async function student_save_draft(subject_index = 0)
 
     const subject_name = "subject-" + subject_index
     const data = {
-        [subject_name] : subject
+        [subject_name] : subject,
+        "csrf-token" : token
     }
     await fetch("./PHP/subject/update_student.php", {
         method: "POST",
@@ -104,8 +106,11 @@ export async function student_submit(subject_index = 0)
     if (!confirm("Voulez-vous soumettre votre sujet ? Ce dernier ne pourra être modifié qu'en cas de rejet par le professeur"))
         return
 
+    const token = document.getElementById("csrf-token-" + subject_index).value
+    console.log("CSRF token (submit) : ", token)
     const data = {
-        "subject-index" : subject_index
+        "subject-index" : subject_index,
+        "csrf-token" : token
     }
     await fetch("./PHP/subject/submit_student.php", {
         method: "POST",

@@ -11,7 +11,7 @@ switch ($user_type) {
         header('Location: ../subject-teacher.html');
         exit();
     case 'student':
-        header('Location: ../subject-student.html');
+        header('Location: ../subject-student_page.php');
         exit();
     default:
         header('Location: ../index.html');

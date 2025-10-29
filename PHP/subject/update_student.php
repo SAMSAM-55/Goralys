@@ -1,10 +1,14 @@
 <?php
-require __DIR__ . '/' . '../config.php';
+require_once __DIR__ . '/' . '../config.php';
+require_once __DIR__ . '/' . '../utility.php';
 session_start();
 
 // Read the JSON payload sent by the JS script (see core.j, section  student functions)
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true);
+
+if (!verify_crf($data['csrf-token']))
+    die("Invalid CSRF Token");
 
 $student_id = $_SESSION['user-id'] ?? null;
 $subject = $data['subject-1'] ?? null;

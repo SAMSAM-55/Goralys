@@ -3,6 +3,9 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/utility.php';
 session_start();
 
+if (!verify_crf())
+    die("Invalid CSRF Token");
+
 $id = $_REQUEST['user-id'];
 $password = $_REQUEST['password-login'];
 
@@ -57,7 +60,7 @@ if (password_verify($password, $hashed_password)) {
     show_toast('error',
         "Echec de la connexion",
         "Email ou mot de passe invalide.",
-        "login.html");
+        "login_page.php");
 }
 
 http_response_code(200);

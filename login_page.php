@@ -43,6 +43,12 @@
     <div class="connection-container">
         <h2>Connection à Goralys</h2>
         <form action="PHP/login.php" class="connection-form" method="post">
+            <input type="hidden" id="csrf-token" name="csrf-token" value="
+            <?php
+            session_start();
+            echo htmlspecialchars($_SESSION['csrf-token'] ?? '', ENT_QUOTES, 'UTF-8');
+            ?>
+            ">
             <div class="input" id="user-id-container">
                 <input type="text" placeholder=" " name="user-id" id="user-id" autocomplete="username" required>
                 <label for="user-id">Identifiant</label>
@@ -55,7 +61,7 @@
             </div>
             <button type="submit" class="submit-button">Se connecter <i class="fa-solid fa-arrow-right"></i></button>
         </form>
-        <p>Vous n'avez pas encore de compte ? <a href="register.html">Créez-en un</a></p>
+        <p>Vous n'avez pas encore de compte ? <a href="register_page.php">Créez-en un</a></p>
     </div>
 </main>
 </body>

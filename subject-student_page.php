@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,6 +73,11 @@
     <h2 class="main-title">Vos sujets</h2>
     <div class="subject-main-container">
         <form class="subject-container" action="" method="post">
+            <input type="hidden" name="csrf-token-1" id="csrf-token-1" value="
+            <?php
+            echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
+            ?>
+            ">
             <div class="subject-info">
                 <p class="topic-name" id="topic-1"></p>
                 <p class="teacher-name" id="teacher-1"></p>
@@ -83,6 +91,11 @@
             <button type="button" class="submit-button" data-action="submit" subject-index="1">Soumettre le sujet <i class="fa-solid fa-arrow-right"></i></button>
         </form>
         <form class="subject-container" action="PHP/subject/update_student.php" method="post">
+            <input type="hidden" name="csrf-token-2" id="csrf-token-2" value="
+            <?php
+            echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
+            ?>
+            ">
             <div class="subject-info">
                 <p class="topic-name" id="topic-2"></p>
                 <p class="teacher-name" id="teacher-2"></p>

@@ -2,13 +2,24 @@
 RewriteEngine on
 RewriteBase /goralys/
 
-# Remove index.html from URL for /goralys/ subfolder
+# Remove _page.php at the end of some url
+RewriteCond %{THE_REQUEST} \s/+(.*)_page\.php [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/goralys/$1_page.php -f
+RewriteRule ^([a-zA-Z0-9_-]+)$ $1_page.php [L]
+
+# Remove index.html from url for /goralys/ subfolder
 RewriteCond %{THE_REQUEST} /index\.html [NC]
 RewriteRule ^index\.html$ /goralys/ [R=301,L]
 
 # Remove the .html at the end of any other url
 RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
-RewriteRule ^ /%1 [NC,L,R]
+RewriteRule ^ /%1 [R=301,L]
 
-RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^ %{REQUEST_URI}.html [NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/goralys/$1.html -f
+RewriteRule ^([a-zA-Z0-9_-]+)$ $1.html [L]

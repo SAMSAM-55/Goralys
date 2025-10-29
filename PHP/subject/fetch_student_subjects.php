@@ -10,7 +10,7 @@ if (!$student_id)
     show_toast('error',
         "Sujets",
         "Nous n'avons pas pu retrouver vos sujets",
-        "subject-student.html");
+        "subject-student_page.php");
     http_response_code(500); // Internal server error
     exit(1);
 }
@@ -27,7 +27,7 @@ if (!$row = $result->fetch_assoc())
     show_toast('error',
         "Sujets",
         "Nous n'avons pas pu retrouver vos sujets",
-        "subject-student.html");
+        "subject-student_page.php");
 
     $stmt->close();
     $conn->close();

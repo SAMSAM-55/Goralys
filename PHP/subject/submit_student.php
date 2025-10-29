@@ -1,14 +1,16 @@
 <?php
 require_once __DIR__ . '/' . '../config.php';
+require_once __DIR__ . '/' . '../utility.php';
 session_start();
 
+// Read the JSON payload sent by the JS script (see core.j, section  student functions)
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true);
 
-error_log("PHP raw input : " . $raw);
-error_log("PHP Received subject index : " . $data['subject-index']);
+if (!verify_crf($data['csrf-token']))
+    die("Invalid CSRF Token");
 
-// Doesn't actually mind the subject status for now
+// Doesn't mind the subject status (impossible to post if the subject is uneditable)
 $subject_index = (string)$data['subject-index'] ?? null;
 $student_id = $_SESSION['user-id'] ?? null;
 $topic_id = $_SESSION['user-topic-id-' . $subject_index] ?? null;
@@ -23,7 +25,7 @@ if (!$topic_id || !$student_id || !$subject_index)
     show_toast('error',
     "Soumission",
     "Une erreur interne est survenue lors de la soumission du sujet. Veuillez réessayer ultérieurement",
-    "subject-student.html",
+    "subject-student_page.php",
     js: true);
     http_response_code(400); // Bad request
     exit(1);
