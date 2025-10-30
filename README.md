@@ -19,7 +19,7 @@ Prerequisites:
 
 To simulate a local PHP server with apache and mysql on windows, you can use [xampp](https://www.apachefriends.org) (also available on linux and macOS)
 
-(Optionnal):
+(Optional):
 - PHP_CodeSniffer
 - PHP ruleset for PSR-12 convention
 
@@ -29,7 +29,7 @@ Steps:
    composer install --working-dir=PHP
    ```
 2. Configure environment:
-   - For development, edit [PHP/config.php](PHP/config.php). You can back up your prefilled information in `PHP/config_secret.php` as it is gitignored. Make sure your cancel any changes made to the variables in `PHP/config.php` before comitting.
+   - For development, edit [PHP/config.php](PHP/config.php). You can back up your prefilled information in `PHP/config_secret.php` as it is gitignored. Make sure your cancel any changes made to the variables in `PHP/config.php` before commiting.
 3. Database:
    - Create the database and tables using the schema at [PHP/data_structure.txt](PHP/data_structure.txt).
 4. Web server:
@@ -46,7 +46,7 @@ Steps:
 - CSRF:
   - Token created by [PHP/create_form_token.php](PHP/create_form_token.php) and validated by [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
 - Passwords:
-  - Passwords are hashed using PHP's `password_hash` ([PHP/register.php](PHP/register.php#L37)) and verified with `password_verify` ([PHP/login.php](PHP/login.php#L29)).
+  - Passwords are hashed using PHP's `password_hash` ([PHP/register.php](PHP/register.php)) and verified with `password_verify` ([PHP/login.php](PHP/login.php)).
 - Sensitive config:
   - Move production secrets out of [PHP/config.php](PHP/config.php) into a protected file (e.g. `PHP/config_secret.php`) and ensure it is excluded by `.gitignore`.
 
