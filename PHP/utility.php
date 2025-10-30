@@ -1,58 +1,146 @@
 <?php
-require_once __DIR__ . '/config.php';
 
-// Function to get the full name from the id (format : [firstinitial].[last name][0-9+]
-// eg : s.saubion5 -> SAUBION S.
-function format_user_id($user_id) : string
+declare(strict_types=1);
+
+namespace Goralys\Utility;
+
+use Goralys\Config\Config;
+
+final class GoralysUtility
 {
-    // Match: first letter, dot, last name, optional number
-    if (preg_match('/^([a-z])\.([a-z]+)\d*$/i', $user_id, $matches)) {
-        $first_initial = strtoupper($matches[1]);
-        $lastname = strtoupper($matches[2]);
-        return "$lastname $first_initial.";
-    } else {
-        // Return as-is if pattern doesn’t match
-        return $user_id;
-    }
-}
-
-// Function to automatically cache the info for a specified topic id (topic index is either 1 or 2)
-function cache_student_topics_info(string $topic_id, int $topic_index): void
-{
-    $conn = connect_to_database();
-
-    $query = "SELECT * FROM saje5795_goralys.topics WHERE id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $topic_id);
-
-    if (!$stmt->execute())
-        show_toast('error',
-        "Erreur",
-        "Une erreur interne est survenue, veuillez réessayer ultérieurement"
-        );
-
-    $row = $stmt->get_result()->fetch_assoc();
-
-    $_SESSION["user-topic-id-$topic_index"] = $topic_id;
-    $_SESSION["user-topic-$topic_index"] = $row['name'];
-    $_SESSION["user-teacher-$topic_index"] = format_user_id($row['teacher_id']);
-
-    $stmt->close();
-    $conn->close();
-}
-
-function verify_crf($token = null) : bool
-{
-    $csrf_token = isset($token) ? trim($token) : trim($_POST['csrf-token']) ?? null;
-    $csrf_token_verify = $_SESSION['csrf-token'] ?? null;
-
-    if (!hash_equals($csrf_token_verify, $csrf_token) || $csrf_token == null || $csrf_token_verify == null)
+/**
+ * Returns the full name of a user based on a short id.
+ *
+ * @param string $userId The short id, e.g. “s.saubion5”.
+ *
+ * @return string The formatted name, e.g. “SAUBION S.”.
+ */
+    final public static function formatUserId(string $userId): string
     {
-        http_response_code(403); // Access denied
-        show_toast('error',
-            "Lien suspect",
-            "Ce lien semble provenir d'un site externe. Ne faites pas confiance à cette source.");
-        return false;
+        // Expected format: first initial, dot, last name, optional digits.
+        if (preg_match('/^([a-z])\.([a-z]+)\d*$/i', $userId, $matches)) {
+            $firstInitial = strtoupper($matches[1]);
+            $lastName     = strtoupper($matches[2]);
+
+            return $lastName . ' ' . $firstInitial . '.';
+        }
+
+        // Return the original value if it does not match the expected format.
+        return $userId;
     }
-    return true;
+
+/**
+ * Enable server-side backend (PHP) to use the toast system of the client-side frontend (JS)
+ * @param string $toast_type The toast type : error, warning, success or info
+ * @param string $toast_title The toast title
+ * @param string $toast_message The toast message
+ * @param string $to_page The page to redirect to (if $js = false)
+ * @param bool $js Defines if the function should redirect (using $to_page) or output a JSON object (if using JS POST)
+ * @return void
+ */
+    final public static function showToast(
+        string $toast_type,
+        string $toast_title,
+        string $toast_message,
+        string $to_page = "index.html",
+        bool $js = false
+    ): void {
+
+        // Normalize values
+        $toast_type    = trim($toast_type);
+        $toast_title   = trim($toast_title);
+        $toast_message = trim($toast_message);
+
+        if ($js) {
+            if (!headers_sent()) {
+                header('Content-Type: application/json; charset=utf-8');
+            }
+
+            echo json_encode([
+                "toast" => true,
+                "toast_type" => $toast_type,
+                "toast_title" => $toast_title,
+                "toast_message" => $toast_message,
+                "redirect" => Config::FOLDER . $to_page
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $base = Config::FOLDER . $to_page;
+        $query = http_build_query([
+        "toast"         => "true",
+        "toast-type"    => $toast_type,
+        "toast-title"   => $toast_title,
+        "toast-message" => $toast_message,
+        ]);
+
+        echo "<script type='text/javascript'>
+        window.location.href = window.location.origin + '$base' + '?$query';
+    </script>";
+    }
+
+/**
+ * Stores information about a topic in the session.
+ *
+ * @param string $topicId     The database id of the topic.
+ * @param int    $topicIndex  Either 1 or 2 – the index used in the session key.
+ *
+ * @return void
+ */
+    final public static function cacheStudentTopicsInfo(string $topicId, int $topicIndex): void
+    {
+        $conn = Config::connectToDatabase();
+
+        $query = 'SELECT * FROM saje5795_goralys.topics WHERE id = ?';
+        $stmt  = $conn->prepare($query);
+        $stmt->bind_param('s', $topicId);
+
+        if (! $stmt->execute()) {
+            self::showToast(
+                'error',
+                'Erreur',
+                'Une erreur interne est survenue, veuillez réessayer ultérieurement'
+            );
+        }
+
+        $row = $stmt->get_result()->fetch_assoc();
+
+        $_SESSION["user-topic-id-$topicIndex"]   = $topicId;
+        $_SESSION["user-topic-$topicIndex"]     = $row['name'];
+        $_SESSION["user-teacher-$topicIndex"]  = self::formatUserId($row['teacher_id']);
+
+        $stmt->close();
+        $conn->close();
+    }
+
+/**
+ * Verifies a CSRF token.
+ *
+ * @param string $token Optional token to verify; if omitted the POST value will be used.
+ *
+ * @return bool TRUE if the token is valid, FALSE otherwise.
+ */
+    final public static function verifyCSRF(string $token = ""): bool
+    {
+        $csrfRequestToken = $token !== "" ? trim($token) : trim($_POST['csrf-token']) ?? null;
+        $csrfSessionToken = $_SESSION['csrf-token'] ?? null;
+
+        if (
+            $csrfRequestToken === '' ||
+            $csrfSessionToken === '' ||
+            ! hash_equals($csrfSessionToken, $csrfRequestToken)
+        ) {
+            http_response_code(403);
+
+            self::showToast(
+                'error',
+                'Lien suspect',
+                'Ce lien semble provenir d\'un site externe. Ne faites pas confiance à cette source.'
+            );
+
+            return false;
+        }
+
+        return true;
+    }
 }

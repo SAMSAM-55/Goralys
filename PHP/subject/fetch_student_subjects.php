@@ -1,33 +1,37 @@
 <?php
-require_once __DIR__ . '/' . '../config.php';
+
+use Goralys\Config\Config;
+use Goralys\Utility\GoralysUtility;
 
 session_start();
 
 $student_id = $_SESSION['user-id'] ?? null;
 
-if (!$student_id)
-{
-    show_toast('error',
+if (!$student_id) {
+    GoralysUtility::showToast(
+        'error',
         "Sujets",
         "Nous n'avons pas pu retrouver vos sujets",
-        "subject-student_page.php");
+        "subject-student_page.php"
+    );
     http_response_code(500); // Internal server error
     exit(1);
 }
 
-$conn = connect_to_database();
+$conn = Config::connectToDatabase();
 $query = "SELECT * FROM saje5795_goralys.student_topics WHERE student_id = ? LIMIT 2";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("s", $student_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if (!$row = $result->fetch_assoc())
-{
-    show_toast('error',
+if (!$row = $result->fetch_assoc()) {
+    GoralysUtility::showToast(
+        'error',
         "Sujets",
         "Nous n'avons pas pu retrouver vos sujets",
-        "subject-student_page.php");
+        "subject-student_page.php"
+    );
 
     $stmt->close();
     $conn->close();

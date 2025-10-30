@@ -1,58 +1,34 @@
 <?php
-// This is the configuration file for the database connection
-$server_name = "localhost";
-$database_id = "your db id here";
-$database_password = "your db password here";
-$database_name = "your db name here";
 
-// Configuration for the email used in the register and password reset process (not implemented yet)
-$mail_domain = "your mail domain here";
-$mail_user = "your mail user here";
-$mail_password = "your mail password here";
+namespace Goralys\Config;
 
-$folder = "/goralys"; // Just use for development, should be "" for production
+use mysqli;
 
-function connect_to_database()
+final class Config
 {
-    global $server_name, $database_id, $database_password, $database_name;
-    $conn = new mysqli($server_name, $database_id, $database_password, $database_name);
-    $conn->set_charset('utf8mb4');
+    //-------------- Database --------------//
+    public const string SERVERNAME = "localhost";
+    public const string DATABASEID = "your db user";
+    public const string DATABASEPASSWORD = "your db password";
+    public const string DATABASENAME = "your db name";
+    //---------------- Mail ----------------//
+    public const string MAILDOMAIN = "your mail domain";
+    public const string MAILUSER = "your mail user (adress)";
+    public const string MAILPASSWORD = "your mail password";
+    //---------------- Misc ----------------//
+    public const string FOLDER = "/goralys/"; // Just use for development, should be "" for production
 
-    if ($conn->connect_error) {
-        http_response_code(500); // Internal Server Error
-        exit("Connection failed: " . $conn->connect_error);
-    }
-
-    return $conn;
-}
-
-// Utility function to easily show toast from php
-function show_toast(string $toast_type, string $toast_title, string $toast_message, string $to_page = "index.html", bool $js = false): void
-{
-    global $folder;
-
-    // Normalize values
-    $toast_type = (string)$toast_type;
-    $toast_title = (string)$toast_title;
-    $toast_message = (string)$toast_message;
-
-    if ($js)
+    final public static function connectToDatabase(): mysqli|null
     {
-        if (!headers_sent()) {
-            header('Content-Type: application/json; charset=utf-8');
+        $conn = new mysqli(Config::SERVERNAME, Config::DATABASEID, Config::DATABASEPASSWORD, Config::DATABASENAME);
+        $conn->set_charset('utf8mb4');
+
+        if ($conn->connect_error) {
+            http_response_code(500); // Internal Server Error
+            error_log("Connection failed: " . $conn->connect_error);
+            return null;
         }
 
-        echo json_encode([
-            "toast" => true,
-            "toast_type" => $toast_type,
-            "toast_title" => $toast_title,
-            "toast_message" => $toast_message,
-            "redirect" => "$folder/$to_page"
-        ], JSON_UNESCAPED_UNICODE);
-        return;
+        return $conn;
     }
-
-    echo "<script type='text/javascript'>
-        window.location.href = window.location.origin + '$folder/$to_page?toast=" . urlencode('true') . "&toast-type=" . urlencode($toast_type) . "&toast-title=" . urlencode($toast_title) . "&toast-message=" . urlencode($toast_message) . "';
-    </script>";
 }

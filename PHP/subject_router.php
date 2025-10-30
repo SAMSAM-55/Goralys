@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $user_type = $_SESSION['user-type'] ?? null;
