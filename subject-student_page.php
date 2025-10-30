@@ -4,10 +4,10 @@ session_start();
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Goralys - Acceuil</title>
+    <title>Goralys - Sujets</title>
     <link rel="stylesheet" href="./CSS/style.css">
     <link rel="stylesheet" href="./CSS/subject.css">
     <link rel="stylesheet" href="./CSS/input.css">
@@ -64,7 +64,7 @@ session_start();
 <!-- Main page -->
 <header class="header">
     <div class="header-menu">
-        <a href="index.html" class="header-text">Menu</a>
+        <a href="index.html" class="header-text">Acceuil</a>
         <a href="PHP/subject_router.php" class="header-text">Vos sujets</a>
     </div>
     <div class="account-info">
