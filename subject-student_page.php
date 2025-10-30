@@ -1,5 +1,7 @@
 <?php
+
 session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -85,10 +87,16 @@ session_start();
             <div class="input" style="max-width: 100%">
                 <label for="subject-1">Votre Sujet</label>
                 <input type="text" name="subject-1" placeholder=" " id="subject-1" required>
-                <p class="helper">*Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.</p>
+                <p class="helper">
+                    *Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.
+                </p>
             </div>
-            <button type="button" class="submit-button" data-action="save_draft" subject-index="1">Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i></button>
-            <button type="button" class="submit-button" data-action="submit" subject-index="1">Soumettre le sujet <i class="fa-solid fa-arrow-right"></i></button>
+            <button type="button" class="submit-button" data-action="save_draft" subject-index="1">
+                Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button type="button" class="submit-button" data-action="submit" subject-index="1">
+                Soumettre le sujet <i class="fa-solid fa-arrow-right"></i>
+            </button>
         </form>
         <form class="subject-container" action="PHP/subject/update_student.php" method="post">
             <input type="hidden" name="csrf-token-2" id="csrf-token-2" value="
@@ -103,10 +111,16 @@ session_start();
             <div class="input" style="max-width: 100%">
                 <label for="subject-2">Votre Sujet</label>
                 <input type="text" name="subject-2" placeholder=" " id="subject-2" required>
-                <p class="helper">*Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.</p>
+                <p class="helper">
+                    *Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.
+                </p>
             </div>
-            <button type="button" class="submit-button" data-action="save_draft">Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i></button>
-            <button type="button" class="submit-button" data-action="submit">Soumettre le sujet <i class="fa-solid fa-arrow-right"></i></button>
+            <button type="button" class="submit-button" data-action="save_draft" subject-index="2">
+                Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button type="button" class="submit-button" data-action="submit" subject-index="2">
+                Soumettre le sujet <i class="fa-solid fa-arrow-right"></i>
+            </button>
         </form>
     </div>
 </main>

@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/..' . '/config.php';
+require_once __DIR__ . '/..' . '/utility.php';
+
 use Goralys\Config\Config;
 use Goralys\Utility\GoralysUtility;
 

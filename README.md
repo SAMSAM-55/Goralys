@@ -13,7 +13,7 @@ Goralys is a lightweight web app to manage "Grand Oral" topics for students and 
 ## Quick start (development)
 
 Prerequisites:
-- PHP 7.4+ with mysqli
+- PHP 8.1+ with mysqli
 - Composer (for PHPMailer)
 - Apache (recommended) or PHP built-in server for testing
 

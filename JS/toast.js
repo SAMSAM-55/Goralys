@@ -56,7 +56,6 @@ function add_toast(toast_element, title, message, type, duration, is_new) {
     sessionStorage.setItem('toast-title', title)
     sessionStorage.setItem('toast-message', message);
     sessionStorage.setItem('toast-expires', (Date.now() + duration).toString());
-    console.log("Test", duration);
 }
 
 // Function to show a toast message

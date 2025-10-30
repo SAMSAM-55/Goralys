@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/utility.php';
+
 use Goralys\Utility\GoralysUtility;
 
 session_start();

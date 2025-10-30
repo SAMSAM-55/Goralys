@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/..' . '/config.php';
+require_once __DIR__ . '/..' . '/utility.php';
+
 use Goralys\Config\Config;
 use Goralys\Utility\GoralysUtility;
 
@@ -48,7 +51,7 @@ if (!$stmt->execute()) {
     GoralysUtility::showToast(
         'error',
         "Soumission",
-        "Une erreur interne est survenue lors de l'enregistrement du sujet. Veuillez réessayer ultérieurement",
+        "Une erreur interne (prepare) est survenue lors de l'enregistrement du sujet. Veuillez réessayer ultérieurement",
         js: true
     );
     http_response_code(500); // Internal server error
