@@ -43,9 +43,10 @@
     <div class="connection-container">
         <h2>Inscription sur Goralys</h2>
         <form action="PHP/register.php" class="connection-form" method="post">
-            <input type="hidden" name="csrf-token-1" id="csrf-token-1" value="
+            <input type="hidden" name="csrf-token" id="csrf-token" value="
             <?php
-            echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
+            session_start();
+            echo htmlspecialchars($_SESSION['csrf-token'] ?? '', ENT_QUOTES, 'UTF-8');
             ?>
             ">
             <div class="input" id="user-id-container">

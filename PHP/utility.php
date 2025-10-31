@@ -122,6 +122,15 @@ final class GoralysUtility
  */
     final public static function verifyCSRF(string $token = ""): bool
     {
+        if ($_POST['csrf-token'] === null) {
+            self::showToast(
+                'error',
+                "Sécurité",
+                "Une erreur interne est survenue et l'opération a été suspendue pour votre sécurité."
+            );
+            die("Invalid token");
+        }
+
         $csrfRequestToken = $token !== "" ? trim($token) : trim($_POST['csrf-token']) ?? null;
         $csrfSessionToken = $_SESSION['csrf-token'] ?? null;
 

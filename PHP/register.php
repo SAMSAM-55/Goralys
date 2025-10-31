@@ -11,6 +11,8 @@ require_once __DIR__ . '/utility.php';
 use Goralys\Config\Config;
 use Goralys\Utility\GoralysUtility;
 
+session_start();
+
 if (!GoralysUtility::verifyCSRF()) {
     die("Invalid CSRF Token");
 }
@@ -55,8 +57,8 @@ $check_id_temp_stmt->bind_param('s', $user_id);
 if (!$check_id_temp_stmt->execute()) {
     GoralysUtility::showToast(
         'error',
-        "Identifiant",
-        "L'identfiant saisi n'est pas valide"
+        "Création du compte",
+        "Une erreur interne est survenue lors de la création de votre compte. Veuilez réessayer."
     );
     $check_id_temp_stmt->close();
     $conn->close();
@@ -64,12 +66,7 @@ if (!$check_id_temp_stmt->execute()) {
     exit();
 }
 
-if ($check_id_temp_stmt->get_result()->num_rows == 0) {
-    GoralysUtility::showToast(
-        'error',
-        "Identifiant",
-        "L'identfiant saisi n'est pas valide"
-    );
+if ($check_id_temp_stmt->get_result()->num_rows > 0) {
     $delete_temp = "DELETE FROM saje5795_goralys.users_temp WHERE user_id = ?";
     $delete_stmt = $conn -> prepare($delete_temp);
     $delete_stmt -> bind_param("s", $user_id);
@@ -119,7 +116,7 @@ if ($create_account_stmt -> execute()) {
     Consulter votre boite de réception.';
 
     $mail = new PHPMailer(true);
-    $link = "https://" . $_SERVER["HTTP_HOST"] . Config::FOLDER . "/PHP/confirm_email.php"
+    $link = "https://" . $_SERVER["HTTP_HOST"] . Config::FOLDER . "PHP/confirm_email.php"
     . "?token=" . urlencode($token)
     . "&user-id=" . urlencode($user_id);
 
