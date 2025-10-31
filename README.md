@@ -50,6 +50,11 @@ Steps:
 - Sensitive config:
   - Move production secrets out of [PHP/config.php](PHP/config.php) into a protected file (e.g. `PHP/config_secret.php`) and ensure it is excluded by `.gitignore`.
 
+## Currently working on
+(31/10/2025) I am currently implementing the backend and frontend for teachers accounts
+
+*Note: the `dev` branch serves as a pre-production playground, so some commits may include experimental or buggy code — I try to minimize this as much as possible.*
+
 ## Key code pointers
 
 - Server-side toast utility: [`Goralys\Utility\GoralysUtility::showToast`](PHP/config.php) — [PHP/config.php](PHP/config.php)
