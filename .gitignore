@@ -6,3 +6,7 @@
 
 # Script to deploy on a local apache server
 deploy-local.bat
+
+# Just some test files
+test.html
+PHP/db.txt
