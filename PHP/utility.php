@@ -120,15 +120,17 @@ final class GoralysUtility
  *
  * @return bool TRUE if the token is valid, FALSE otherwise.
  */
-    final public static function verifyCSRF(string $token = ""): bool
+    final public static function verifyCSRF(string $token = "", bool $js = false): bool
     {
-        if ($_POST['csrf-token'] === null) {
+        if (!isset($_POST['csrf-token']) && $token === "") {
             self::showToast(
                 'error',
                 "Sécurité",
-                "Une erreur interne est survenue et l'opération a été suspendue pour votre sécurité."
+                "Une erreur interne est survenue et l'opération a été suspendue pour votre sécurité.",
+                js: $js
             );
-            die("Invalid token");
+            error_log("Invalid csrf token was sent");
+            die();
         }
 
         $csrfRequestToken = $token !== "" ? trim($token) : trim($_POST['csrf-token']) ?? null;

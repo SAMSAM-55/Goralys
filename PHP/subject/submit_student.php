@@ -12,7 +12,7 @@ session_start();
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true);
 
-if (!GoralysUtility::verifyCSRF($data['csrf-token'])) {
+if (!GoralysUtility::verifyCSRF($data['csrf-token'], true)) {
     die("Invalid CSRF Token");
 }
 
