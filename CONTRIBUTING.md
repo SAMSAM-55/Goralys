@@ -24,6 +24,7 @@ Please note that this project is released with a Contributor Code of Conduct. By
 - Follow PSR-12 coding style for PHP code
 - Use 4 spaces for indentation (no tabs)
 - Add comments for complex logic
+- Always write the meaning of the HTTP codes in PHP
 - Write descriptive variable/function names
 - Write code in English
 
