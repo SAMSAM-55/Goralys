@@ -65,7 +65,7 @@
     font-weight: 800;
 }
 
-.subject-info .teacher-name
+.subject-info .teacher-name, .subject-info .student-name
 {
     max-width: 30%;
     margin-top: 0;
@@ -123,4 +123,168 @@
     .submit-button:hover i {
         animation: arrow-animation 0.75s infinite;
     }
+}
+
+/* Custom underline color for inputs */
+.subject-container[data-status='2'] .input::before {
+    background: #fe345b !important;
+}
+
+.subject-container[data-status='2'] .input label {
+    color: #fe345b;
+}
+
+.subject-container[data-status='3'] .input::before{
+    background: #47d763 !important;
+}
+
+.subject-container[data-status='3'] .input label {
+    color: #47d763;
+}
+
+.subject-container[data-status='2'] .input input, .subject-container[data-status='3'] .input input {
+    color: black;
+}
+
+/* Style for the validate and reject buttons (teacher-side) */
+.validate-button, .reject-button {
+    /* 1/c with c=1.05 (see scale on hover, line 112), multiplied by 100 to get percentage of width */
+    --coefficient: 95.238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095238095;
+    background-color: var(--theme-button-color-normal);
+    position: relative;
+    width: calc(var(--coefficient)*1% + (var(--coefficient)/100) * 30px); /* use the above coefficient and cancel the parent padding, make the button perfectly match its parent width when hovered */
+    transform-origin: center center;
+    z-index: 2;
+
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.validate-button i, .reject-button i {
+    margin-left: 5px;
+}
+
+.reject-button {
+    z-index: 1;
+}
+
+@media (hover: hover) {
+    .validate-button:hover {
+        background-color: #47d763;
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .reject-button:hover {
+        background-color: #fe345b;
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .validate-button:hover i, .reject-button:hover i {
+        animation: arrow-animation 0.75s infinite;
+    }
+}
+
+/* Style for the subject visibility toggles */
+.selector-main-container {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 75px;
+    z-index: 5;
+    width: 60%;
+    margin: 0 auto auto;
+    padding: 15px;
+    align-content: center;
+    background-color: var(--theme-container-normal);
+    border-radius: 10px;
+    box-shadow: 0 9px 15px rgba(0, 0, 0, 0.3);
+}
+
+.selector-main-container h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.selector-container {
+    margin-bottom: 5px;
+}
+
+.selectors-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 30px);
+}
+
+/* Style for the checkbox, original design : https://getcssscan.com/css-checkboxes-examples (#2 by Linear) */
+
+.selector-container .subject-selector {
+    appearance: none;
+    background-color: #dfe1e4;
+    border-radius: 72px;
+    border-style: none;
+    flex-shrink: 0;
+    height: 20px;
+    margin: 0;
+    position: relative;
+    width: 40px;
+}
+
+.selector-container .subject-selector::before {
+    bottom: -6px;
+    content: "";
+    left: -6px;
+    position: absolute;
+    right: -6px;
+    top: -6px;
+}
+
+.selector-container .subject-selector,
+.selector-container .subject-selector::after {
+    transition: all 375ms cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.selector-container .subject-selector::after {
+    background-color: #fff;
+    border-radius: 50%;
+    content: "";
+    height: 14px;
+    left: 3px;
+    position: absolute;
+    top: 3px;
+    width: 14px;
+}
+
+.selector-container input[type=checkbox] {
+    cursor: default;
+}
+
+.selector-container .subject-selector:hover {
+    background-color: #c9cbcd;
+    transition-duration: 0s;
+}
+
+.selector-container .subject-selector:checked {
+    background-color: var(--theme-button-color-hovered);
+}
+
+.selector-container .subject-selector:checked::after {
+    background-color: #fff;
+    left: 23px;
+}
+
+.selector-container :focus:not(.focus-visible) {
+    outline: 0;
+}
+
+.selector-container .subject-selector:checked:hover {
+    background-color: var(--theme-button-color-selected);
 }
