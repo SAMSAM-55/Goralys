@@ -40,12 +40,12 @@
     --theme-header-color : #0077B6; /* Header color */
     --theme-button-color-normal : #00B4D8; /* Normal button color */
     --theme-button-color-hovered : #0077B6; /* Hovered button color */
-    --theme-button-color-selected : #000348; /* Selected button color */
+    --theme-button-color-selected : #00048e; /* Selected button color */
     --theme-container-normal : #00B4D8;
     --theme-container-hovered : #0077B6;
     --theme-progress-bar-color : #0077B6;
     --theme-progress-value-color : #03045E;
     --theme-burger-menu-color : #03045E; /* color for the burger manu (same as header by default) */
-    --theme-input-border-color : #000348;
+    --theme-input-border-color : #00048e;
     --theme-input-background-color : #0077B6;
 }
