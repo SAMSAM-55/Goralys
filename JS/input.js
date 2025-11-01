@@ -42,9 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const passwordElement = document.getElementById("password-login") ?? document.getElementById("password-register") ?? null
     if (passwordElement)
     {
-        console.log("password element found")
         passwordElement.nextElementSibling.addEventListener("click", () => {
-            console.log("eye clicked : ", passwordElement.type)
             if (passwordElement.type === "password")
             {
                 passwordElement.type = "text"

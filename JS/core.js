@@ -171,8 +171,7 @@ export async function show_teacher_subjects()
 
     await fetch('./PHP/subject/fetch_teacher_subjects.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: "s.saubion9" })
+        headers: { 'Content-Type': 'application/json' }
     })
         .then(res => res.json())
         .then(data => {

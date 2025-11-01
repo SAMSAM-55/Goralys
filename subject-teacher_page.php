@@ -31,7 +31,6 @@ session_start();
 
     // Little script to get dynamic form action
     addEventListener("SubjectsShown", () => {
-        console.log("Hi")
         const forms = Array.from(document.getElementsByClassName("subject-container"))
         forms.forEach((f) => {
             let form_submit_buttons = [

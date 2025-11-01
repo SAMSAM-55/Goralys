@@ -10,9 +10,7 @@ use Goralys\Utility\GoralysUtility;
 
 session_start();
 
-$data = json_decode(file_get_contents("php://input"), true);
-
-$teacher_id = $data['id'] ?? $_SESSION['id'] ?? null;
+$teacher_id = $_SESSION['user-id'] ?? null;
 
 if (!$teacher_id) {
     http_response_code(401); // Unauthorized
