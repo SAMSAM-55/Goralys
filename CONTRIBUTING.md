@@ -6,14 +6,14 @@ Thank you for your interest in contributing to Goralys! This document provides g
 
 ### Pull Requests
 
-1. Fork the repository and create your branch from `dev`
+1. Fork the repository and create your branch from `features/dev`
 2. Install dependencies: `composer install --working-dir=PHP`
 3. Make your changes following the coding conventions below
 4. Write clear commit messages
 5. Update documentation as needed
-6. Submit a pull request to the `dev` branch
+6. Submit a pull request to the `features/dev` branch
 
-*Note: Never create a pull request to the `main` branch*
+*Note: Never create a pull request to the `main` branch, all pull requests to `main` will be closed.*
 
 #### Coding Conventions
 
