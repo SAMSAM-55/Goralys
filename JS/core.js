@@ -42,7 +42,14 @@ async function show_student_topics(toast = true)
 
         for (let i=1; i<3; i++) {
             const subject_element = document.getElementById(`subject-${i}`)
+            const helper_element = subject_element.parentElement
+                                            .getElementsByClassName("helper")[0]
             subject_element.value = data[`subject-${i}`] === "" || data[`subject-${i}`] === null ? null : data[`subject-${i}`]
+
+            // Reset input and helper
+            subject_element.parentElement.classList.remove("disabled", "rejected", "approved")
+            helper_element.textContent = "*Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur."
+
             const status = parseInt(sessionStorage.getItem(`subject-${i}-status`))
             const last_rejected = data[`last-rejected-${i}`]
             const subject = subject_element.value
@@ -52,25 +59,22 @@ async function show_student_topics(toast = true)
                 subject_element.disabled = true
                 subject_element.parentElement.classList.add("disabled")
                 // Update helper
-                subject_element.parentElement
-                    .getElementsByClassName("helper")[0]
-                    .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
+                helper_element.textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
             } else if (status === 2 && subject === last_rejected) {
                 // If the subject has been rejected
                 subject_element.parentElement.classList.add("rejected")
                 // Update helper
-                subject_element.parentElement
-                    .getElementsByClassName("helper")[0]
-                    .textContent = "*Votre sujet a été rejeté. Vous devez en soumettre un nouveau"
+                helper_element.textContent = "*Votre sujet a été rejeté. Vous devez en soumettre un nouveau"
                 reject_count++
             } else if (status === 3) {
                 // If the subject has been approved
                 subject_element.disabled = true
                 subject_element.parentElement.classList.add("approved", "disabled")
+
                 // Update helper
-                subject_element.parentElement
-                    .getElementsByClassName("helper")[0]
-                    .textContent = "*Votre sujet a validé. Vous ne pouvez plus le modifié"
+                helper_element.textContent = "*Votre sujet a validé. Vous ne pouvez plus le modifié"
+
+                // Hide the buttons
                 subject_element.parentElement.parentElement
                     .querySelectorAll("button[type='button']")
                     .forEach((b) => {

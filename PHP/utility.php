@@ -8,13 +8,13 @@ use Goralys\Config\Config;
 
 final class GoralysUtility
 {
-/**
- * Returns the full name of a user based on a short id.
- *
- * @param string $userId The short id, e.g. “s.saubion5”.
- *
- * @return string The formatted name, e.g. “SAUBION S.”.
- */
+    /**
+    * Returns the full name of a user based on a short id.
+    *
+    * @param string $userId The short id, e.g. “s.saubion5”.
+    *
+    * @return string The formatted name, e.g. “SAUBION S.”.
+    */
     final public static function formatUserId(string $userId): string
     {
         // Expected format: first initial, dot, last name, optional digits.
@@ -29,15 +29,15 @@ final class GoralysUtility
         return $userId;
     }
 
-/**
- * Enable server-side backend (PHP) to use the toast system of the client-side frontend (JS)
- * @param string $toast_type The toast type : error, warning, success or info
- * @param string $toast_title The toast title
- * @param string $toast_message The toast message
- * @param string $to_page The page to redirect to (if $js = false)
- * @param bool $js Defines if the function should redirect (using $to_page) or output a JSON object (if using JS POST)
- * @return void
- */
+    /**
+    * Enable server-side backend (PHP) to use the toast system of the client-side frontend (JS)
+    * @param string $toast_type The toast type : error, warning, success or info
+    * @param string $toast_title The toast title
+    * @param string $toast_message The toast message
+    * @param string $to_page The page to redirect to (if $js = false)
+    * @param bool $js Defines if the function should redirect (using $to_page) or output a JSON object (if using JS)
+    * @return void
+    */
     final public static function showToast(
         string $toast_type,
         string $toast_title,
@@ -79,14 +79,14 @@ final class GoralysUtility
     </script>";
     }
 
-/**
- * Stores information about a topic in the session.
- *
- * @param string $topicId     The database id of the topic.
- * @param int    $topicIndex  Either 1 or 2 – the index used in the session key.
- *
- * @return void
- */
+    /**
+    * Stores information about a topic in the session.
+    *
+    * @param string $topicId     The database id of the topic.
+    * @param int    $topicIndex  Either 1 or 2 – the index used in the session key.
+    *
+    * @return void
+    */
     final public static function cacheStudentTopicsInfo(string $topicId, int $topicIndex): void
     {
         $conn = Config::connectToDatabase();
@@ -113,13 +113,13 @@ final class GoralysUtility
         $conn->close();
     }
 
-/**
- * Verifies a CSRF token.
- *
- * @param string $token Optional token to verify; if omitted the POST value will be used.
- *
- * @return bool TRUE if the token is valid, FALSE otherwise.
- */
+    /**
+    * Verifies a CSRF token.
+    *
+    * @param string $token Optional token to verify; if omitted the POST value will be used.
+    *
+    * @return bool TRUE if the token is valid, FALSE otherwise.
+    */
     final public static function verifyCSRF(string $token = "", bool $js = false): bool
     {
         if (!isset($_POST['csrf-token']) && $token === "") {
