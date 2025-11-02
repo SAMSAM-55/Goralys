@@ -43,7 +43,8 @@ if (!$subject || !$topic_id || !$student_id) {
 }
 
 $conn = Config::connectToDatabase();
-$query = "UPDATE saje5795_goralys.student_topics SET subject = ? WHERE student_id = ? AND topic_id = ?";
+$query = "UPDATE saje5795_goralys.student_topics SET subject = ?, subject_status = 0 
+                                                 WHERE student_id = ? AND topic_id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("ssi", $subject, $student_id, $topic_id);
 
@@ -51,7 +52,7 @@ if (!$stmt->execute()) {
     GoralysUtility::showToast(
         'error',
         "Soumission",
-        "Une erreur interne (prepare) est survenue lors de l'enregistrement du sujet. Veuillez réessayer ultérieurement",
+        "Une erreur interne est survenue lors de l'enregistrement du sujet. Veuillez réessayer ultérieurement",
         js: true
     );
     http_response_code(500); // Internal server error

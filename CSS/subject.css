@@ -126,19 +126,19 @@
 }
 
 /* Custom underline color for inputs */
-.subject-container[data-status='2'] .input::before {
+.input.rejected::before {
     background: #fe345b !important;
 }
 
-.subject-container[data-status='2'] .input label {
+.input.rejected label {
     color: #fe345b;
 }
 
-.subject-container[data-status='3'] .input::before{
+.input.approved::before{
     background: #47d763 !important;
 }
 
-.subject-container[data-status='3'] .input label {
+.input.approved label {
     color: #47d763;
 }
 

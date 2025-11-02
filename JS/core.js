@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import {show_toast} from "./toast.js";
 
-async function show_student_topics()
+async function show_student_topics(toast = true)
 {
     const user_topic_1 = sessionStorage.getItem("user-topic-1")
     const user_teacher_1 = sessionStorage.getItem("user-teacher-1")
@@ -21,8 +21,7 @@ async function show_student_topics()
     document.getElementById("teacher-2").textContent = user_teacher_2 ?? ""
 
     // Show student subject (from db)
-    if (window.location.pathname.split("/").slice(-1).toString() === 'subject-student')
-    {
+    if (window.location.pathname.split("/").slice(-1).toString() === 'subject-student') {
         let data = await fetch("./PHP/subject/fetch_student_subjects.php", {
             credentials: "include"
         })
@@ -38,30 +37,81 @@ async function show_student_topics()
 
         subject1_element.value = data['subject-1'] === "" || data['subject-1'] === null ? null : data['subject-1']
         subject2_element.value = data['subject-2'] === "" || data['subject-2'] === null ? null : data['subject-2']
+        let reject_count = 0;
+        let approved_count = 0;
 
-        if (parseInt(sessionStorage .getItem("subject-1-status")) === 1)
-        {
-            subject1_element.disabled = true;
-            subject1_element.parentElement.classList.add("disabled")
-            // Update helper
-            subject1_element.parentElement
-                .getElementsByClassName("helper")[0]
-                .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
-        } else if (parseInt(sessionStorage .getItem("subject-2-status")) === 1) {
-            subject2_element.disabled = true;
-            subject2_element.parentElement.classList.add("disabled")
-            // Update helper
-            subject2_element.parentElement
-                .getElementsByClassName("helper")[0]
-                .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
+        for (let i=1; i<3; i++) {
+            const subject_element = document.getElementById(`subject-${i}`)
+            subject_element.value = data[`subject-${i}`] === "" || data[`subject-${i}`] === null ? null : data[`subject-${i}`]
+            const status = parseInt(sessionStorage.getItem(`subject-${i}-status`))
+            const last_rejected = data[`last-rejected-${i}`]
+            const subject = subject_element.value
+
+            if (status === 1) {
+                // If the subject has been submitted
+                subject_element.disabled = true
+                subject_element.parentElement.classList.add("disabled")
+                // Update helper
+                subject_element.parentElement
+                    .getElementsByClassName("helper")[0]
+                    .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
+            } else if (status === 2 && subject === last_rejected) {
+                // If the subject has been rejected
+                subject_element.parentElement.classList.add("rejected")
+                // Update helper
+                subject_element.parentElement
+                    .getElementsByClassName("helper")[0]
+                    .textContent = "*Votre sujet a été rejeté. Vous devez en soumettre un nouveau"
+                reject_count++
+            } else if (status === 3) {
+                // If the subject has been approved
+                subject_element.disabled = true
+                subject_element.parentElement.classList.add("approved", "disabled")
+                // Update helper
+                subject_element.parentElement
+                    .getElementsByClassName("helper")[0]
+                    .textContent = "*Votre sujet a validé. Vous ne pouvez plus le modifié"
+                subject_element.parentElement.parentElement
+                    .querySelectorAll("button[type='button']")
+                    .forEach((b) => {
+                        b.style.display = "none"
+                    })
+                approved_count++
+            }
+        }
+
+        if (toast) {
+            if (reject_count > 0 && approved_count === 0) {
+                show_toast(
+                    'Sujets',
+                    `${["Un", "Deux"][reject_count - 1]} de vos sujets ${["a", "ont"][reject_count - 1]} été rejeté${["", "s"][reject_count - 1]}. 
+                    Vous devez le${["", "s"][reject_count - 1]} modifier`,
+                    'info'
+                )
+            } else if (approved_count > 0 && reject_count === 0) {
+                show_toast(
+                    'Sujets',
+                    approved_count === 2
+                        ? "Tous vos sujes ont été validés."
+                        : `Un de vos sujets a été validé. Vous ne pouvez plus le modifier`,
+                    'info'
+                )
+            } else if (approved_count > 0 && reject_count > 0) {
+                show_toast(
+                    'Sujets',
+                    `Un de vos sujets a été validé, l'autre a été rejeté.`,
+                    'info'
+                )
+            }
         }
     }
 }
 
 export async function student_save_draft(subject_index = 0)
 {
-    if (!confirm("Voulez-vous écraser votre ancien brouillon ?"))
+    if (!confirm("Voulez-vous écraser votre ancien brouillon ?")) {
         return
+    }
 
     const subject = document.getElementById("subject-" + subject_index).value
     const old_subject = sessionStorage.getItem("old-subject-" + subject_index)
@@ -70,7 +120,6 @@ export async function student_save_draft(subject_index = 0)
     if (subject === old_subject)
     {
         alert("Aucun changement n'a été effectué.")
-        window.location.href = "./subject-student.html"
         return
     }
 
@@ -98,13 +147,15 @@ export async function student_save_draft(subject_index = 0)
         {
             sessionStorage.setItem("old-subject-" + subject_index, subject)
         }
+        await show_student_topics(false)
     })
 }
 
 export async function student_submit(subject_index = 0)
 {
-    if (!confirm("Voulez-vous soumettre votre sujet ? Ce dernier ne pourra être modifié qu'en cas de rejet par le professeur"))
+    if (!confirm("Voulez-vous soumettre votre sujet ? Ce dernier ne pourra être modifié qu'en cas de rejet par le professeur")) {
         return
+    }
 
     const token = document.getElementById("csrf-token-" + subject_index).value
     const data = {
@@ -129,25 +180,13 @@ export async function student_submit(subject_index = 0)
         if (!response.ok)
             return
 
-        const subject1_element = document.getElementById("subject-1")
-        const subject2_element = document.getElementById("subject-2")
-
-        if (subject_index === 1)
-        {
-            subject1_element.disabled = true;
-            subject1_element.parentElement.classList.add("disabled")
-            // Update helper
-            subject1_element.parentElement
-                .getElementsByClassName("helper")[0]
-                .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
-        } else if (subject_index === 2) {
-            subject2_element.disabled = true;
-            subject2_element.parentElement.classList.add("disabled")
-            // Update helper
-            subject2_element.parentElement
-                .getElementsByClassName("helper")[0]
-                .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
-        }
+        const subject_element = document.getElementById(`subject-${subject_index}`)
+        subject_element.disabled = true;
+        subject_element.parentElement.classList.add("disabled")
+        // Update helper
+        subject_element.parentElement
+            .getElementsByClassName("helper")[0]
+            .textContent = "*Votre sujet a été soumis et ne peux plus être modifié."
     })
 }
 
@@ -175,13 +214,16 @@ export async function show_teacher_subjects()
     })
         .then(res => res.json())
         .then(data => {
-            const helper_array = ["Cet élève n'a pas encore soumis de sujet.", "La validation d'un sujet est irréversible", "Vous avez rejeté le sujet de cet élève, il doit en soumettre un nouveau.", "Vous avez validé le sujet de cet élève."]
+            const helper_array = ["Cet élève n'a pas encore soumis de sujet.",
+                "La validation d'un sujet est irréversible",
+                "Vous avez rejeté le sujet de cet élève, il doit en soumettre un nouveau.",
+                "Vous avez validé le sujet de cet élève."]
             let i = 0
             const subject_array = data['data']
             subject_array.filter(s => s['subject-status'] === 1 && document.getElementById("selector-pending").checked).forEach((subject) => {
                 // If the subject has been submitted
                 newContent += `
-                   <form class="subject-container" action="" method="post" data-status="${subject['subject-status']}">
+                   <form class="subject-container" action="" method="post" data-status="1">
                        <input type="hidden" id="form-data-${i}" data-subject="${subject['subject']}" data-student_id="${subject['student-id']}" data-topic_id="${subject['topic-id']}">
                        <div class="subject-info">
                            <p class="topic-name">${subject['topic-name']}</p>
@@ -206,12 +248,12 @@ export async function show_teacher_subjects()
             subject_array.filter(s => s['subject-status'] === 3 && document.getElementById("selector-approved").checked).forEach((subject) => {
                 // If the subject has been approved
                 newContent += `
-                    <form class="subject-container" action="" method="post" data-status="${subject['subject-status']}">
+                    <form class="subject-container" action="" method="post" data-status="3">
                         <div class="subject-info">
                             <p class="topic-name">${subject['topic-name']}</p>
                             <p class="student-name">${subject['student-name']}</p>
                         </div>
-                        <div class="input disabled" style="max-width: 100%">
+                        <div class="input approved disabled" style="max-width: 100%">
                             <label for="subject-${i}">Sujet</label>
                             <input type="text" name="subject-${i}" placeholder=" " id="subject-${i}" value="${subject['subject']}" disabled required>
                             <p class="helper">
@@ -224,12 +266,12 @@ export async function show_teacher_subjects()
             subject_array.filter(s => s['subject-status'] === 2 && document.getElementById("selector-rejected").checked).forEach((subject) => {
                 // If the subject has been rejected
                 newContent += `
-                    <form class="subject-container" action="" method="post" data-status="${subject['subject-status']}">
+                    <form class="subject-container" action="" method="post" data-status="2">
                         <div class="subject-info">
                             <p class="topic-name">${subject['topic-name']}</p>
                             <p class="student-name">${subject['student-name']}</p>
                         </div>
-                        <div class="input disabled" style="max-width: 100%">
+                        <div class="input rejected disabled" style="max-width: 100%">
                             <label for="subject-${i}">Sujet</label>
                             <input type="text" name="subject-${i}" placeholder=" " id="subject-${i}" value="${subject['subject']}" disabled required>
                             <p class="helper">
@@ -242,7 +284,7 @@ export async function show_teacher_subjects()
             subject_array.filter(s => s['subject-status'] === 0 && document.getElementById("selector-unsubmitted").checked).forEach((subject) => {
                 // If the subject hasn't been submitted
                 newContent += `
-                   <form class="subject-container" action="" method="post" data-status="${subject['subject-status']}">
+                   <form class="subject-container" action="" method="post" data-status="0">
                        <div class="subject-info">
                            <p class="topic-name">${subject['topic-name']}</p>
                            <p class="student-name">${subject['student-name']}</p>

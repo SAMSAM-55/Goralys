@@ -9,8 +9,8 @@ session_start();
     <meta charset="UTF-8">
     <title>Goralys - Sujets</title>
     <link rel="stylesheet" href="./CSS/style.css">
-    <link rel="stylesheet" href="./CSS/subject.css">
     <link rel="stylesheet" href="./CSS/input.css">
+    <link rel="stylesheet" href="./CSS/subject.css">
 
     <script type="module" src="./JS/core.js"></script>
     <script type="module" src="./JS/user.js"></script>

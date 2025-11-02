@@ -48,9 +48,12 @@ $row = $result->fetch_assoc();
 $subject_2 = $row;
 
 echo json_encode([
-    "subject-1" => $subject_1['subject'],
+    "subject-1"        => $subject_1['subject'],
+    "last-rejected-1"   => $subject_1['last_rejected'],
     "subject-1-status" => $subject_1['subject_status'],
-    "subject-2" => $subject_2['subject'],
+
+    "subject-2"        => $subject_2['subject'],
+    "last-rejected-2"   => $subject_2['last_rejected'],
     "subject-2-status" => $subject_2['subject_status'],
 ]);
 
