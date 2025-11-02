@@ -2,10 +2,6 @@
 
 Thank you for your interest in contributing to Goralys! This document provides guidelines for contributing to the project.
 
-## Code of Conduct
-
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
-
 ## How to Contribute
 
 ### Pull Requests
