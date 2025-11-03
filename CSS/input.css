@@ -99,8 +99,7 @@
 
 /* Disabled style */
 
-.input.disabled input
-{
+.input.disabled input {
     color: rgb(90, 90, 90);
     cursor: not-allowed;
 }

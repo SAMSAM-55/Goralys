@@ -8,8 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import {show_toast} from "./toast.js";
 
-async function show_student_topics(toast = true)
-{
+// Displays the current student topics and associated subjects
+// @param toast :
+// If the subject should toast after updating the displayed subjects
+async function show_student_topics(toast = true){
     const user_topic_1 = sessionStorage.getItem("user-topic-1")
     const user_teacher_1 = sessionStorage.getItem("user-teacher-1")
     const user_topic_2 = sessionStorage.getItem("user-topic-2")
@@ -111,8 +113,10 @@ async function show_student_topics(toast = true)
     }
 }
 
-export async function student_save_draft(subject_index = 0)
-{
+// Save a student subject's draft
+// @param subject_index :
+// 1 or 2, defines which subject to save
+export async function student_save_draft(subject_index = 0) {
     if (!confirm("Voulez-vous écraser votre ancien brouillon ?")) {
         return
     }
@@ -140,8 +144,7 @@ export async function student_save_draft(subject_index = 0)
     }).then(async (response) => {
         const data = JSON.parse(await response.text())
 
-        if (data.toast)
-        {
+        if (data.toast) {
             show_toast(data.toast_title,
                 data.toast_message,
                 data.toast_type)
@@ -155,8 +158,10 @@ export async function student_save_draft(subject_index = 0)
     })
 }
 
-export async function student_submit(subject_index = 0)
-{
+// Submit a student subject
+// @param subject_index :
+// 1 or 2, defines which subject to submit
+export async function student_submit(subject_index = 0) {
     if (!confirm("Voulez-vous soumettre votre sujet ? Ce dernier ne pourra être modifié qu'en cas de rejet par le professeur")) {
         return
     }
@@ -174,15 +179,15 @@ export async function student_submit(subject_index = 0)
     }).then(async (response) => {
         const data = JSON.parse(await response.text())
 
-        if (data.toast)
-        {
+        if (data.toast) {
             show_toast(data.toast_title,
                 data.toast_message,
                 data.toast_type)
         }
 
-        if (!response.ok)
+        if (!response.ok) {
             return
+        }
 
         const subject_element = document.getElementById(`subject-${subject_index}`)
         subject_element.disabled = true;
@@ -194,6 +199,7 @@ export async function student_submit(subject_index = 0)
     })
 }
 
+// Show the subjects when the page is loaded and a student is logged-in
 addEventListener("UserDataLoaded", async () => {
         if (sessionStorage.getItem("logged-in") !== 'true')
             return
@@ -206,8 +212,8 @@ addEventListener("UserDataLoaded", async () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import {updateInputs} from "./input.js";
 
-export async function show_teacher_subjects()
-{
+// Displays all subjects for the current teacher
+export async function show_teacher_subjects() {
     const scroll = document.documentElement.scrollTop
     let newContent = ''
     const subject_container = document.getElementById("subject-main-container")
@@ -310,8 +316,10 @@ export async function show_teacher_subjects()
         })
 }
 
-export async function teacher_validate(subject_index = 0)
-{
+// Validate a student's subject
+// @param subject_index :
+// The subject to validate (1 to n for n subjects)
+export async function teacher_validate(subject_index = 0) {
     const dataElement = document.getElementById("form-data-" + subject_index)
     const studentId = dataElement.dataset.student_id
     const topicId = dataElement.dataset.topic_id
@@ -330,22 +338,24 @@ export async function teacher_validate(subject_index = 0)
     }).then(async (response) => {
         const data = JSON.parse(await response.text())
 
-        if (data.toast)
-        {
+        if (data.toast) {
             show_toast(data.toast_title,
                 data.toast_message,
                 data.toast_type)
         }
 
-        if (!response.ok)
+        if (!response.ok) {
             return
+        }
 
         await show_teacher_subjects()
     })
 }
 
-export async function teacher_reject(subject_index = 0)
-{
+// Reject a student's subject
+// @param subject_index :
+// The subject to reject (1 to n for n subjects)
+export async function teacher_reject(subject_index = 0) {
     const dataElement = document.getElementById("form-data-" + subject_index)
     const studentId = dataElement.dataset.student_id
     const topicId = dataElement.dataset.topic_id
@@ -366,20 +376,21 @@ export async function teacher_reject(subject_index = 0)
     }).then(async (response) => {
         const data = JSON.parse(await response.text())
 
-        if (data.toast)
-        {
+        if (data.toast) {
             show_toast(data.toast_title,
                 data.toast_message,
                 data.toast_type)
         }
 
-        if (!response.ok)
+        if (!response.ok) {
             return
+        }
 
         await show_teacher_subjects()
     })
 }
 
+// Show the subjects when the page is loaded and a teacher is logged-in
 addEventListener("UserDataLoaded", async () => {
     if (sessionStorage.getItem("logged-in") !== 'true')
         return

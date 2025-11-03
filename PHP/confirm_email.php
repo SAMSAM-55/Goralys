@@ -60,7 +60,7 @@ $validation_token = $row["verification_token"];
 if (
     $validation_token !== $token
     || $validation_token === ""
-    || (new DateTime()->getTimestamp() - new DateTime($row['created_at'])->getTimestamp()) > 750
+    || ((new DateTime())->getTimestamp() - (new DateTime($row['created_at']))->getTimestamp()) > 750
 ) {
     http_response_code(400);
     $del_stmt->execute();

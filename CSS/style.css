@@ -15,8 +15,7 @@ html {
     font-weight: 600;
 }
 
-body
-{
+body {
     background: var(--theme-background-color);
     margin: 0 auto;
     width: auto;
