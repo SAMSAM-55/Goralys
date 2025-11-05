@@ -1,50 +1,57 @@
 // File to update the custom inputs style (autofill)
 
 function updateFilled(el) {
-    const wrapper = el.closest(".input");
-    if (!wrapper) return;
-    if (el.value && el.value.trim() !== "") wrapper.classList.add("filled");
-    else wrapper.classList.remove("filled");
+    const wrapper = el.closest(".input")
+    if (!wrapper) {
+        return;
+    }
+    if (el.value && el.value.trim() !== "") {
+        wrapper.classList.add("filled")
+    } else {
+        wrapper.classList.remove("filled")
+    }
 }
 
 // Detect autofill using computed style
+// @param element :
+// The element to check the computed style of
 function detectAutofill(element) {
     return new Promise(resolve => {
         setTimeout(() => {
-            const style = window.getComputedStyle(element, null);
-            const isAutofilled = style.getPropertyValue('appearance') === 'menulist-button';
-            resolve(isAutofilled);
-        }, 600); // wait for autofill to apply (the least I could make consistent
+            const style = window.getComputedStyle(element, null)
+            const isAutofilled = style.getPropertyValue('appearance') === 'menulist-button'
+            resolve(isAutofilled)
+        }, 600); // wait for autofill to apply (the least I could make consistent)
     });
 }
 
+// Updates all inputs on the current page
 export function updateInputs() {
     // Initialize inputs
     const inputs = Array.from(document.querySelectorAll(".input input"));
     inputs.forEach(async input => {
         // Normal typing
-        updateFilled(input);
-        input.addEventListener("input", () => updateFilled(input));
-        input.addEventListener("change", () => updateFilled(input));
+        updateFilled(input)
+        input.addEventListener("input", () => updateFilled(input))
+        input.addEventListener("change", () => updateFilled(input))
 
         // Check for autofill
-        const autofilled = await detectAutofill(input);
+        const autofilled = await detectAutofill(input)
         if (autofilled || input.value) {
-            input.closest(".input")?.classList.add("filled");
+            input.closest(".input")?.classList.add("filled")
         }
     });
 }
 
+// Password inputs handling
 document.addEventListener("DOMContentLoaded", () => {
     updateInputs()
 
     // Handle the click on the eye icon to toggle password visibility (only one password per page max)
     const passwordElement = document.getElementById("password-login") ?? document.getElementById("password-register") ?? null
-    if (passwordElement)
-    {
+    if (passwordElement) {
         passwordElement.nextElementSibling.addEventListener("click", () => {
-            if (passwordElement.type === "password")
-            {
+            if (passwordElement.type === "password") {
                 passwordElement.type = "text"
                 passwordElement.nextElementSibling.classList.remove("fa-eye")
                 passwordElement.nextElementSibling.classList.add("fa-eye-slash")

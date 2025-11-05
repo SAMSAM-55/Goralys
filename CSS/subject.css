@@ -1,5 +1,4 @@
-.main-title
-{
+.main-title {
     position: relative;
     right: calc(-50% + 30%);
     font-size: 35px;
@@ -7,8 +6,7 @@
     max-width: 500px;
 }
 
-.main-title::before
-{
+.main-title::before {
     content: '';
     width: 200px;
     height: 5px;
@@ -19,8 +17,7 @@
     border-radius: 0 5px 5px 0;
 }
 
-.subject-main-container
-{
+.subject-main-container {
     position: relative;
     width: 60%;
     right: calc(-50% + 30%);
@@ -30,8 +27,7 @@
     align-content: center;
 }
 
-.subject-container
-{
+.subject-container {
     width: 100%;
     padding: 15px;
     background-color: var(--theme-container-normal);
@@ -43,13 +39,11 @@
     align-items: center;
 }
 
-.subject-container:not(:last-child)
-{
+.subject-container:not(:last-child) {
     margin-bottom: 50px;
 }
 
-.subject-info
-{
+.subject-info {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -57,30 +51,26 @@
     margin: 0;
 }
 
-.subject-info .topic-name
-{
+.subject-info .topic-name {
     max-width: 60%;
     margin: 0;
     font-size: 1.25em;
     font-weight: 800;
 }
 
-.subject-info .teacher-name, .subject-info .student-name
-{
+.subject-info .teacher-name, .subject-info .student-name {
     max-width: 30%;
     margin: 0;
     font-size: 1.25em;
     font-weight: 800;
 }
 
-.subject-input-container
-{
+.subject-input-container {
     display: flex;
     flex-direction: row;
 }
 
-.subject-input-container label
-{
+.subject-input-container label {
     margin-right: 10px;
 }
 
