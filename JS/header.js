@@ -9,10 +9,15 @@ function insertHeader() {
     headerEl.innerHTML = `
     <div class="header-menu">
         <a href="index.html" class="header-text">Acceuil</a>
-        <a href="PHP/subject_router.php" class="header-text">Vos sujets</a>
+        <a href="PHP/subject_router.php" class="header-text">
         ${sessionStorage.getItem("logged-in") === 'true'
         && sessionStorage.getItem("user-type") === "admin"
-        ? `<a href="manage-accounts.html">Gestion des comptes</a>`
+        ? "Les Sujets"
+        : "Vos Sujets"}
+        </a>
+        ${sessionStorage.getItem("logged-in") === 'true'
+        && sessionStorage.getItem("user-type") === "admin"
+        ? `<a href="manage-accounts_page.php" class="header-text">Gestion des comptes</a>`
         : ``}
     </div>
     <div class="account-info">

@@ -39,7 +39,7 @@ session_start();
                     event.preventDefault()
 
                     const action = button.dataset.action
-                    const index = parseInt(button.getAttribute("subject-index"))
+                    const index = parseInt(button.dataset.index)
 
                     if (action === "save_draft")
                     {
@@ -83,10 +83,10 @@ session_start();
                     *Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.
                 </p>
             </div>
-            <button type="button" class="submit-button" data-action="save_draft" subject-index="1">
+            <button type="button" class="submit-button" data-action="save_draft" data-index="1">
                 Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i>
             </button>
-            <button type="button" class="submit-button" data-action="submit" subject-index="1">
+            <button type="button" class="submit-button" data-action="submit" data-index="1">
                 Soumettre le sujet <i class="fa-solid fa-arrow-right"></i>
             </button>
         </form>
@@ -107,10 +107,10 @@ session_start();
                     *Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.
                 </p>
             </div>
-            <button type="button" class="submit-button" data-action="save_draft" subject-index="2">
+            <button type="button" class="submit-button" data-action="save_draft" data-index="2">
                 Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i>
             </button>
-            <button type="button" class="submit-button" data-action="submit" subject-index="2">
+            <button type="button" class="submit-button" data-action="submit" data-index="2">
                 Soumettre le sujet <i class="fa-solid fa-arrow-right"></i>
             </button>
         </form>
