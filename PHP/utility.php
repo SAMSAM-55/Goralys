@@ -122,6 +122,8 @@ final class GoralysUtility
     */
     final public static function verifyCSRF(string $token = "", bool $js = false): bool
     {
+        @session_start();
+
         if (!isset($_POST['csrf-token']) && $token === "") {
             self::showToast(
                 'error',
@@ -130,11 +132,11 @@ final class GoralysUtility
                 js: $js
             );
             error_log("Invalid csrf token was sent");
-            die();
+            return false;
         }
 
-        $csrfRequestToken = $token !== "" ? trim($token) : trim($_POST['csrf-token']) ?? null;
-        $csrfSessionToken = $_SESSION['csrf-token'] ?? null;
+        $csrfRequestToken = $token !== "" ? trim($token) : trim($_POST['csrf-token']) ?? '';
+        $csrfSessionToken = $_SESSION['csrf-token'] ?? '';
 
         if (
             $csrfRequestToken === '' ||
@@ -146,7 +148,8 @@ final class GoralysUtility
             self::showToast(
                 'error',
                 'Lien suspect',
-                'Ce lien semble provenir d\'un site externe. Ne faites pas confiance à cette source.'
+                'Ce lien semble provenir d\'un site externe. Ne faites pas confiance à cette source.',
+                js: $js
             );
 
             return false;

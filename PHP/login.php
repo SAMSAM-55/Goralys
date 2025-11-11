@@ -6,6 +6,8 @@ require_once __DIR__ . '/utility.php';
 use Goralys\Config\Config;
 use Goralys\Utility\GoralysUtility;
 
+Config::init();
+
 session_start();
 
 if (!GoralysUtility::verifyCSRF()) {
