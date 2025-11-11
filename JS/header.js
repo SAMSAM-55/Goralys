@@ -46,3 +46,8 @@ addEventListener("DOMContentLoaded", () => {
     insertHeader()
     updateHeader()
 })
+
+addEventListener("UserDataLoaded", () => {
+    insertHeader()
+    updateHeader()
+})
