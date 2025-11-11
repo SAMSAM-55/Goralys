@@ -12,7 +12,7 @@ function insertHeader() {
         <a href="PHP/subject_router.php" class="header-text">Vos sujets</a>
         ${sessionStorage.getItem("logged-in") === 'true'
         && sessionStorage.getItem("user-type") === "admin"
-        ? `<a href="manage-accounts.html">`
+        ? `<a href="manage-accounts.html">Gestion des comptes</a>`
         : ``}
     </div>
     <div class="account-info">
