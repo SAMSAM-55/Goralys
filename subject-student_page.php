@@ -14,7 +14,7 @@ session_start();
 
     <script type="module" src="./JS/core.js"></script>
     <script type="module" src="./JS/user.js"></script>
-    <script type="module" src="./JS/update-header.js"></script>
+    <script type="module" src="JS/header.js"></script>
     <script type="module" src="./JS/toast.js"></script>
     <script type="module" src="./JS/input.js"></script>
 
@@ -39,7 +39,7 @@ session_start();
                     event.preventDefault()
 
                     const action = button.dataset.action
-                    const index = parseInt(button.getAttribute("subject-index"))
+                    const index = parseInt(button.dataset.index)
 
                     if (action === "save_draft")
                     {
@@ -61,16 +61,8 @@ session_start();
     <div class="toast-content">
     </div>
 </div>
+<header class="header"></header>
 <!-- Main page -->
-<header class="header">
-    <div class="header-menu">
-        <a href="index.html" class="header-text">Acceuil</a>
-        <a href="PHP/subject_router.php" class="header-text">Vos sujets</a>
-    </div>
-    <div class="account-info">
-        <a href="" class="header-text" id="user-name-text"><i class="fa-solid fa-user"></i> Se connecter</a>
-    </div>
-</header>
 <main class="main">
     <h2 class="main-title">Vos sujets</h2>
     <div class="subject-main-container">
@@ -91,10 +83,10 @@ session_start();
                     *Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.
                 </p>
             </div>
-            <button type="button" class="submit-button" data-action="save_draft" subject-index="1">
+            <button type="button" class="submit-button" data-action="save_draft" data-index="1">
                 Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i>
             </button>
-            <button type="button" class="submit-button" data-action="submit" subject-index="1">
+            <button type="button" class="submit-button" data-action="submit" data-index="1">
                 Soumettre le sujet <i class="fa-solid fa-arrow-right"></i>
             </button>
         </form>
@@ -115,10 +107,10 @@ session_start();
                     *Après soumission, votre sujet ne pourra plus être modifié, sauf en cas de rejet par le professeur.
                 </p>
             </div>
-            <button type="button" class="submit-button" data-action="save_draft" subject-index="2">
+            <button type="button" class="submit-button" data-action="save_draft" data-index="2">
                 Enregistrer le brouillon <i class="fa-solid fa-arrow-right"></i>
             </button>
-            <button type="button" class="submit-button" data-action="submit" subject-index="2">
+            <button type="button" class="submit-button" data-action="submit" data-index="2">
                 Soumettre le sujet <i class="fa-solid fa-arrow-right"></i>
             </button>
         </form>

@@ -24,12 +24,12 @@ To simulate a local PHP server with apache and mysql on windows, you can use [xa
 - PHP ruleset for PSR-12 convention
 
 Steps:
-1. Install PHP dependencies:
+1. Run setup script:
    ```bash
-   composer install --working-dir=PHP
+   .\setup.bat
    ```
 2. Configure environment:
-   - For development, edit [PHP/config.php](PHP/config.php). You can back up your prefilled information in `PHP/config_secret.php` as it is gitignored. Make sure your cancel any changes made to the variables in `PHP/config.php` before commiting.
+   - For development, modify the values inside .env (created using setup.bat)
 3. Database:
    - Create the database and tables using the schema at [PHP/data_structure.txt](PHP/data_structure.txt).
 4. Web server:
@@ -51,7 +51,7 @@ Steps:
   - Move production secrets out of [PHP/config.php](PHP/config.php) into a protected file (e.g. `PHP/config_secret.php`) and ensure it is excluded by `.gitignore`.
 
 ## Currently working on
-(31/10/2025) I am currently implementing the backend and frontend for teachers accounts
+(07/11/2025) I am currently implementing the backend and frontend for admins accounts
 
 *Note: the `dev` branch serves as a pre-production playground, so some commits may include experimental or buggy code — I try to minimize this as much as possible.*
 
@@ -62,7 +62,7 @@ Steps:
 - Student subject UI & flows: [`core.js`, section: `Student functions`](JS/core.js) — [JS/core.js](JS/core.js)
 - Core client-side logic for subject management/handling: [core.js](JS/core.js)
 - Client-side toast handling: [`toast.show_toast`](JS/toast.js) — [JS/toast.js](JS/toast.js)
-- Automatic header update: [`update_header`](JS/update-header.js) — [JS/update-header.js](JS/update-header.js)
+- Automatic header update: [`update_header`](JS/header.js) — [JS/header.js](JS/header.js)
 
 ## Contents & quick links
 
@@ -91,7 +91,7 @@ Steps:
 - Frontend JS
   - [JS/core.js](JS/core.js) — student flows; functions [`core.student_save_draft`](JS/core.js) and [`core.student_submit`](JS/core.js)
   - [JS/user.js](JS/user.js)
-  - [JS/update-header.js](JS/update-header.js) — [`update_header`](JS/update-header.js)
+  - [JS/header.js](JS/header.js) — [`update_header`](JS/header.js)
   - [JS/toast.js](JS/toast.js) — [`toast.show_toast`](JS/toast.js)
   - [JS/input.js](JS/input.js)
 - Styles

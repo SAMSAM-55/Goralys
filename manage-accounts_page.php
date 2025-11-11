@@ -1,8 +1,11 @@
+<?php
+// Empty for now
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Goralys - Acceuil</title>
+    <title>Goralys - Gestion des Comptes</title>
     <link rel="stylesheet" href="./CSS/style.css">
 
     <script type="module" src="./JS/user.js"></script>
@@ -27,9 +30,11 @@
     </div>
 </div>
 <header class="header"></header>
-<!-- Main page -->
+<!-- Main page
+Only for admins, not implemented yet
+-->
 <main class="main">
-    <h1>Bienvenue sur Goralys !</h1>
+    <h1>Page de gestion des comptes pour administrateurs</h1>
 </main>
 </body>
 </html>

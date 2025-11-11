@@ -11,6 +11,8 @@ require_once __DIR__ . '/utility.php';
 use Goralys\Config\Config;
 use Goralys\Utility\GoralysUtility;
 
+Config::init();
+
 session_start();
 
 if (!GoralysUtility::verifyCSRF()) {
@@ -124,14 +126,14 @@ if ($create_account_stmt -> execute()) {
         // Setup for the email (replace the placeholders values with valid ones)
         $mail->isSMTP();
         $mail->CharSet = "UTF-8";
-        $mail->Host = Config::MAILDOMAIN;
+        $mail->Host = Config::$MAIL_DOMAIN;
         $mail->SMTPAuth = true;
-        $mail->Username = Config::MAILUSER;
-        $mail->Password = Config::MAILPASSWORD;
+        $mail->Username = Config::$MAIL_USER;
+        $mail->Password = Config::$MAIL_PASSWORD;
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
 
-        $mail->setFrom(Config::MAILUSER, 'Goralys');
+        $mail->setFrom(Config::$MAIL_USER, 'Goralys');
         $mail->addAddress($email);
 
         $mail->Subject = 'Vérification de votre compte';

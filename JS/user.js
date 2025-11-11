@@ -1,4 +1,4 @@
-import {update_header} from "./update-header.js";
+import {updateHeader} from "./header.js";
 
 addEventListener("DOMContentLoaded", async () => {
     if (!(sessionStorage.getItem("logged-in") === 'true'))
@@ -27,12 +27,12 @@ addEventListener("DOMContentLoaded", async () => {
                             }
                         }
 
-                        update_header()
+                        updateHeader()
                         window.dispatchEvent(new Event("UserDataLoaded"))
                     })
             })
     } else {
-        update_header()
+        updateHeader()
         window.dispatchEvent(new Event("UserDataLoaded"))
     }
 })
