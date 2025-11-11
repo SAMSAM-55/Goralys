@@ -62,7 +62,7 @@ Steps:
 - Student subject UI & flows: [`core.js`, section: `Student functions`](JS/core.js) — [JS/core.js](JS/core.js)
 - Core client-side logic for subject management/handling: [core.js](JS/core.js)
 - Client-side toast handling: [`toast.show_toast`](JS/toast.js) — [JS/toast.js](JS/toast.js)
-- Automatic header update: [`update_header`](JS/update-header.js) — [JS/update-header.js](JS/update-header.js)
+- Automatic header update: [`update_header`](JS/header.js) — [JS/header.js](JS/header.js)
 
 ## Contents & quick links
 
@@ -91,7 +91,7 @@ Steps:
 - Frontend JS
   - [JS/core.js](JS/core.js) — student flows; functions [`core.student_save_draft`](JS/core.js) and [`core.student_submit`](JS/core.js)
   - [JS/user.js](JS/user.js)
-  - [JS/update-header.js](JS/update-header.js) — [`update_header`](JS/update-header.js)
+  - [JS/header.js](JS/header.js) — [`update_header`](JS/header.js)
   - [JS/toast.js](JS/toast.js) — [`toast.show_toast`](JS/toast.js)
   - [JS/input.js](JS/input.js)
 - Styles
