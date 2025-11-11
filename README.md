@@ -24,12 +24,12 @@ To simulate a local PHP server with apache and mysql on windows, you can use [xa
 - PHP ruleset for PSR-12 convention
 
 Steps:
-1. Install PHP dependencies:
+1. Run setup script:
    ```bash
-   composer install --working-dir=PHP
+   .\setup.bat
    ```
 2. Configure environment:
-   - For development, edit [PHP/config.php](PHP/config.php). You can back up your prefilled information in `PHP/config_secret.php` as it is gitignored. Make sure your cancel any changes made to the variables in `PHP/config.php` before commiting.
+   - For development, modify the values inside .env (created using setup.bat)
 3. Database:
    - Create the database and tables using the schema at [PHP/data_structure.txt](PHP/data_structure.txt).
 4. Web server:
