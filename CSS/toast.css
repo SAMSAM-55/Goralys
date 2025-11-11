@@ -92,19 +92,19 @@
 /* The different colors used for the types of message */
 
 .success {
-    --color: #47d763;
+    --color: var(--theme-success);
 }
 
 .warning {
-    --color: #ffc021;
+    --color: var(--theme-warning);
 }
 
 .error {
-    --color: #fe345b;
+    --color: var(--theme-error);
 }
 
 .info {
-    --color: #2f86ea;
+    --color: var(--theme-info);
 }
 
 /* Responsive style for mobile */

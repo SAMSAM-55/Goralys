@@ -33,19 +33,42 @@
 
 :root {
     /* Main theme color and variables (some of the colors might also be used in other components than the specified ones) */
-    --border-color: #ffffff00; /* Border color for buttons */
+
+    /* Main variables*/
+    --theme-base: #0077B6;
+    --theme-accent: #00B4D8;
+    --theme-shadow: #00048E;
     --theme-font: "Cardo";
+
     --header-text-before-width: 75%; /* Width of the header text underline */
     --theme-background-color : #CAF0F8; /* Background color of the page */
-    --theme-header-color : #0077B6; /* Header color */
-    --theme-button-color-normal : #00B4D8; /* Normal button color */
-    --theme-button-color-hovered : #0077B6; /* Hovered button color */
-    --theme-button-color-selected : #00048e; /* Selected button color */
-    --theme-container-normal : #00B4D8;
-    --theme-container-hovered : #0077B6;
-    --theme-progress-bar-color : #0077B6;
-    --theme-progress-value-color : #03045E;
-    --theme-burger-menu-color : #03045E; /* color for the burger manu (same as header by default) */
-    --theme-input-border-color : #00048e;
-    --theme-input-background-color : #0077B6;
+    --theme-header-color : var(--theme-base); /* Header color */
+
+
+    /* Buttons */
+    --button-border-color: #ffffff00;
+    --theme-button-color-normal : var(--theme-accent);
+    --theme-button-color-hovered : var(--theme-base);
+    --theme-button-color-selected : var(--theme-shadow);
+
+    /* Containers */
+    --theme-container-normal : var(--theme-accent);
+
+    /* Inputs (including checkboxes) */
+    --theme-input-background-color : var(--theme-base);
+    --theme-input-border-color : var(--theme-shadow);
+    --theme-input-before-color : var(--theme-base);
+    --theme-input-after-color : var(--theme-shadow);
+
+    --theme-checkbox-color-normal: #DFE1E4;
+    --theme-checkbox-color-checked: var(--theme-base);
+    --theme-checkbox-color-hover: var(--theme-shadow);
+
+    /* Misc */
+    --theme-burger-menu-color : var(--theme-header-color); /* color for the burger manu (same as header by default) */
+
+    --theme-info: #2F86EA;
+    --theme-success: #47D763;
+    --theme-warning: #FFC021;
+    --theme-error: #FE345B;
 }

@@ -26,7 +26,7 @@
     bottom: 0;
     width: 100%;
     height: 2px;
-    background: var(--theme-container-hovered);
+    background: var(--theme-input-before-color);
     transition: width 0.25s ease;
 }
 
@@ -41,7 +41,7 @@
     bottom: 0;
     width: 0;
     height: 2px;
-    background: var(--theme-input-border-color);
+    background: var(--theme-input-after-color);
     transition: width 0.25s ease;
 }
 

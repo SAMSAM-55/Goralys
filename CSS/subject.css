@@ -118,19 +118,19 @@
 
 /* Custom underline color for inputs */
 .input.rejected::before {
-    background: #fe345b !important;
+    background: var(--theme-error) !important;
 }
 
 .input.rejected label {
-    color: #fe345b;
+    color: var(--theme-error);
 }
 
 .input.approved::before{
-    background: #47d763 !important;
+    background: var(--theme-success) !important;
 }
 
 .input.approved label {
-    color: #47d763;
+    color: var(--theme-success);
 }
 
 .subject-container[data-status='2'] .input input, .subject-container[data-status='3'] .input input {
@@ -219,7 +219,7 @@
 
 .selector-container .subject-selector {
     appearance: none;
-    background-color: #dfe1e4;
+    background-color: var(--theme-checkbox-color-normal);
     border-radius: 72px;
     border-style: none;
     flex-shrink: 0;
@@ -264,7 +264,7 @@
 }
 
 .selector-container .subject-selector:checked {
-    background-color: var(--theme-button-color-hovered);
+    background-color: var(--theme-checkbox-color-checked);
 }
 
 .selector-container .subject-selector:checked::after {
@@ -277,5 +277,5 @@
 }
 
 .selector-container .subject-selector:checked:hover {
-    background-color: var(--theme-button-color-selected);
+    background-color: var(--theme-checkbox-color-hover);
 }
