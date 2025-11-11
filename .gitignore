@@ -1,8 +1,8 @@
 /PHP/vendor/
 /.idea/
 
-# Config file (filled)
-/PHP/config_secret.php
+# Config file
+.env
 
 # Script to deploy on a local apache server
 deploy-local.bat
