@@ -22,7 +22,8 @@ final class Config
     private static  bool $INITIALIZED = false;
     public const string FOLDER = "/goralys/"; // Just use for development, should be "" for production
 
-    final public static function init() {
+    final public static function init(): void
+    {
         if (self::$INITIALIZED) {
             return;
         }

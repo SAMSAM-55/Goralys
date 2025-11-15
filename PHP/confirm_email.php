@@ -8,9 +8,6 @@ use Goralys\Utility\GoralysUtility;
 
 Config::init();
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-
 $id = $_GET['user-id'];
 $token = $_GET['token'];
 $conn = Config::connectToDatabase();
@@ -18,13 +15,13 @@ $req = "SELECT * FROM saje5795_goralys.users_temp WHERE user_id = ?";
 $del = "DELETE FROM saje5795_goralys.users_temp WHERE user_id = ?";
 $stmt = $conn->prepare($req);
 $stmt->bind_param("s", $id);
-$del_stmt = $conn->prepare($del);
-$del_stmt->bind_param("s", $id);
+$delStmt = $conn->prepare($del);
+$delStmt->bind_param("s", $id);
 
 if (!$stmt->execute()) {
     http_response_code(403);
-    $del_stmt->execute();
-    $del_stmt->close();
+    $delStmt->execute();
+    $delStmt->close();
     $conn->close();
     $stmt->close();
 
@@ -41,8 +38,8 @@ $result = $stmt->get_result();
 
 if ($result->num_rows === 0 || !($row = $result->fetch_assoc())) {
     http_response_code(400);
-    $del_stmt->execute();
-    $del_stmt->close();
+    $delStmt->execute();
+    $delStmt->close();
     $conn->close();
     $stmt->close();
 
@@ -56,17 +53,17 @@ if ($result->num_rows === 0 || !($row = $result->fetch_assoc())) {
     exit(1);
 }
 
-$validation_token = $row["verification_token"];
+$validationToken = $row["verification_token"];
 
 // Verify that the token is valid and that the link was sent less than 15 minutes ago.
 if (
-    $validation_token !== $token
-    || $validation_token === ""
+    $validationToken !== $token
+    || $validationToken === ""
     || ((new DateTime())->getTimestamp() - (new DateTime($row['created_at']))->getTimestamp()) > 750
 ) {
     http_response_code(400);
-    $del_stmt->execute();
-    $del_stmt->close();
+    $delStmt->execute();
+    $delStmt->close();
     $conn->close();
     $stmt->close();
 
@@ -80,21 +77,21 @@ if (
     exit(1);
 }
 
-$password_hash = $row["password_hash"];
-$user_name = $row["full_name"];
-$user_email = $row['email'];
-$user_role = $row['role'];
+$passwordHash = $row["password_hash"];
+$userName = $row["full_name"];
+$userEmail = $row['email'];
+$userRole = $row['role'];
 
-$create_account_req = "INSERT INTO saje5795_goralys.users 
+$createAccountRequest = "INSERT INTO saje5795_goralys.users 
     (user_id, full_name, email, password_hash, role) 
     VALUES(?, ?, ?, ?, ?)";
-$stmt = $conn->prepare($create_account_req);
-$stmt->bind_param("sssss", $id, $user_name, $user_email, $password_hash, $user_role);
+$stmt = $conn->prepare($createAccountRequest);
+$stmt->bind_param("sssss", $id, $userName, $userEmail, $passwordHash, $userRole);
 
 if ($stmt->execute()) {
     http_response_code(200);
-    $del_stmt->execute();
-    $del_stmt->close();
+    $delStmt->execute();
+    $delStmt->close();
     $stmt->close();
     $conn->close();
 
@@ -108,8 +105,8 @@ if ($stmt->execute()) {
     exit(0);
 } else {
     http_response_code(403);
-    $del_stmt->execute();
-    $del_stmt->close();
+    $delStmt->execute();
+    $delStmt->close();
     $stmt->close();
     $conn->close();
 

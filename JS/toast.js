@@ -1,7 +1,7 @@
 // This file is part of the "Toast" feature for displaying notifications.
 // It handles the display of toast notifications based on URL parameters.
 
-let toast_element = null
+let toastElement = null
 
 // Function to add the toast message to the screen
 // @param title :
@@ -10,7 +10,7 @@ let toast_element = null
 // The message of the toast
 // @param type :
 // The type of the toast message (success, error, warning, info)
-function add_toast(toast_element, title, message, type, duration, is_new) {
+function addToast(toast_element, title, message, type, duration, is_new) {
     toast_element.className = `feedback-container ${type}`
     toast_element.querySelector('.toast-image').getElementsByClassName('fas')[0].className =
         `fas ${type === 'success'  ? 'fa-circle-check'
@@ -68,7 +68,7 @@ function add_toast(toast_element, title, message, type, duration, is_new) {
 // The message of the toast
 // @param type :
 // The type of the toast message (success, error, warning, info)
-export function show_toast(title, message, type = 'warning', duration = 3500, is_new = true) {
+export function showToast(title, message, type = 'warning', duration = 3500, is_new = true) {
     const toast = document.getElementById('toast')
 
     if (toast.classList.contains('show')) {
@@ -78,38 +78,38 @@ export function show_toast(title, message, type = 'warning', duration = 3500, is
         setTimeout(() => {
             toast.style.display = 'none'
             toast.classList.remove('hide')
-            add_toast(toast, title, message, type, duration, is_new)
+            addToast(toast, title, message, type, duration, is_new)
         }, 750)
     } else {
-        add_toast(toast, title, message, type, duration, is_new)
+        addToast(toast, title, message, type, duration, is_new)
     }
 }
 
 // This script listens for the DOMContentLoaded event and checks for URL parameters to display a toast notification.
 // If the 'toast' parameter is set to 'true', it retrieves the toast title, message, and type from the URL parameters and displays the toast notification.
 addEventListener("DOMContentLoaded", () => {
-    toast_element = document.getElementById("toast")
-    const url_params = new URLSearchParams(window.location.search)
+    toastElement = document.getElementById("toast")
+    const urlParams = new URLSearchParams(window.location.search)
 
-    if (url_params.get('toast') === 'true') {
-        const toast_title = url_params.get('toast-title')
-        const toast_message = url_params.get('toast-message')
-        const toast_type = url_params.get('toast-type')
+    if (urlParams.get('toast') === 'true') {
+        const toast_title = urlParams.get('toast-title')
+        const toast_message = urlParams.get('toast-message')
+        const toast_type = urlParams.get('toast-type')
 
         const cleanUrl = window.location.origin + window.location.pathname
         window.history.replaceState({}, document.title, cleanUrl)
 
-        show_toast(toast_title, toast_message, toast_type);
+        showToast(toast_title, toast_message, toast_type);
     } else if (sessionStorage.getItem('toast') === 'true') {
 
-        const toast_type = sessionStorage.getItem('toast-type')
-        const toast_title = sessionStorage.getItem('toast-title')
-        const toast_message = sessionStorage.getItem('toast-message')
-        const toast_expires = parseInt(sessionStorage.getItem('toast-expires'))
-        const remaining_duration = toast_expires - Date.now()
+        const toastType = sessionStorage.getItem('toast-type')
+        const toastTitle = sessionStorage.getItem('toast-title')
+        const toastMessage = sessionStorage.getItem('toast-message')
+        const toastExpires = parseInt(sessionStorage.getItem('toast-expires'))
+        const remainingDuration = toastExpires - Date.now()
 
-        if (remaining_duration > 0) {
-            show_toast(toast_title, toast_message, toast_type, remaining_duration, false)
+        if (remainingDuration > 0) {
+            showToast(toastTitle, toastMessage, toastType, remainingDuration, false)
         } else {
             sessionStorage.removeItem('toast')
             sessionStorage.removeItem('toast-type')

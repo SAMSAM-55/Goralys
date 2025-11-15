@@ -19,12 +19,12 @@ if (!GoralysUtility::verifyCSRF()) {
     die("Invalid CSRF Token");
 }
 
-$user_id   = isset($_POST['user-id']) ? trim($_POST['user-id']) : null;
+$userId   = isset($_POST['user-id']) ? trim($_POST['user-id']) : null;
 $email     = isset($_POST['email-register']) ? trim($_POST['email-register']) : null;
 $password  = isset($_POST['password-register']) ? trim($_POST['password-register']) : null;
-$user_name = isset($_POST['user-name']) ? trim($_POST['user-name']) : null;
+$userName = isset($_POST['user-name']) ? trim($_POST['user-name']) : null;
 
-if (empty($email) || empty($password) || empty($user_name) || empty($user_id)) {
+if (empty($email) || empty($password) || empty($userName) || empty($userId)) {
     $redirect = Config::FOLDER . '/register_page.php';
     echo "<script type='text/javascript'>
         window.location.href = window.location.origin + '$redirect';
@@ -34,7 +34,7 @@ if (empty($email) || empty($password) || empty($user_name) || empty($user_id)) {
     exit();
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[A-Za-z]+\.[A-Za-z]+\d+$/', $user_id)) {
+if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[A-Za-z]+\.[A-Za-z]+\d+$/', $userId)) {
     GoralysUtility::showToast(
         'warning',
         "Email ou identifiant incorrect",
@@ -46,41 +46,41 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[A-Za-z]+\.[A-Z
 }
 
 $conn = Config::connectToDatabase();
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 $token = bin2hex(random_bytes(32));
-$create_account_stmt = $conn->prepare("INSERT INTO saje5795_goralys.users_temp 
+$createAccountStmt = $conn->prepare("INSERT INTO saje5795_goralys.users_temp 
     (user_id, full_name, email, password_hash, role, verification_token) 
     VALUES(?, ?, ?, ?, ?, ?)");
 
 // Check for pending registration and delete if exists
-$check_id_temp_stmt = $conn->prepare("SELECT * FROM saje5795_goralys.users_temp WHERE user_id = ?");
-$check_id_temp_stmt->bind_param('s', $user_id);
+$checkIdTempStmt = $conn->prepare("SELECT * FROM saje5795_goralys.users_temp WHERE user_id = ?");
+$checkIdTempStmt->bind_param('s', $userId);
 
-if (!$check_id_temp_stmt->execute()) {
+if (!$checkIdTempStmt->execute()) {
     GoralysUtility::showToast(
         'error',
         "Création du compte",
         "Une erreur interne est survenue lors de la création de votre compte. Veuilez réessayer."
     );
-    $check_id_temp_stmt->close();
+    $checkIdTempStmt->close();
     $conn->close();
     http_response_code(500); // Internal server error
     exit();
 }
 
-if ($check_id_temp_stmt->get_result()->num_rows > 0) {
-    $delete_temp = "DELETE FROM saje5795_goralys.users_temp WHERE user_id = ?";
-    $delete_stmt = $conn -> prepare($delete_temp);
-    $delete_stmt -> bind_param("s", $user_id);
-    $delete_stmt -> execute();
-    $delete_stmt->close();
+if ($checkIdTempStmt->get_result()->num_rows > 0) {
+    $deleteTemp = "DELETE FROM saje5795_goralys.users_temp WHERE user_id = ?";
+    $deleteStmt = $conn -> prepare($deleteTemp);
+    $deleteStmt -> bind_param("s", $userId);
+    $deleteStmt -> execute();
+    $deleteStmt->close();
     $conn->close();
     http_response_code(500); // Internal server error
     exit();
 }
 
 // Check if the id is valid and allows for automatic role assignment
-$check_id_req = "
+$checkIdRequest = "
 SELECT user_id, source FROM (
     SELECT student_id AS user_id, 'student_topics' AS source
     FROM saje5795_goralys.student_topics
@@ -91,16 +91,16 @@ SELECT user_id, source FROM (
 WHERE user_id = ?
 LIMIT 1
 ";
-$check_id_stmt = $conn->prepare($check_id_req);
-$check_id_stmt->bind_param("s", $user_id);
-$check_id_stmt->execute();
-$res = $check_id_stmt->get_result();
+$checkIdStmt = $conn->prepare($checkIdRequest);
+$checkIdStmt->bind_param("s", $userId);
+$checkIdStmt->execute();
+$res = $checkIdStmt->get_result();
 
 if (!$res || $res->num_rows == 0) {
     GoralysUtility::showToast(
         'error',
         "Identifiant invalide",
-        "Votre identifiant $user_id n'est pas valide, veuillez réessayer",
+        "Votre identifiant $userId n'est pas valide, veuillez réessayer",
         "register_page.php"
     );
     $conn -> close();
@@ -109,18 +109,18 @@ if (!$res || $res->num_rows == 0) {
 
 $row = $res->fetch_assoc();
 $role = $row["source"] == "student_topics" ? "student" : "teacher";
-$create_account_stmt->bind_param("ssssss", $user_id, $user_name, $email, $hashed_password, $role, $token);
+$createAccountStmt->bind_param("ssssss", $userId, $userName, $email, $hashedPassword, $role, $token);
 
-if ($create_account_stmt -> execute()) {
-    $toast_type = 'info';
-    $toast_title = 'Création du compte';
-    $toast_message = 'Pour finaliser la création de votre compte, veuillez vérifier votre email. 
+if ($createAccountStmt -> execute()) {
+    $toastType = 'info';
+    $toastTitle = 'Création du compte';
+    $toastMessage = 'Pour finaliser la création de votre compte, veuillez vérifier votre email. 
     Consulter votre boite de réception.';
 
     $mail = new PHPMailer(true);
     $link = "https://" . $_SERVER["HTTP_HOST"] . Config::FOLDER . "PHP/confirm_email.php"
     . "?token=" . urlencode($token)
-    . "&user-id=" . urlencode($user_id);
+    . "&user-id=" . urlencode($userId);
 
     try {
         // Setup for the email (replace the placeholders values with valid ones)
@@ -137,7 +137,7 @@ if ($create_account_stmt -> execute()) {
         $mail->addAddress($email);
 
         $mail->Subject = 'Vérification de votre compte';
-        $mail->Body    = "Bonjour $user_name,\n
+        $mail->Body    = "Bonjour $userName,\n
         Merci de votre inscription à Goralys.\n
         Pour finaliser la création de votre compte veuillez cliquer sur le lien ci-dessous : \n
         $link\n
@@ -147,32 +147,32 @@ if ($create_account_stmt -> execute()) {
         $mail->send();
         http_response_code(200); // OK
     } catch (Exception $e) {
-        $toast_type = 'error';
-        $toast_title = 'Création du compte';
-        $toast_message = "Une erreur est lors de l'envoie de l'email de confirmation";
+        $toastType = 'error';
+        $toastTitle = 'Création du compte';
+        $toastMessage = "Une erreur est lors de l'envoie de l'email de confirmation";
         http_response_code(500); // Internal server error
     }
 
     $conn->close();
-    $create_account_stmt->close();
+    $createAccountStmt->close();
 
     GoralysUtility::showToast(
-        $toast_type,
-        $toast_title,
-        $toast_message
+        $toastType,
+        $toastTitle,
+        $toastMessage
     );
 } else {
-    $toast_type = 'error';
-    $toast_title = 'Erreur';
-    $toast_message = "Votre compte n'a pas pu être créé. Veuillez réessayer.";
+    $toastType = 'error';
+    $toastTitle = 'Erreur';
+    $toastMessage = "Votre compte n'a pas pu être créé. Veuillez réessayer.";
     GoralysUtility::showToast(
-        $toast_type,
-        $toast_title,
-        $toast_message,
+        $toastType,
+        $toastTitle,
+        $toastMessage,
         "register_page.php"
     );
 
-    $create_account_stmt->close();
+    $createAccountStmt->close();
     $conn -> close();
     http_response_code(500); // Internal server error
 }
