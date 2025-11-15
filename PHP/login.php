@@ -25,7 +25,7 @@ $stmt->bind_param("s", $id);
 if ($stmt->execute()) {
     $result = $stmt->get_result();
     $response = $result->fetch_assoc();
-    $hashed_password = $response['password_hash'];
+    $hashedPassword = $response['password_hash'];
 } else {
     http_response_code(403); // Access unauthorized
     error_log("An error occured while trying to connect to database");
@@ -34,7 +34,7 @@ if ($stmt->execute()) {
     exit(1);
 }
 
-if (password_verify($password, $hashed_password)) {
+if (password_verify($password, $hashedPassword)) {
     $user = $response;
     $_SESSION['user-email'] = $user['email'];
     $_SESSION['user-id'] = $user['user_id'];
@@ -42,11 +42,11 @@ if (password_verify($password, $hashed_password)) {
     $_SESSION['user-type'] = $user['role'];
     $_SESSION['logged-in'] = true;
 
-    $get_topics_query = "SELECT * FROM saje5795_goralys.student_topics WHERE student_id = ?";
-    $get_topics_stmt = $conn->prepare($get_topics_query);
-    $get_topics_stmt->bind_param("s", $user['user_id']);
-    $get_topics_stmt->execute();
-    $result = $get_topics_stmt->get_result();
+    $getTopicsRequest = "SELECT * FROM saje5795_goralys.student_topics WHERE student_id = ?";
+    $getTopicsStmt = $conn->prepare($getTopicsRequest);
+    $getTopicsStmt->bind_param("s", $user['user_id']);
+    $getTopicsStmt->execute();
+    $result = $getTopicsStmt->get_result();
 
     // We know that a student has exactly two topics, so we can just fetch_assoc() twice.
     $row = $result->fetch_assoc();

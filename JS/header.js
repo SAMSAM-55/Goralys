@@ -5,8 +5,8 @@
 ;
 // Function to programmatically insert and display the header menu
 function insertHeader() {
-    const headerEl = document.getElementsByTagName("header")[0]
-    headerEl.innerHTML = `
+    const headerElement = document.getElementsByTagName("header")[0]
+    headerElement.innerHTML = `
     <div class="header-menu">
         <a href="index.html" class="header-text">Acceuil</a>
         <a href="PHP/subject_router.php" class="header-text">
@@ -31,14 +31,14 @@ export function updateHeader() {
         insertHeader()
     }
 
-    const user_name_text = document.getElementById("user-name-text")
+    const userNameText = document.getElementById("user-name-text")
 
     if (sessionStorage.getItem("logged-in") === 'true')
     {
-        user_name_text.setAttribute("href", "account.html")
-        user_name_text.innerHTML = "<i class=\"fa-solid fa-user\"></i> " + sessionStorage.getItem("user-name")
+        userNameText.setAttribute("href", "account.html")
+        userNameText.innerHTML = "<i class=\"fa-solid fa-user\"></i> " + sessionStorage.getItem("user-name")
     } else {
-        user_name_text.setAttribute("href", "login_page.php")
+        userNameText.setAttribute("href", "login_page.php")
     }
 }
 

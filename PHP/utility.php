@@ -31,25 +31,25 @@ final class GoralysUtility
 
     /**
     * Enable server-side backend (PHP) to use the toast system of the client-side frontend (JS)
-    * @param string $toast_type The toast type : error, warning, success or info
-    * @param string $toast_title The toast title
-    * @param string $toast_message The toast message
-    * @param string $to_page The page to redirect to (if $js = false)
+    * @param string $toastType The toast type : error, warning, success or info
+    * @param string $toastTitle The toast title
+    * @param string $toastMessage The toast message
+    * @param string $toPage The page to redirect to (if $js = false)
     * @param bool $js Defines if the function should redirect (using $to_page) or output a JSON object (if using JS)
     * @return void
     */
     final public static function showToast(
-        string $toast_type,
-        string $toast_title,
-        string $toast_message,
-        string $to_page = "index.html",
-        bool $js = false
+        string $toastType,
+        string $toastTitle,
+        string $toastMessage,
+        string $toPage = "index.html",
+        bool   $js = false
     ): void {
 
         // Normalize values
-        $toast_type    = trim($toast_type);
-        $toast_title   = trim($toast_title);
-        $toast_message = trim($toast_message);
+        $toastType    = trim($toastType);
+        $toastTitle   = trim($toastTitle);
+        $toastMessage = trim($toastMessage);
 
         if ($js) {
             if (!headers_sent()) {
@@ -58,20 +58,20 @@ final class GoralysUtility
 
             echo json_encode([
                 "toast" => true,
-                "toast_type" => $toast_type,
-                "toast_title" => $toast_title,
-                "toast_message" => $toast_message,
-                "redirect" => Config::FOLDER . $to_page
+                "toast_type" => $toastType,
+                "toast_title" => $toastTitle,
+                "toast_message" => $toastMessage,
+                "redirect" => Config::FOLDER . $toPage
             ], JSON_UNESCAPED_UNICODE);
             return;
         }
 
-        $base = Config::FOLDER . $to_page;
+        $base = Config::FOLDER . $toPage;
         $query = http_build_query([
         "toast"         => "true",
-        "toast-type"    => $toast_type,
-        "toast-title"   => $toast_title,
-        "toast-message" => $toast_message,
+        "toast-type"    => $toastType,
+        "toast-title"   => $toastTitle,
+        "toast-message" => $toastMessage,
         ]);
 
         echo "<script type='text/javascript'>

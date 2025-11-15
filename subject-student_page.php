@@ -1,8 +1,3 @@
-<?php
-
-session_start();
-
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -27,7 +22,7 @@ session_start();
     />
 </head>
 <script type="module">
-    import {student_save_draft, student_submit} from './JS/core.js'
+    import {studentSaveDraft, studentSubmit} from './JS/core.js'
 
     // Little script to get dynamic form action
     document.addEventListener("DOMContentLoaded", () => {
@@ -43,9 +38,9 @@ session_start();
 
                     if (action === "save_draft")
                     {
-                        await student_save_draft(index)
+                        await studentSaveDraft(index)
                     } else if (action === "submit") {
-                        await student_submit(index)
+                        await studentSubmit(index)
                     }
                 })
             })
@@ -69,6 +64,8 @@ session_start();
         <form class="subject-container" action="" method="post">
             <input type="hidden" name="csrf-token-1" id="csrf-token-1" value="
             <?php
+            session_start();
+            $_SESSION['csrf-token'] = bin2hex(random_bytes(16));
             echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
             ?>
             ">
@@ -93,6 +90,8 @@ session_start();
         <form class="subject-container" action="PHP/subject/update_student.php" method="post">
             <input type="hidden" name="csrf-token-2" id="csrf-token-2" value="
             <?php
+            session_start();
+            $_SESSION['csrf-token'] = bin2hex(random_bytes(16));
             echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
             ?>
             ">

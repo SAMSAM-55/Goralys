@@ -2,9 +2,9 @@
 
 session_start();
 
-$user_type = $_SESSION['user-type'] ?? null;
+$userType = $_SESSION['user-type'] ?? null;
 
-switch ($user_type) {
+switch ($userType) {
     case 'admin':
         header('Location: ../subject-admin_page.php');
         exit();

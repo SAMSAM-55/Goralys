@@ -10,10 +10,10 @@ addEventListener("DOMContentLoaded", async () => {
                 response.text()
                     .then((data) => {
                         data = JSON.parse(data)
-                        const is_logged_in = data['logged_in']
-                        sessionStorage.setItem("logged-in", is_logged_in)
+                        const isLoggedIn = data['logged_in']
+                        sessionStorage.setItem("logged-in", isLoggedIn)
 
-                        if (is_logged_in) {
+                        if (isLoggedIn) {
                             sessionStorage.setItem("user-id", data['user_id'])
                             sessionStorage.setItem("user-email", data['user_email'])
                             sessionStorage.setItem("user-name", data['username'])
@@ -39,12 +39,7 @@ addEventListener("DOMContentLoaded", async () => {
 
 // Function to easily get and display the user information inside account.html
 // Can only be called from account.html so it assumes that the data are already cached
-export function get_user_data()
+export function getUserData()
 {
     return {'id' : sessionStorage.getItem("user-id"), 'email' : sessionStorage.getItem("user-email")}
 }
-
-// Create a "CSRF" token to validate all forms on the site later
-document.addEventListener("DOMContentLoaded", async () => {
-    await fetch("./PHP/create_form_token.php")
-})
