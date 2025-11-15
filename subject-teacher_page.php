@@ -52,7 +52,7 @@
     // Update displayed subjects
     const subjectsSelectorsElements = Array.from(document.getElementsByClassName("subject-selector"))
     subjectsSelectorsElements.forEach(async (element) => {
-        element.addEventListener("click", async (event) => {
+        element.addEventListener("click", async () => {
             await showTeacherSubjects()
         })
     })
