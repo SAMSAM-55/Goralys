@@ -28,6 +28,10 @@ Steps:
    ```bash
    .\setup.bat
    ```
+   Or if you use linux:
+   ```bash
+   ./setup.sh
+   ```
 2. Configure environment:
    - For development, modify the values inside .env (created using setup.bat)
 3. Database:
@@ -44,16 +48,16 @@ Steps:
 ## Security notes
 
 - CSRF:
-  - Token created by [PHP/create_form_token.php](PHP/create_form_token.php) and validated by [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
+  - Token validated by [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
 - Passwords:
   - Passwords are hashed using PHP's `password_hash` ([PHP/register.php](PHP/register.php)) and verified with `password_verify` ([PHP/login.php](PHP/login.php)).
 - Sensitive config:
-  - Move production secrets out of [PHP/config.php](PHP/config.php) into a protected file (e.g. `PHP/config_secret.php`) and ensure it is excluded by `.gitignore`.
+  - You *must* use `.env` to configure your project.
 
 ## Currently working on
 (07/11/2025) I am currently implementing the backend and frontend for admins accounts
 
-*Note: the `dev` branch serves as a pre-production playground, so some commits may include experimental or buggy code — I try to minimize this as much as possible.*
+*Note: the `develop` branch serves as a pre-production playground, so some commits may include experimental or buggy code — I try to minimize this as much as possible.*
 
 ## Key code pointers
 
