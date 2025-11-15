@@ -38,7 +38,8 @@
             <input type="hidden" id="csrf-token" name="csrf-token" value="
             <?php
             session_start();
-            echo htmlspecialchars($_SESSION['csrf-token'] ?? '', ENT_QUOTES, 'UTF-8');
+            $_SESSION['csrf-token'] = bin2hex(random_bytes(16));
+            echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
             ?>
             ">
             <div class="input" id="user-id-container">

@@ -1,8 +1,3 @@
-<?php
-
-session_start();
-
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -27,7 +22,7 @@ session_start();
     />
 </head>
 <script type="module">
-    import {teacher_validate, teacher_reject, show_teacher_subjects} from './JS/core.js'
+    import {teacherValidate, teacherReject, showTeacherSubjects} from './JS/core.js'
 
     // Little script to get dynamic form action
     addEventListener("SubjectsShown", () => {
@@ -46,9 +41,9 @@ session_start();
 
                     if (action === "subject_validate")
                     {
-                        await teacher_validate(index)
+                        await teacherValidate(index)
                     } else if (action === "subject_reject") {
-                        await teacher_reject(index)
+                        await teacherReject(index)
                     }
                 })
             })
@@ -58,7 +53,7 @@ session_start();
     const subjectsSelectorsElements = Array.from(document.getElementsByClassName("subject-selector"))
     subjectsSelectorsElements.forEach(async (element) => {
         element.addEventListener("click", async (event) => {
-            await show_teacher_subjects()
+            await showTeacherSubjects()
         })
     })
 </script>
@@ -99,6 +94,8 @@ session_start();
     </div>
     <div class="subject-main-container" id="subject-main-container" data-token="
     <?php
+    session_start();
+    $_SESSION['csrf-token'] = bin2hex(random_bytes(16));
     echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
     ?>
     ">
