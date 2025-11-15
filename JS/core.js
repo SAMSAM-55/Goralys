@@ -395,5 +395,130 @@ addEventListener("UserDataLoaded", async () => {
     if (sessionStorage.getItem("logged-in") !== 'true')
         return
     if (sessionStorage.getItem("user-type") === 'teacher')
-        await show_teacher_subjects()
+        await showTeacherSubjects()
+})
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// [SECTION] : Admin functions                                                                                      //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export async function showAdminSubjects() {
+    const scroll = document.documentElement.scrollTop
+    let newContent = ''
+    const subjectContainer = document.getElementById("subject-main-container")
+
+    const data = {'csrf-token' : subjectContainer.dataset.token.toString().trim()}
+
+    await fetch('./PHP/subject/fetch_all_subjects.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.toast) {
+                showToast(data.toastTitle,
+                    data.toastMessage,
+                    data.toastType)
+            }
+
+            if (data.toastType === "error") {
+                return
+            }
+
+            const helperArray = ["Cet élève n'a pas encore soumis de sujet.",
+                "Ce sujet est en attente de validation.",
+                "Ce sujet a été rejeté par le professeur",
+                "Ce sujet a été validé."]
+            let i = 0
+            const subjectArray = data['data']
+            subjectArray.filter(s => s['subject-status'] === 1 && document.getElementById("selector-pending").checked)
+                .forEach((subject) => {
+                // If the subject has been submitted
+                newContent += `
+                   <form class="subject-container" action="" method="post" data-status="1">
+                       <input type="hidden" id="form-data-${i}" data-subject="${subject['subject']}" data-student_id="${subject['student-id']}" data-topic_id="${subject['topic-id']}">
+                       <div class="subject-info">
+                           <p class="topic-name">${subject['topic-name']} (${subject['teacher-name']})</p>
+                           <p class="student-name">${subject['student-name']}</p>
+                       </div>
+                       <div class="input disabled" style="max-width: 100%">
+                           <label for="subject-${i}">Sujet</label>
+                           <input type="text" name="subject-${i}" placeholder=" " id="subject-${i}" value="${subject['subject']}" disabled required>
+                           <p class="helper">
+                               *${helperArray[1]}
+                           </p>
+                       </div>
+                   </form>`
+                i++
+            })
+            subjectArray.filter(s => s['subject-status'] === 3 && document.getElementById("selector-approved").checked)
+                .forEach((subject) => {
+                // If the subject has been approved
+                newContent += `
+                    <form class="subject-container" action="" method="post" data-status="3">
+                        <div class="subject-info">
+                            <p class="topic-name">${subject['topic-name']} (${subject['teacher-name']})</p>
+                            <p class="student-name">${subject['student-name']}</p>
+                        </div>
+                        <div class="input approved disabled" style="max-width: 100%">
+                            <label for="subject-${i}">Sujet</label>
+                            <input type="text" name="subject-${i}" placeholder=" " id="subject-${i}" value="${subject['subject']}" disabled required>
+                            <p class="helper">
+                                *${helperArray[parseInt(subject['subject-status'])]}
+                            </p>
+                        </div>
+                    </form>`
+                i++
+            })
+            subjectArray.filter(s => s['subject-status'] === 2 && document.getElementById("selector-rejected").checked)
+                .forEach((subject) => {
+                // If the subject has been rejected
+                newContent += `
+                    <form class="subject-container" action="" method="post" data-status="2">
+                        <div class="subject-info">
+                            <p class="topic-name">${subject['topic-name']} (${subject['teacher-name']})</p>
+                            <p class="student-name">${subject['student-name']}</p>
+                        </div>
+                        <div class="input rejected disabled" style="max-width: 100%">
+                            <label for="subject-${i}">Sujet</label>
+                            <input type="text" name="subject-${i}" placeholder=" " id="subject-${i}" value="${subject['subject']}" disabled required>
+                            <p class="helper">
+                                *${helperArray[parseInt(subject['subject-status'])]}
+                            </p>
+                        </div>
+                    </form>`
+                i++
+            })
+            subjectArray.filter(s => s['subject-status'] === 0 && document.getElementById("selector-unsubmitted").checked)
+                .forEach((subject) => {
+                // If the subject hasn't been submitted
+                newContent += `
+                   <form class="subject-container" action="" method="post" data-status="0">
+                       <div class="subject-info">
+                           <p class="topic-name">${subject['topic-name']} (${subject['teacher-name']})</p>
+                           <p class="student-name">${subject['student-name']}</p>
+                       </div>
+                       <div class="input disabled" style="max-width: 100%">
+                           <label for="subject-${i}">Sujet</label>
+                           <input type="text" name="subject-${i}" placeholder=" " id="subject-${i}" value="" disabled required>
+                           <p class="helper">
+                               *${helperArray[0]}
+                           </p>
+                       </div>
+                   </form>`
+                i++
+            })
+            subjectContainer.innerHTML = newContent
+            updateInputs() // Make sure all inputs are correctly displayed
+            window.dispatchEvent(new Event("SubjectsShown"))
+            window.scrollTo(0, scroll)
+        })
+}
+addEventListener("DOMContentLoaded", async () => {
+    await showAdminSubjects()
+    if (sessionStorage.getItem("logged-in") !== 'true')
+        return
+    if (sessionStorage.getItem("user-type") === 'teacher')
+        await showAdminSubjects()
 })
