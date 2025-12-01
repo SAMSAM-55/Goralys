@@ -2,6 +2,11 @@
 
 Goralys is a lightweight web app to manage "Grand Oral" topics for students and teachers at a high school.
 
+
+> ⚠️ Notice:    
+> The current `features/backend` branch is incomplete and considered unstable.  
+> Major changes are still in progress, the codebase should not be used in production.
+
 ## Features
 
 - Student/teacher/admin roles with automatic role detection at registration ([PHP/register.php](PHP/register.php)).
