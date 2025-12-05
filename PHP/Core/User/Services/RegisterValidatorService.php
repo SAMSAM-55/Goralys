@@ -38,6 +38,8 @@ class RegisterValidatorService implements RegisterValidatorServiceInterface
             (SELECT student_id AS user_id FROM saje5795_goralys.student_topics
             UNION ALL
             SELECT teacher_id AS user_id FROM saje5795_goralys.topics
+            UNION ALL
+            SELECT user_id AS user_i FROM saje5795_goralys.admins_list
             ) AS all_ids
             WHERE user_id = ?
             LIMIT 1",

@@ -19,7 +19,7 @@ final class Config
     public static string $MAIL_USER;
     public static string $MAIL_PASSWORD;
     //---------------- Misc ----------------//
-    private static  bool $INITIALIZED = false;
+    private static bool $INITIALIZED = false;
     public const string FOLDER = "/goralys/"; // Just use for development, should be "" for production
 
     final public static function init(): void
@@ -46,7 +46,12 @@ final class Config
 
     final public static function connectToDatabase(): mysqli|null
     {
-        $conn = new mysqli(Config::$DATABASE_HOST, Config::$DATABASE_ID, Config::$DATABASE_PASSWORD, Config::$DATABASE_NAME);
+        $conn = new mysqli(
+            Config::$DATABASE_HOST,
+            Config::$DATABASE_ID,
+            Config::$DATABASE_PASSWORD,
+            Config::$DATABASE_NAME
+        );
         $conn->set_charset('utf8mb4');
 
         if ($conn->connect_error) {

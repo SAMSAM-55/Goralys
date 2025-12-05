@@ -33,6 +33,9 @@ class GetUserRoleService implements GetUserRoleInterface
             UNION ALL
             SELECT teacher_id AS user_id, 'teacher' AS role
             FROM saje5795_goralys.topics
+            UNION ALL
+            SELECT user_id AS user_id, 'admin' AS role
+            FROM saje5795_goralys.admins_list
             ) AS all_ids
             WHERE user_id = ?
             LIMIT 1",
