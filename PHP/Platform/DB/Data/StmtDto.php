@@ -11,11 +11,12 @@ class StmtDto
     public function __construct(
         string $query,
         string $types,
+        mixed $value1,
         mixed ...$args
     ) {
         $this->query = $query;
         $this->types = $types;
-        $this->args = $args;
+        $this->args = array_merge([$value1], $args);
     }
 
     /**

@@ -50,15 +50,17 @@ class DbContainer implements DbContainerInterface
     /**
      * @param string $query
      * @param string $types
+     * @param mixed $value1
      * @param mixed ...$args
      * @return mysqli_result
-     * @throws GoralysQueryException|GoralysPrepareException
+     * @throws GoralysPrepareException|GoralysQueryException
      */
-    public function fetch(string $query, string $types, ...$args): mysqli_result
+    public function fetch(string $query, string $types, mixed $value1, ...$args): mysqli_result
     {
         $StmtData = new StmtDto(
             $query,
             $types,
+            $value1,
             ...$args
         );
         $service = new PrepareService($this->logger, $this->conn);
@@ -75,16 +77,37 @@ class DbContainer implements DbContainerInterface
 
     /**
      * @param string $query
+     * @return mysqli_result
+     * @throws GoralysPrepareException|GoralysQueryException
+     */
+    public function fetchNoArgs(string $query): mysqli_result
+    {
+        $service = new PrepareService($this->logger, $this->conn);
+
+        $stmt = $service->prepare($query);
+
+        if (!$stmt->execute()) {
+            $this->logger->error(LoggerInitiator::PLATFORM, "Could not run the statement");
+            throw new GoralysQueryException("Could not run the statement");
+        }
+
+        return $stmt->get_result();
+    }
+
+    /**
+     * @param string $query
      * @param string $types
+     * @param mixed $value1
      * @param mixed ...$args
      * @return bool
      * @throws GoralysPrepareException|GoralysQueryException
      */
-    public function run(string $query, string $types, ...$args): bool
+    public function run(string $query, string $types, mixed $value1, ...$args): bool
     {
         $StmtData = new StmtDto(
             $query,
             $types,
+            $value1,
             ...$args
         );
         $service = new PrepareService($this->logger, $this->conn);
@@ -100,7 +123,9 @@ class DbContainer implements DbContainerInterface
 
     public function __destruct()
     {
-        $this->conn->close();
+        if (isset($this->conn)) {
+            $this->conn->close();
+        }
         $this->logger->info(
             LoggerInitiator::PLATFORM,
             "A DB container was destroyed, connection successfully closed"

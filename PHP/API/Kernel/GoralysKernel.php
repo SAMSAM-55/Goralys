@@ -110,6 +110,30 @@ class GoralysKernel
         throw new ErrorException($message, 0, $severity, $file, $line);
     }
 
+    public function getInputByKey(string $key): string
+    {
+
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST[$key])) {
+                return trim($_POST[$key]);
+            }
+            return "";
+        }
+
+        $rawInput = file_get_contents("php://input");
+        if (!$rawInput) {
+            return "";
+        }
+
+        $decoded = json_decode($rawInput, true);
+
+        if (!is_array($decoded)) {
+            return "";
+        }
+
+        return trim($decoded[$key] ?? "");
+    }
+
     public function run(callable $callback): void
     {
         try {

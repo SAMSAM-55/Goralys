@@ -25,6 +25,28 @@ class PrepareService implements PrepareInterface
     }
 
     /**
+     * @param string $query
+     * @return mysqli_stmt
+     * @throws GoralysPrepareException
+     */
+    public function prepare(string $query): mysqli_stmt
+    {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        try {
+            $stmt = $this->conn->prepare($query);
+        } catch (mysqli_sql_exception $e) {
+            $this->logger->error(
+                LoggerInitiator::PLATFORM,
+                "An error occurred while preparing statement with query : " . $stmtData->getQuery() .
+                    ". Error : " . $e->getMessage()
+            );
+            throw new GoralysPrepareException("Failed to prepare statement.");
+        }
+        return $stmt;
+    }
+
+    /**
      * Prepare a statement and returns it.
      * Handles and log any error that could occur during preparation.
      * @param StmtDto $stmtData The necessary data to prepare the statement
