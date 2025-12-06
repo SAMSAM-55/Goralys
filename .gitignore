@@ -1,11 +1,15 @@
 /PHP/vendor/
 /.idea/
+/PHP/Log
 
 # Config file
 .env
 
 # Script to deploy on a local apache server
 deploy-local.bat
+
+# Script to delete the logs
+flush-logs.bat
 
 # Just some test files
 test.html
