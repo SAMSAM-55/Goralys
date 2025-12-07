@@ -4,11 +4,18 @@ namespace Goralys\Platform\Logger;
 
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
+/**
+ * A small loader to load the necessary configuration for the logger.
+ */
 class LoggerConfigLoader
 {
     private static array $loggerFiles;
     private static bool $isInitialized = false;
 
+    /**
+     * Initializes the respective log files for the different layers and for all instances of the loader (static array).
+     * @return void
+     */
     final public static function init(): void
     {
         if (!self::$isInitialized) {
@@ -22,11 +29,22 @@ class LoggerConfigLoader
         }
     }
 
+    /**
+     * Returns the name of the log file for the given layer.
+     * Note that the full path is constructed inside the `LoggerService`.
+     * @param LoggerInitiator $type The layer to get the log file for.
+     * @return string The name of the file.
+     */
     final public static function getInitiatorFile(LoggerInitiator $type): string
     {
         return self::$loggerFiles[$type->name];
     }
 
+    /**
+     * Get the global log file
+     * Note that the full path is constructed inside the `LoggerService`.
+     * @return string The name of the file
+     */
     final public static function getGlobalFile(): string
     {
         return self::$loggerFiles["GLOBAL"];

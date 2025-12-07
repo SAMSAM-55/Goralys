@@ -1,9 +1,9 @@
 <?php
 
-require __DIR__ . "/vendor/autoload.php";
-require __DIR__ . "/API/Kernel/bootstrap.php";
+require __DIR__ . "/../../../../vendor/autoload.php";
+require __DIR__ . "/../../../../Kernel/bootstrap.php";
 
-use Goralys\API\Kernel\GoralysKernel;
+use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;

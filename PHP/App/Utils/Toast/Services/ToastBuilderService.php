@@ -6,8 +6,20 @@ use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\App\Utils\Toast\Interfaces\ToastBuilderInterface;
 use Goralys\App\Utils\Toast\Data\ToastDTO;
 
+/**
+ * The service used to build a toast DTO from its info.
+ */
 class ToastBuilderService implements ToastBuilderInterface
 {
+    /**
+     * Builds a toast DTO from its type, title, message, redirect and isJS property.
+     * @param ToastType $toastType The type of the toast
+     * @param string $toastTitle The title of the toast
+     * @param string $toastMessage The message of the toast
+     * @param string $redirect The page to redirect the user to
+     * @param bool $isJS If the toast should be sent as a JSON or not (default =  false).
+     * @return ToastDTO The data of the toast
+     */
     public function buildToast(
         ToastType $toastType,
         string $toastTitle,

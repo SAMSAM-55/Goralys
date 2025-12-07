@@ -1,13 +1,13 @@
 <?php
 
 require __DIR__ . "/../../../../vendor/autoload.php";
-require __DIR__ . "/../../../Kernel/bootstrap.php";
+require __DIR__ . "/../../../../Kernel/bootstrap.php";
 
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\UserLoginDTO;
-use Goralys\API\Kernel\GoralysKernel;
+use Goralys\Kernel\GoralysKernel;
 
 // --------------- Init --------------- //
 

@@ -2,6 +2,10 @@
 
 namespace Goralys\Platform\DB\Data;
 
+/**
+ * The DTO used to transport the data of a statement across the different services and layers.
+ * Its use stops as soon as the statement is prepared (it is now a `mysqli_stmt`).
+ */
 class StmtDto
 {
     private string $query;
@@ -20,7 +24,7 @@ class StmtDto
     }
 
     /**
-     * Return the query for the statement
+     * Return the query for the statement.
      * @return string
      */
     public function getQuery(): string
@@ -29,7 +33,7 @@ class StmtDto
     }
 
     /**
-     * Return the types of the statement's parameters
+     * Return the types of the statement's parameters.
      * @return string
      */
     public function getTypes(): string
@@ -38,7 +42,7 @@ class StmtDto
     }
 
     /**
-     * Return the statement's parameters
+     * Return the statement's parameters.
      * @return array
      */
     public function getArgs(): array

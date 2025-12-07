@@ -4,13 +4,16 @@ namespace Goralys\Core\User\Data;
 
 use Goralys\Core\User\Data\Enums\UserRole;
 
+/**
+ * The DTO containing all the information of a user
+ */
 class UserFullDTO
 {
-    private readonly int $id;
-    private readonly string $username;
-    private readonly UserRole $role;
+    private int $id;
+    private string $username;
+    private UserRole $role;
 
-    private readonly string $fullName;
+    private string $fullName;
 
     public function __construct(
         int $id,

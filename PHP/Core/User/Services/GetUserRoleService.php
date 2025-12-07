@@ -4,50 +4,43 @@ namespace Goralys\Core\User\Services;
 
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Interfaces\GetUserRoleInterface;
-use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
+use Goralys\Shared\Exception\User\UserNotFoundException;
 
+/**
+ * Service used to retrieve and automatically assign a user's role.
+ */
 class GetUserRoleService implements GetUserRoleInterface
 {
-    private DbContainer $db;
+    private UserRepository $repo;
 
+    /**
+     * Initializes the user repository used by the service.
+     * @param UserRepository $repo The injected user repository.
+     */
     public function __construct(
-        DbContainer $db
+        UserRepository $repo
     ) {
-        $this->db = $db;
+            $this->repo = $repo;
     }
 
     /**
-     * Returns a user's role based on his username
-     * @param string $username The user's name
-     * @return UserRole The user's role
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Returns a user's role based on his username.
+     * @param string $username The user's name.
+     * @return UserRole The user's role.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     * @throws UserNotFoundException If the user could not be found.
      */
     public function getRoleByUsername(string $username): UserRole
     {
-        $result = $this->db->fetch(
-            "SELECT user_id, role FROM (
-            SELECT student_id AS user_id, 'student' AS role
-            FROM saje5795_goralys.student_topics
-            UNION ALL
-            SELECT teacher_id AS user_id, 'teacher' AS role
-            FROM saje5795_goralys.topics
-            UNION ALL
-            SELECT user_id AS user_id, 'admin' AS role
-            FROM saje5795_goralys.admins_list
-            ) AS all_ids
-            WHERE user_id = ?
-            LIMIT 1",
-            "s",
-            $username
-        );
+        $role = $this->repo->getRoleForUsername($username);
 
-        if ($result->num_rows == 0) {
-            return UserRole::UNKNOWN;
+        if ($role === null) {
+            throw new UserNotFoundException("No such user : " . $username);
         }
 
-        $row = $result->fetch_assoc();
-        return UserRole::fromString($row['role']);
+        return $role;
     }
 }

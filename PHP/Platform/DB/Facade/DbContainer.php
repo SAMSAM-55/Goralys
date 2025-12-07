@@ -16,11 +16,23 @@ use Goralys\Shared\Exception\DB\GoralysQueryException;
 use mysqli;
 use mysqli_result;
 
+/**
+ * The database wrapper used for this project.
+ * It allows for very close behavior to the default `mysqli` implementation in PHP (at least for the basics).
+ * It implements:
+ * - connection to the database using the `.env` configuration file
+ * - statement execution/fetch
+ */
 class DbContainer implements DbContainerInterface
 {
     private mysqli $conn;
     private GoralysLogger $logger;
 
+
+    /**
+     * Initializes the logger of the database container.
+     * @param GoralysLogger $logger The injected logger.
+     */
     public function __construct(
         GoralysLogger $logger,
     ) {
@@ -29,8 +41,10 @@ class DbContainer implements DbContainerInterface
 
 
     /**
-     * @return bool
-     * @throws GoralysConnectException
+     * Establish the connection to the database using the credentials inside `.env`.
+     * Note that it will never return false as it throws an exception if the connection fails.
+     * @return bool If the connection succeeded, true.
+     * @throws GoralysConnectException Only thrown when the connection could not be established.
      */
     public function connect(): bool
     {
@@ -48,12 +62,16 @@ class DbContainer implements DbContainerInterface
     }
 
     /**
-     * @param string $query
-     * @param string $types
-     * @param mixed $value1
-     * @param mixed ...$args
-     * @return mysqli_result
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Executes a request on the database and returns the result.
+     * It uses prepared statements to avoid SQL injection.
+     * Note that the preparation of the statement is delegated to a specialized service
+     * @param string $query The request to execute.
+     * @param string $types The types of the statements arguments.
+     * Uses the same types as the default `mysqli` implementation.
+     * @param mixed $value1 The first required variable to bind.
+     * @param mixed ...$args The other variables to bind (optional).
+     * @return mysqli_result The result of the request.
+     * @throws GoralysPrepareException|GoralysQueryException Thrown if something goes wrong during the fetch.
      */
     public function fetch(string $query, string $types, mixed $value1, ...$args): mysqli_result
     {
@@ -76,8 +94,11 @@ class DbContainer implements DbContainerInterface
     }
 
     /**
-     * @param string $query
-     * @return mysqli_result
+     * Executes a request on the database that doesn't need any arguments (statement parameters).
+     * It uses prepared statements to avoid SQL injection.
+     * Note that the preparation of the statement is delegated to a specialized service
+     * @param string $query The request to execute.
+     * @return mysqli_result The result of the request.
      * @throws GoralysPrepareException|GoralysQueryException
      */
     public function fetchNoArgs(string $query): mysqli_result
@@ -95,12 +116,16 @@ class DbContainer implements DbContainerInterface
     }
 
     /**
-     * @param string $query
-     * @param string $types
-     * @param mixed $value1
-     * @param mixed ...$args
-     * @return bool
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Executes a request on the database.
+     * It uses prepared statements to avoid SQL injection.
+     * Note that the preparation of the statement is delegated to a specialized service
+     * @param string $query The request to execute.
+     * @param string $types The types of the statements arguments.
+     * Uses the same types as the default `mysqli` implementation.
+     * @param mixed $value1 The first required variable to bind.
+     * @param mixed ...$args The other variables to bind (optional).
+     * @return bool `true` if the request execution was successful, `false` elsewise.
+     * @throws GoralysPrepareException|GoralysQueryException Thrown if something goes wrong during the execution.
      */
     public function run(string $query, string $types, mixed $value1, ...$args): bool
     {
@@ -121,6 +146,9 @@ class DbContainer implements DbContainerInterface
         return true;
     }
 
+    /**
+     * Closes the connection to the database
+     */
     public function __destruct()
     {
         if (isset($this->conn)) {

@@ -2,6 +2,9 @@
 
 namespace Goralys\App\Utils\Toast\Data;
 
+/**
+ * The DTO used to transport the data of a toast
+ */
 class ToastDTO
 {
     private array $toastInfo;

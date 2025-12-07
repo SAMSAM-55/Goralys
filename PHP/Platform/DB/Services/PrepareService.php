@@ -11,6 +11,9 @@ use mysqli;
 use mysqli_stmt;
 use mysqli_sql_exception;
 
+/**
+ * The service used to prepare statements
+ */
 class PrepareService implements PrepareInterface
 {
     private GoralysLogger $logger;
@@ -25,9 +28,10 @@ class PrepareService implements PrepareInterface
     }
 
     /**
-     * @param string $query
-     * @return mysqli_stmt
-     * @throws GoralysPrepareException
+     * Prepares a statement without parameters.
+     * @param string $query The statement's request.
+     * @return mysqli_stmt The prepared statement.
+     * @throws GoralysPrepareException If the preparation fails.
      */
     public function prepare(string $query): mysqli_stmt
     {
@@ -38,7 +42,7 @@ class PrepareService implements PrepareInterface
         } catch (mysqli_sql_exception $e) {
             $this->logger->error(
                 LoggerInitiator::PLATFORM,
-                "An error occurred while preparing statement with query : " . $stmtData->getQuery() .
+                "An error occurred while preparing statement with query : " . $query .
                     ". Error : " . $e->getMessage()
             );
             throw new GoralysPrepareException("Failed to prepare statement.");
@@ -49,9 +53,9 @@ class PrepareService implements PrepareInterface
     /**
      * Prepare a statement and returns it.
      * Handles and log any error that could occur during preparation.
-     * @param StmtDto $stmtData The necessary data to prepare the statement
-     * @return mysqli_stmt The prepared statement
-     * @throws GoralysPrepareException
+     * @param StmtDto $stmtData The necessary data to prepare the statement.
+     * @return mysqli_stmt The prepared statement.
+     * @throws GoralysPrepareException If the preparation fails.
      */
     public function prepareAndBind(StmtDto $stmtData): mysqli_stmt
     {

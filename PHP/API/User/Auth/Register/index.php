@@ -7,7 +7,7 @@ use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\UserRegisterDTO;
-use Goralys\API\Kernel\GoralysKernel;
+use Goralys\Kernel\GoralysKernel;
 
 // --------------- Init --------------- //
 $kernel = bootKernel();

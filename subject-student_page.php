@@ -90,7 +90,7 @@
         <form class="subject-container" action="PHP/subject/update_student.php" method="post">
             <input type="hidden" name="csrf-token-2" id="csrf-token-2" value="
             <?php
-            session_start();
+            @session_start();
             $_SESSION['csrf-token'] = bin2hex(random_bytes(16));
             echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
             ?>

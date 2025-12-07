@@ -9,10 +9,17 @@ use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 use mysqli_result;
 
+/**
+ * The repository to fetch and modify subjects inside the database.
+ */
 class SubjectsRepository implements SubjectsRepositoryInterface
 {
     private DbContainer $db;
 
+    /**
+     * Initializes the database container for the repository.
+     * @param DbContainer $db
+     */
     public function __construct(
         DbContainer $db
     ) {
@@ -20,9 +27,10 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * @param string $studentUsername
-     * @return mysqli_result
-     * @throws GoralysPrepareException | GoralysQueryException
+     * Gets all the subjects for a given student.
+     * @param string $studentUsername The student's username.
+     * @return mysqli_result The result of the request.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function findByStudent(string $studentUsername): mysqli_result
     {
@@ -38,14 +46,15 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * @param string $teacherUsername
-     * @return mysqli_result
-     * @throws GoralysPrepareException | GoralysQueryException
+     * Gets all the subjects for a given teacher.
+     * @param string $teacherUsername The teacher's username.
+     * @return mysqli_result The result of the request.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * */
     public function findByTeacher(string $teacherUsername): mysqli_result
     {
         return $this->db->fetch(
-            "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS commment, 
+            "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS comment, 
             t.name AS topic
             FROM saje5795_goralys.topics t
             JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
@@ -56,8 +65,10 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * @return mysqli_result
-     * @throws GoralysPrepareException | GoralysQueryException
+     * Gets all the subjects from the database.
+     * This should only be used for admin accounts.
+     * @return mysqli_result The result of the request.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function findAll(): mysqli_result
     {
@@ -70,11 +81,13 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * @param string $teacherUsername
-     * @param string $studentUsername
-     * @param string $newSubject
-     * @return bool
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Update a subject's content inside the database.
+     * A subject is always identified by its teacher and student couple.
+     * @param string $teacherUsername The teacher's username.
+     * @param string $studentUsername The student's username.
+     * @param string $newSubject The new subject.
+     * @return bool If the update was successful or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateSubject(string $teacherUsername, string $studentUsername, string $newSubject): bool
     {
@@ -92,11 +105,13 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * @param string $teacherUsername
-     * @param string $studentUsername
-     * @param SubjectStatus $newStatus
-     * @return bool
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Update a subject's status inside the database.
+     * A subject is always identified by its teacher and student couple.
+     * @param string $teacherUsername The teacher's username.
+     * @param string $studentUsername The student's username.
+     * @param SubjectStatus $newStatus The new status of the subject.
+     * @return bool If the update was successful or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateStatus(string $teacherUsername, string $studentUsername, SubjectStatus $newStatus): bool
     {
@@ -114,11 +129,14 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * @param string $teacherUsername
-     * @param string $studentUsername
-     * @param string $newComment
-     * @return bool
-     * @throws GoralysQueryException|GoralysPrepareException
+     * Update a subject's comment inside the database.
+     * The comment is written by the teacher and seen by both the teacher and the student.
+     * A subject is always identified by its teacher and student couple.
+     * @param string $teacherUsername The teacher's username.
+     * @param string $studentUsername The student's username.
+     * @param string$newComment The new comment for the subject.
+     * @return bool If the update was successful or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateComment(string $teacherUsername, string $studentUsername, string $newComment): bool
     {

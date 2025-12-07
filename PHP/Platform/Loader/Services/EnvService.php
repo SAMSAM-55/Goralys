@@ -11,10 +11,17 @@ use Goralys\Platform\Loader\Interfaces\EnvInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\GoralysLogger;
 
+/**
+ * A simple wrapper around `DotEnv` to load the environment variables
+ */
 class EnvService implements EnvInterface
 {
     private GoralysLogger $logger;
 
+    /**
+     * Initializes the logger for the environment loader
+     * @param GoralysLogger $logger The injected loader
+     */
     public function __construct(
         GoralysLogger $logger,
     ) {
@@ -24,7 +31,7 @@ class EnvService implements EnvInterface
     /**
      * Load the environment variables inside $_ENV
      * @param string $path The path to the .env file
-     * @return bool
+     * @return bool `true` if the loading was successful, `false` elsewise
      */
     public function load(string $path): bool
     {
@@ -62,7 +69,7 @@ class EnvService implements EnvInterface
     /**
      * Returns the environment value for the specified key
      * @param string $key The environment variable to get
-     * @return mixed
+     * @return mixed The environment variable value
      */
     public function getByKey(string $key): mixed
     {

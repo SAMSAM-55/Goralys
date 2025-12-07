@@ -4,11 +4,11 @@
 let toastElement = null
 
 // Function to add the toast message to the screen
-// @param title :
+// @param title:
 // The title of the toast message
-// @param message :
+// @param message:
 // The message of the toast
-// @param type :
+// @param type:
 // The type of the toast message (success, error, warning, info)
 function addToast(toast_element, title, message, type, duration, is_new) {
     toast_element.className = `feedback-container ${type}`
@@ -48,17 +48,17 @@ function addToast(toast_element, title, message, type, duration, is_new) {
         }, 750);// Match the CSS transition duration
 
         sessionStorage.removeItem('toast')
-        sessionStorage.removeItem('toast-type')
-        sessionStorage.removeItem('toast-title')
-        sessionStorage.removeItem('toast-message')
-        sessionStorage.removeItem('toast-expires')
+        sessionStorage.removeItem('toastType')
+        sessionStorage.removeItem('toastTitle')
+        sessionStorage.removeItem('toastMessage')
+        sessionStorage.removeItem('toastExpires')
     }, duration);
 
     sessionStorage.setItem('toast', 'true')
-    sessionStorage.setItem('toast-type', type)
-    sessionStorage.setItem('toast-title', title)
-    sessionStorage.setItem('toast-message', message)
-    sessionStorage.setItem('toast-expires', (Date.now() + duration).toString())
+    sessionStorage.setItem('toastType', type)
+    sessionStorage.setItem('toastTitle', title)
+    sessionStorage.setItem('toastMessage', message)
+    sessionStorage.setItem('toastExpires', (Date.now() + duration).toString())
 }
 
 // Function to show a toast message
@@ -92,9 +92,9 @@ addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search)
 
     if (urlParams.get('toast') === 'true') {
-        const toast_title = urlParams.get('toast-title')
-        const toast_message = urlParams.get('toast-message')
-        const toast_type = urlParams.get('toast-type')
+        const toast_title = urlParams.get('toastTitle')
+        const toast_message = urlParams.get('toastMessage')
+        const toast_type = urlParams.get('toastType')
 
         const cleanUrl = window.location.origin + window.location.pathname
         window.history.replaceState({}, document.title, cleanUrl)
@@ -102,20 +102,20 @@ addEventListener("DOMContentLoaded", () => {
         showToast(toast_title, toast_message, toast_type);
     } else if (sessionStorage.getItem('toast') === 'true') {
 
-        const toastType = sessionStorage.getItem('toast-type')
-        const toastTitle = sessionStorage.getItem('toast-title')
-        const toastMessage = sessionStorage.getItem('toast-message')
-        const toastExpires = parseInt(sessionStorage.getItem('toast-expires'))
+        const toastType = sessionStorage.getItem('toastType')
+        const toastTitle = sessionStorage.getItem('toastTitle')
+        const toastMessage = sessionStorage.getItem('toastMessage')
+        const toastExpires = parseInt(sessionStorage.getItem('toastExpires'))
         const remainingDuration = toastExpires - Date.now()
 
         if (remainingDuration > 0) {
             showToast(toastTitle, toastMessage, toastType, remainingDuration, false)
         } else {
             sessionStorage.removeItem('toast')
-            sessionStorage.removeItem('toast-type')
-            sessionStorage.removeItem('toast-title')
-            sessionStorage.removeItem('toast-message')
-            sessionStorage.removeItem('toast-expires')
+            sessionStorage.removeItem('toastType')
+            sessionStorage.removeItem('toastTitle')
+            sessionStorage.removeItem('toastMessage')
+            sessionStorage.removeItem('toastExpires')
         }
     }
 });

@@ -4,48 +4,38 @@ namespace Goralys\Core\User\Services;
 
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Core\User\Interfaces\RegisterValidatorServiceInterface;
-use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 
+/**
+ * Service used to determine if a user can register or not.
+ */
 class RegisterValidatorService implements RegisterValidatorServiceInterface
 {
-    private DbContainer $db;
+    private UserRepository $repo;
 
+    /**
+     * Initializes the user repository used by the service.
+     * @param UserRepository $repo The injected user repository.
+     */
     public function __construct(
-        DbContainer $db
+        UserRepository $repo
     ) {
-        $this->db = $db;
+        $this->repo = $repo;
     }
 
 
     /**
-     * @param UserRegisterDTO $data
-     * @return bool
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Checks if a user can register.
+     * @param UserRegisterDTO $data The user's data.
+     * @return bool If the user can register or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function canRegister(UserRegisterDTO $data): bool
     {
-
-        $exits = $this->db->fetch(
-            "SELECT * FROM saje5795_goralys.users WHERE user_id = ? LIMIT 1",
-            "s",
-            $data->getUsername()
-        )->num_rows != 0;
-
-        $valid = $this->db->fetch(
-            "SELECT user_id FROM
-            (SELECT student_id AS user_id FROM saje5795_goralys.student_topics
-            UNION ALL
-            SELECT teacher_id AS user_id FROM saje5795_goralys.topics
-            UNION ALL
-            SELECT user_id AS user_i FROM saje5795_goralys.admins_list
-            ) AS all_ids
-            WHERE user_id = ?
-            LIMIT 1",
-            "s",
-            $data->getUsername()
-        )->num_rows != 0;
+        $exits = $this->repo->exits($data->getUsername());
+        $valid = $this->repo->isUsernameValid($data->getUsername());
 
         return $valid && !$exits;
     }

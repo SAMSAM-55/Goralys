@@ -4,22 +4,11 @@ namespace Goralys\Platform\Logger\Data\Enums;
 
 enum LoggerType: int
 {
-    // Verbosity levels (higher = more severe)
-    // Debug and Info are both 1XX because they do not defer that much from each other
+    // Verbosity levels (higher = more severe).
+    // Debug and Info are both 1XX because they do not differ that much from each other.
     case Debug = 100;
     case Info = 110;
     case Warning = 200;
     case Error = 300;
     case Fatal = 400;
-
-    // Helpers
-    public function isAtLeast(LoggerType $reference): bool
-    {
-        return $this->value >= $reference->value;
-    }
-
-    public function isAtMost(LoggerType $reference): bool
-    {
-        return $this->value <= $reference->value;
-    }
 }

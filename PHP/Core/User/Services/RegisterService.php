@@ -9,6 +9,7 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
+use Goralys\Shared\Exception\User\UserNotFoundException;
 
 class RegisterService implements RegisterServiceInterface
 {
@@ -17,6 +18,16 @@ class RegisterService implements RegisterServiceInterface
     private GetUserRoleService $roleGetter;
     private CreateUserService $userCreator;
 
+    /**
+     * Initializes the logger and all the service's sub-services.
+     * @param GoralysLogger $logger The injected logger
+     * @param RegisterValidatorService $validator The injected validator.
+     * It is used to verify that the can register
+     * @param GetUserRoleService $roleGetter The injected role getter.
+     * It is used to retrieve the user's role and assign iot automatically.
+     * @param CreateUserService $userCreator The injected user creator.
+     * It is used to create the user inside the database.
+     */
     public function __construct(
         GoralysLogger $logger,
         RegisterValidatorService $validator,
@@ -31,9 +42,11 @@ class RegisterService implements RegisterServiceInterface
     }
 
     /**
-     * @param UserRegisterDTO $data
-     * @return bool
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Register a new user to the database.
+     * @param UserRegisterDTO $data The necessary data to register the user.
+     * @return bool If the register process was successful or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     * @throws UserNotFoundException If the user is not found.
      */
     public function register(UserRegisterDTO $data): bool
     {

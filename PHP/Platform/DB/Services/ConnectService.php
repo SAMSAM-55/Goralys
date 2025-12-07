@@ -10,6 +10,9 @@ use Goralys\Shared\Exception\DB\GoralysConnectException;
 use mysqli;
 use mysqli_sql_exception;
 
+/**
+ * Service used to connect to the database
+ */
 class ConnectService implements ConnectInterface
 {
     private GoralysLogger $logger;
@@ -20,8 +23,10 @@ class ConnectService implements ConnectInterface
     }
 
     /**
-     * Creates and returns a connection to the database
-     * @throws GoralysConnectException
+     * Creates and returns a connection to the database.
+     * @param DbDto $credentials The necessary credentials to connect to the database.
+     * @return mysqli The connection to the database.
+     * @throws GoralysConnectException If the connection fails
      */
     public function connectToDatabase(DbDto $credentials): mysqli
     {

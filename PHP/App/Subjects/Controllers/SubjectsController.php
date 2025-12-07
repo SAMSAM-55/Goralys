@@ -16,6 +16,9 @@ use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 
+/**
+ * The controller used to update/get subjects from the database via the `SubjectsRepository` (and intermediate services)
+ */
 class SubjectsController implements SubjectsControllerInterface
 {
     private GoralysLogger $logger;
@@ -25,6 +28,12 @@ class SubjectsController implements SubjectsControllerInterface
     private UsernameFormatterService $formatter;
     private GetSubjectsService $getService;
 
+    /**
+     * Initializes the logger and database container for the controller.
+     * Also instantiates all of its sub-services.
+     * @param GoralysLogger $logger
+     * @param DbContainer $db
+     */
     public function __construct(
         GoralysLogger $logger,
         DbContainer $db
@@ -39,12 +48,13 @@ class SubjectsController implements SubjectsControllerInterface
     }
 
     /**
-     * @param string $teacherUsername
-     * @param string $studentUsername
-     * @param SubjectFields $field
-     * @param string|SubjectStatus $newValue
-     * @return bool
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Update a given field for teacher and student pair.
+     * @param string $teacherUsername The username of the teacher.
+     * @param string $studentUsername The username of the student.
+     * @param SubjectFields $field The field to update.
+     * @param string|SubjectStatus $newValue The new value of the field.
+     * @return bool If the update was successful or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the database request goes wrong.
      */
     public function updateField(
         string $teacherUsername,
@@ -67,16 +77,17 @@ class SubjectsController implements SubjectsControllerInterface
                 $teacherUsername,
                 $studentUsername,
                 $newValue
-            ),
-            default => false,
+            )
         };
     }
 
     /**
-     * @param UserRole $role
-     * @param string $username
-     * @return false|SubjectsCollection
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Get the subjects for a given user with a given role.
+     * @param UserRole $role The role of the user to get the subjects of.
+     * @param string $username The username of the student or teacher to get the subjects for.
+     * Let the defaults value ("") for admins as they have access to all subjects.
+     * @return false|SubjectsCollection The list of the retrieved subjects.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the database request goes wrong.
      */
     public function getForRole(UserRole $role, string $username = ""): SubjectsCollection|false
     {
@@ -84,7 +95,7 @@ class SubjectsController implements SubjectsControllerInterface
             UserRole::STUDENT => $this->getService->getStudentSubjects($username),
             UserRole::TEACHER => $this->getService->getTeacherSubjects($username),
             UserRole::ADMIN => $this->getService->getAllSubjects(),
-            default => false,
+            UserRole::UNKNOWN => false
         };
     }
 }

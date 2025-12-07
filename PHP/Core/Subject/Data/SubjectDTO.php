@@ -5,6 +5,10 @@ namespace Goralys\Core\Subject\Data;
 use Goralys\Core\Subject\Data\Enums\SubjectStatus;
 use JsonSerializable;
 
+/**
+ * The DTO used to transport the data of a subject.
+ * It is used inside the App and Core layers to get the subjects from the database.
+ */
 class SubjectDTO implements JsonSerializable
 {
     private string $studentUsername;
@@ -31,46 +35,7 @@ class SubjectDTO implements JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    public function getStudentUsername(): string
-    {
-        return $this->studentUsername;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubject(): string
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @return SubjectStatus
-     */
-    public function getStatus(): SubjectStatus
-    {
-        return $this->status;
-    }
-
-    /**
-     * @return string
-     */
-    public function getComment(): string
-    {
-        return $this->comment;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTeacherUsername(): string
-    {
-        return $this->teacherUsername;
-    }
-
-    /**
+     * Transforms the subject's data into a JSON object that is then sent to the frontend
      * @return array
      */
     public function jsonSerialize(): array

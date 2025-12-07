@@ -9,16 +9,6 @@ enum UserRole: int
     case STUDENT = 0;
     case UNKNOWN = -1;
 
-    public function isAtLeast(UserRole $reference): bool
-    {
-        return $this->value >= $reference->value;
-    }
-
-    public function isAtMost(UserRole $reference): bool
-    {
-        return $this->value <= $reference->value;
-    }
-
     public function toString(): string
     {
         return strtolower($this->name);

@@ -7,16 +7,27 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\GoralysLogger;
 use Random\RandomException;
 
+/**
+ * Service to manage the CSRF tokens system.
+ */
 class CSRFService implements CSRFServiceInterface
 {
     private GoralysLogger $logger;
 
+    /**
+     * Initializes the logger for the service.
+     * @param GoralysLogger $logger The injected logger.
+     */
     public function __construct(
         GoralysLogger $logger
     ) {
         $this->logger = $logger;
     }
 
+    /**
+     * Retrieves the token sent to the endpoint either inside of `$_POST` or `php://input`.
+     * @return string The retrieved token
+     */
     public function getToken(): string
     {
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -41,8 +52,9 @@ class CSRFService implements CSRFServiceInterface
     }
 
     /**
-     * @param string $formId
-     * @return string
+     * Gets the token for a given form.
+     * @param string $formId The id of the form.
+     * @return string The retrieved token.
      */
     public function getForForm(string $formId): string
     {
@@ -50,8 +62,9 @@ class CSRFService implements CSRFServiceInterface
     }
 
     /**
-     * @param string $formId
-     * @return bool
+     * Creates a new CSRF token.
+     * @param string $formId The id of the form to creat the token for.
+     * @return bool If the creation was successful or not.
      */
     public function create(string $formId): bool
     {
@@ -62,17 +75,18 @@ class CSRFService implements CSRFServiceInterface
         } catch (RandomException $e) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "An occured while generating a CSRF token for form : " . $formId
+                "An error occurred while generating a CSRF token for form : " . $formId
             );
             return false;
         }
     }
 
     /**
-     * Validates a given CSRF token for a specific form
-     * @param string $formId The id of the form to verify the token for
-     * @param string $token The CSRF token
-     * @return bool
+     * Validates a given CSRF token for a specific form.
+     * It automatically invalidates the token even if the validation fails
+     * @param string $formId The id of the form to verify the token for.
+     * @param string $token The CSRF token.
+     * @return bool If the token is valid or not.
      */
     public function validate(string $formId, string $token): bool
     {
@@ -88,7 +102,6 @@ class CSRFService implements CSRFServiceInterface
             $this->logger->error(
                 LoggerInitiator::APP,
                 "Failed to validate token for form : " . $formId . "(" . $token . ")"
-                . "\nCurrent tokens : " . print_r($_SESSION, true)
             );
             unset($_SESSION[$formId . "-csrf-token"]);
             return false;
