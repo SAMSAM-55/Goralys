@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__ . "/../../../../vendor/autoload.php";
-require __DIR__ . "/../../../../Kernel/bootstrap.php";
+require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
 use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Security\CSRF\Services\CSRFService;
@@ -20,7 +20,7 @@ $kernel = bootKernel();
 $csrfHandler = new CSRFService($kernel->logger);
 $token = $csrfHandler->getToken();
 
-if (!$csrfHandler->validate("update-subject-status", $token)) {
+if (!$csrfHandler->validate("update-subject", $token)) {
     http_response_code(403);
     $kernel->toast->showToast(
         ToastType::WARNING,
@@ -51,7 +51,7 @@ $kernel->run(function (GoralysKernel $kernel) {
     $result = $subjectsController->updateField(
         $teacherUsername,
         $studentUsername,
-        SubjectFields::STATUS,
+        SubjectFields::SUBJECT,
         $newStatus
     );
 

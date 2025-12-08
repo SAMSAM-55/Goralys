@@ -1,9 +1,14 @@
-/PHP/vendor/
 /.idea/
+
+# The PHP/ directory is now obselete
+/PHP/vendor/
 /PHP/Log
 
+/backend/src/Log
+/backend/vendor
+
 # Config file
-.env
+backend/.env
 
 # Script to deploy on a local apache server
 deploy-local.bat

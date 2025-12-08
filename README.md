@@ -6,6 +6,7 @@ Goralys is a lightweight web app to manage "Grand Oral" topics for students and 
 > ⚠️ Notice:    
 > The current `features/backend` branch is incomplete and considered unstable.  
 > Major changes are still in progress, the codebase should not be used in production.
+> Also, please note that the `PHP/` folder is now obsolete, I just keep it to have a stable backend/frontend combo while I refactor the frontend
 
 ## Features
 
@@ -96,7 +97,7 @@ Steps:
   - [PHP/config.php](PHP/config.php) — contains DB + mail config
   - [PHP/utility.php](PHP/utility.php) — helper functions including [`Goralys\Utility\GoralysUtility::formatUserId`](PHP/utility.php) and [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php)
   - [PHP/data_structure.txt](PHP/data_structure.txt) — DB schema
-  - [PHP/composer.json](PHP/composer.json) — 3rd-party deps (PHPMailer)
+  - [PHP/composer.json](backend/composer.json) — 3rd-party deps (PHPMailer)
 - Frontend JS
   - [JS/core.js](JS/core.js) — student flows; functions [`core.student_save_draft`](JS/core.js) and [`core.student_submit`](JS/core.js)
   - [JS/user.js](JS/user.js)

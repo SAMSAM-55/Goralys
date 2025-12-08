@@ -1,7 +1,7 @@
 <?php
 
 require __DIR__ . "/../../../../vendor/autoload.php";
-require __DIR__ . "/../../../../Kernel/bootstrap.php";
+require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
 use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Security\CSRF\Services\CSRFService;
@@ -43,11 +43,11 @@ $kernel->run(function (GoralysKernel $kernel) {
 
     // --------------- Inputs --------------- //
 
-    $studentUsername = $kernel->getInputByKey("student-username");
+    $teacherUsername = $kernel->getInputByKey("teacher-username");
 
     $result = $subjectsController->getForRole(
-        UserRole::STUDENT,
-        $studentUsername
+        UserRole::TEACHER,
+        $teacherUsername
     );
 
     if (!$result) {

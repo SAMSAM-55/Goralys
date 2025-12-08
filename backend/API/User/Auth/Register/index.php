@@ -1,23 +1,22 @@
 <?php
 
 require __DIR__ . "/../../../../vendor/autoload.php";
-require __DIR__ . "/../../../../Kernel/bootstrap.php";
+require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
-use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Kernel\GoralysKernel;
 
 // --------------- Init --------------- //
-
 $kernel = bootKernel();
-// --------------- CSRF --------------- //
 
+// --------------- CSRF --------------- //
 $csrfHandler = new CSRFService($kernel->logger);
 $token = $csrfHandler->getToken();
 
-if (!$csrfHandler->validate("login", $token)) {
+if (!$csrfHandler->validate("register", $token)) {
     http_response_code(403);
     $kernel->toast->showToast(
         ToastType::WARNING,
@@ -32,37 +31,37 @@ $kernel->run(function (GoralysKernel $kernel) {
     if (!$kernel->connect()) {
         $kernel->toast->fatalError(
             500, // Internal server error
-            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement."
+            "Une erreur interne est survenue lors de la création du compte, veuillez réessayer ultérieurement."
         );
     }
 
     // --------------- Inputs --------------- //
+
     $username = trim($_POST['user-name'] ?? "");
-    $password = trim($_POST['password-login'] ?? "");
+    $password = trim($_POST['password-register'] ?? "");
+    $fullName = trim($_POST['full-name'] ?? "");
 
-    if (empty($username) || empty($password)) {
-        $kernel->toast->showToast(
-            ToastType::WARNING,
-            "Connexion",
-            "Veuillez remplir tous les champs",
-            "index.html"
-        );
-    }
+    // --------------- Register --------------- //
 
-    $userData = new UserLoginDTO(
+    $registerData = new UserRegisterDTO(
         $username,
-        $password
+        $fullName,
+        $password,
     );
 
-    // --------------- Login --------------- //
-    $auth = new AuthController($kernel->logger, $kernel->db);
-    $auth->login($userData);
+    $registerController = new AuthController($kernel->logger, $kernel->db);
+    if (!$registerController->register($registerData)) {
+        $kernel->toast->fatalError(
+            403, // Forbidden
+            "Une erreur interne est survenue lors de la création du compte, veuillez réessayer ultérieurement."
+        );
+    }
 
     http_response_code(200); // OK
     $kernel->toast->showToast(
         ToastType::SUCCESS,
-        "Connexion",
-        "Vous avez bien été connecté à votre compte.",
+        "Création du compte",
+        "Votre compte chez Goralys a bien été créé !",
         "index.html"
     );
     exit;

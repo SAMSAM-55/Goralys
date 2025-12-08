@@ -1,14 +1,13 @@
 <?php
 
 require __DIR__ . "/../../../../vendor/autoload.php";
-require __DIR__ . "/../../../../Kernel/bootstrap.php";
+require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
 use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
-use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
+use Goralys\Core\User\Data\Enums\UserRole;
 
 
 // --------------- Init --------------- //
@@ -20,7 +19,7 @@ $kernel = bootKernel();
 $csrfHandler = new CSRFService($kernel->logger);
 $token = $csrfHandler->getToken();
 
-if (!$csrfHandler->validate("update-subject-status", $token)) {
+if (!$csrfHandler->validate("get-all-subjects", $token)) {
     http_response_code(403);
     $kernel->toast->showToast(
         ToastType::WARNING,
@@ -40,20 +39,9 @@ $kernel->run(function (GoralysKernel $kernel) {
         );
     }
 
-    // --------------- Inputs --------------- //
-
-    $teacherUsername = $kernel->getInputByKey('teacher-username');
-    $studentUsername = $kernel->getInputByKey('student-username');
-    $newStatus = SubjectStatus::fromString($kernel->getInputByKey('new-status'));
-
     $subjectsController = new SubjectsController($kernel->logger, $kernel->db);
 
-    $result = $subjectsController->updateField(
-        $teacherUsername,
-        $studentUsername,
-        SubjectFields::COMMENT,
-        $newStatus
-    );
+    $result = $subjectsController->getForRole(UserRole::ADMIN);
 
     if (!$result) {
         $kernel->toast->fatalError(
@@ -62,6 +50,8 @@ $kernel->run(function (GoralysKernel $kernel) {
             veuillez réessayer ultérieurement."
         );
     }
+
+    echo print_r(json_encode($result, JSON_UNESCAPED_UNICODE), true);
 
     http_response_code(200); // OK
     exit;
