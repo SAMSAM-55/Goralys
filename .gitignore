@@ -2,10 +2,10 @@
 
 # The PHP/ directory is now obselete
 /PHP/vendor/
-/PHP/Log
+/backend/Logs/
+/backend/.phpunit.result.cache
 
-/backend/src/Log
-/backend/vendor
+/backend/vendor/
 
 # Config file
 backend/.env
