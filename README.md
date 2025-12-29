@@ -15,7 +15,7 @@ Goralys is a lightweight web app to manage "Grand Oral" topics for students and 
 - Session-backed user data caching for fast frontend rendering ([PHP/login.php](PHP/login.php) uses [`Goralys\Utility\GoralysUtility::cacheStudentTopicsInfo`](PHP/utility.php) indirectly).
 - CSRF protection using a short-lived session token: [`PHP/create_form_token.php`](PHP/create_form_token.php) + [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
 - Toast notification system used by both PHP and JS ([`Goralys\Config\GoralysUtility::showToast`](PHP/config.php) and [`toast.show_toast`](JS/toast.js)).
-
+ 
 ## Quick start (development)
 
 Prerequisites:
@@ -50,6 +50,15 @@ Steps:
      ```
 5. Access the app:
    - Visit `http://localhost/goralys/` (or `http://localhost:8000` if using built-in server).
+
+## Testing
+
+You can use phpunit to run the unit tests for the backend in `/backend/tests`.
+To run the tests, use the following command after installing the projects dependencies with composer:
+
+```bash
+.\vendor\bin\phpunit --configuration phpunit.xml
+```
 
 ## Security notes
 
