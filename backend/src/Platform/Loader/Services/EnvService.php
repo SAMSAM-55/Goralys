@@ -40,20 +40,12 @@ class EnvService implements EnvInterface
     public function getByKey(string $key): mixed
     {
         if (!array_key_exists($key, $_ENV)) {
-            $this->logger->warning(
-                LoggerInitiator::PLATFORM,
-                "Invalid environment variable : " . $key
-            );
             return null;
         }
 
         $value = $_ENV[$key];
 
         if ($value == "") {
-            $this->logger->warning(
-                LoggerInitiator::PLATFORM,
-                "Empty environment variable : " . $key
-            );
             return null;
         }
 
