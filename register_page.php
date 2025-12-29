@@ -1,3 +1,18 @@
+<?php
+
+require __DIR__ . "/PHP/vendor/autoload.php";
+
+session_start();
+
+use Goralys\App\Security\CSRF\Services\CSRFService;
+use Goralys\Platform\Logger\GoralysLogger;
+
+$logger = new GoralysLogger();
+
+$csrf = new CSRFService($logger);
+$csrf->create("register");
+$token = $csrf->getForForm("register");
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

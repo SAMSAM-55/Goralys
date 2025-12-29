@@ -94,7 +94,7 @@
     </div>
     <div class="subject-main-container" id="subject-main-container" data-token="
     <?php
-    session_start();
+    @session_start();
     $_SESSION['csrf-token'] = bin2hex(random_bytes(16));
     echo htmlspecialchars($_SESSION['csrf-token'], ENT_QUOTES, 'UTF-8');
     ?>

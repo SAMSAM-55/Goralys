@@ -1,11 +1,20 @@
-/PHP/vendor/
 /.idea/
 
+# The PHP/ directory is now obselete
+/PHP/vendor/
+/backend/Logs/
+/backend/.phpunit.result.cache
+
+/backend/vendor/
+
 # Config file
-.env
+backend/.env
 
 # Script to deploy on a local apache server
 deploy-local.bat
+
+# Script to delete the logs
+flush-logs.bat
 
 # Just some test files
 test.html

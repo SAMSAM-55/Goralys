@@ -1,0 +1,475 @@
+<?php
+
+namespace Goralys\Kernel;
+
+use ErrorException;
+use Goralys\App\HTTP\Request\GoralysRequest;
+use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
+use Goralys\App\Security\CSRF\Services\CSRFService;
+use Goralys\App\Subjects\Controllers\SubjectsController;
+use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\User\Controllers\AuthController;
+use Goralys\App\User\Data\Enums\UserAuthStatus;
+use Goralys\App\Utils\Toast\Controllers\ToastController;
+use Goralys\App\Utils\Toast\Data\Enums\ToastType;
+use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\Loader\Services\EnvService;
+use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
+use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
+use Goralys\Shared\Exception\DB\GoralysConnectException;
+use Goralys\Shared\Exception\GoralysException;
+use JetBrains\PhpStorm\NoReturn;
+use JsonSerializable;
+use Throwable;
+
+/**
+ * The kernel used by the API to access the database, environment, and toast controller.
+ */
+class GoralysKernel
+{
+    private string $rootPath;
+    private EnvService $env;
+    public DbContainer $db;
+    public LoggerInterface $logger;
+    public AuthController $auth;
+    public SubjectsController $subjects;
+    public ToastController $toast;
+    private CSRFService $CSRF;
+    /**
+     * This variable is used to determine if the kernel handlers should use flash toasts.
+     * @var bool
+     */
+    private bool $useFlash;
+    public SubjectsUsernameManager $usernameManager;
+    private RequestInterface $request;
+    private int $sessionLifetime;
+    /**
+     * Multiplier applied to the base session lifetime to determine the upper bound
+     * after which a user is no longer considered authenticated.
+     *
+     * This multiplier introduces an intermediate authentication state used for
+     * user-facing feedback:
+     *
+     * - If the time since the last activity is less than the base session lifetime,
+     *   the user is considered fully authenticated.
+     * - If it exceeds the base session lifetime but remains below
+     *   (session lifetime * multiplier), the session is considered expired,
+     *   but the user is still distinguishable from a fully unauthenticated state.
+     * - If it exceeds (session lifetime * multiplier), the user is considered
+     *   not authenticated.
+     *
+     * In both non-authenticated and expired states, the underlying session is unset
+     * and destroyed; the distinction exists solely to provide more accurate user
+     * feedback and state reporting.
+     *
+     * The multiplier value is configured via the environment configuration (.env).
+     *
+     * @var float
+     */
+    private readonly float $sessionLifetimeMultiplier;
+    private int $sinceLastActivity;
+
+    /**
+     * Initializes the kernel and all of its members.
+     * @param string $rootPath The path to the .env file and that is considered to be the root path for the kernel.
+     */
+    public function __construct(string $rootPath, bool $useFlash = false)
+    {
+        $this->rootPath = $rootPath;
+
+        $this->initEnv();
+        $this->initLogger();
+        $this->sessionLifetime = $this->env->getByKey("PHP_SESSION_LIFETIME");
+        $this->sessionLifetimeMultiplier = $this->env->getByKey("PHP_SESSION_LIFETIME_MULTIPLIER");
+        $this->startSession();
+
+        // Initializes toast before the DB to be able to provide user feedback if the connection to the DB fails.
+        $this->initToast();
+        $this->useFlash = $useFlash;
+
+        $this->initDb();
+        $this->initAuth();
+        $this->initSubjects();
+        $this->initCSRF();
+        $this->initUsernameManager();
+    }
+
+    /**
+     * Sets the exceptions and errors handlers to be the ones from the `GoralysKernel`.
+     * @return void
+     */
+    public function setHandlers(): void
+    {
+        set_exception_handler([$this, 'exceptionHandler']);
+        set_error_handler([$this, 'errorHandler']);
+    }
+
+    /**
+     * Starts the PHP session if it is not already started.
+     * @return void
+     */
+    private function startSession(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            ini_set('session.gc_maxlifetime', $this->sessionLifetime);
+            ini_set('session.cookie_lifetime', $this->sessionLifetime);
+
+            session_set_cookie_params([
+                // Ensure the session expiration logic works as intended. Refer to variable docs for more info.
+                'lifetime' => $this->sessionLifetime * $this->sessionLifetimeMultiplier,
+                'path' => '/',
+                'domain' => '',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'None',
+            ]);
+
+            session_start();
+
+            $this->sinceLastActivity = isset($_SESSION['LAST_ACTIVITY'])
+                    ? time() - $_SESSION['LAST_ACTIVITY']
+                    : -1;
+
+            $_SESSION['LAST_ACTIVITY'] = time();
+        }
+    }
+
+    private function destroySession(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_unset();
+            session_destroy();
+        }
+    }
+
+    /**
+     * Loads the environment variables inside $_ENV using `DotEnv`.
+     * The path to the .env file is supposed to be `$rootPath`.
+     * @return void
+     */
+    private function initEnv(): void
+    {
+        $this->env = new EnvService();
+        $this->env->load($this->rootPath);
+    }
+
+    /**
+     * Initializes the logger of the kernel.
+     * The logger used is a `GoralysLogger`, which is a custom logger made specially for this project.
+     * @return void
+     */
+    private function initLogger(): void
+    {
+        $this->logger = new GoralysLogger();
+    }
+
+    /**
+     * Initializes the database container of the kernel.
+     * Note that the database connection won't be established until the `connect` method of the kernel is called.
+     * @return void
+     */
+    private function initDb(): void
+    {
+        $this->db = new DbContainer($this->logger);
+    }
+
+    /**
+     * Initializes the authentification controller of the kernel.
+     * @return void
+     */
+    private function initAuth(): void
+    {
+        $this->auth = new AuthController(
+            $this->logger,
+            $this->db,
+            $this->sessionLifetime,
+            $this->sessionLifetimeMultiplier
+        );
+    }
+
+    /**
+     * Initializes the subjects controller of the kernel.
+     * @return void
+     */
+    private function initSubjects(): void
+    {
+        $this->subjects = new SubjectsController($this->logger, $this->db);
+    }
+
+    /**
+     * Initializes the toast controller used by the kernel.
+     * @return void
+     */
+    private function initToast(): void
+    {
+        $this->toast = new ToastController();
+    }
+
+    /**
+     * Initializes the CSRF service used by the kernel
+     * @return void
+     */
+    private function initCSRF(): void
+    {
+        $this->CSRF = new CSRFService($this->logger);
+    }
+
+    private function initUsernameManager(): void
+    {
+        $this->usernameManager = new SubjectsUsernameManager($this->logger);
+    }
+
+    /**
+     * Connects the kernel to the database.
+     * @throws GoralysConnectException Throws an exception if the connection with the database could not be established.
+     */
+    public function connect(): bool
+    {
+        if (!isset($this->db)) {
+            $this->db = new DbContainer($this->logger);
+        }
+        return $this->db->connect();
+    }
+
+    /**
+     * The custom exception handler for the kernel.
+     * It handles `GoralysException` and its instances as "normal" errors.
+     * Thus for other exceptions, it toasts them as unexpected.
+     * @param Throwable $e The thrown exception.
+     * @return void
+     */
+    #[NoReturn]
+    public function exceptionHandler(Throwable $e): void
+    {
+        $this->logger->error(
+            LoggerInitiator::APP,
+            "Uncaught exception: " . $e->getMessage()
+        );
+        $this->logger->debug(
+            LoggerInitiator::APP,
+            "Is kernel using flash: " . $this->useFlash
+        );
+
+        if ($e instanceof GoralysException) {
+            if ($this->useFlash) {
+                $this->flashFatalError();
+            } else {
+                $this->toast->fatalError(500);
+            }
+        } else {
+            if ($this->useFlash) {
+                $this->flashFatalError("Une erreur inattendue s'est produite.");
+            } else {
+                $this->toast->fatalError(500, "Une erreur inattendue s'est produite.");
+            }
+        }
+    }
+
+    /**
+     * The custom error handler for the kernel.
+     * It ignores errors considered "non-fatal":
+     * - `E_ERROR`
+     * - `E_USER_ERROR`
+     * - `E_CORE_ERROR`
+     * - `E_COMPILE_ERROR`
+     * - `E_RECOVERABLE_ERROR`
+     * @param int $severity The severity of the error.
+     * @param string $message The error's message.
+     * @param string $file The file where the error occurred.
+     * @param int $line The line that caused the error.
+     * @return void
+     * @throws ErrorException Only thrown when the exception is considered fatal.
+     */
+    public function errorHandler(int $severity, string $message, string $file, int $line): void
+    {
+        $this->logger->warning(
+            LoggerInitiator::APP,
+            "PHP Error (severity $severity) : $message — $file:$line"
+        );
+
+        // Ignore non fatal errors
+        if (!in_array($severity, [E_ERROR, E_USER_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR])) {
+            return;
+        }
+
+        throw new ErrorException($message, 0, $severity, $file, $line);
+    }
+
+    /**
+     * Gets the kernel's current HTTP request
+     * @return GoralysRequest The request.
+     */
+    public function getRequest(): GoralysRequest
+    {
+        if (!isset($this->request)) {
+            $this->request = new GoralysRequest();
+        }
+
+        return $this->request;
+    }
+
+
+    /**
+     * Runs the provided function and catches any exception to handle it.
+     * @param callable $callback The function to execute.
+     * @return void
+     */
+    public function run(callable $callback): void
+    {
+        try {
+            $callback($this, $this->request);
+        } catch (Throwable $e) {
+            $this->exceptionHandler($e);
+        }
+    }
+
+    /**
+     * Helper to check if the user is authenticated
+     * @param string $context The context the authentification is required in.
+     * @return void
+     */
+    public function requireAuth(string $context): void
+    {
+        $this->logger->debug(LoggerInitiator::PLATFORM, "Session lifetime : " . $this->sessionLifetime);
+        $this->logger->debug(LoggerInitiator::PLATFORM, "Since last activity : " . $this->sinceLastActivity);
+
+        switch ($this->auth->getAuthStatus($this->sinceLastActivity)) {
+            case UserAuthStatus::SESSION_EXPIRED:
+                $this->logger->warning(
+                    LoggerInitiator::CORE,
+                    "Tried to perform action: $context without authentification"
+                );
+                $this->destroySession();
+
+                http_response_code(401); // Unauthorized
+                echo json_encode(["authEvent" => "expired"]);
+                exit;
+            case UserAuthStatus::NOT_AUTHENTICATED:
+                $this->destroySession();
+
+                http_response_code(401); // Unauthorized
+                echo json_encode(["authEvent" => "unauthenticated"]);
+                exit;
+            case UserAuthStatus::AUTHENTICATED:
+                break;
+        }
+    }
+
+    /**
+     * Helper to use CSRF in an API endpoint.
+     * It should always be called after you already called getRequest on the kernel.
+     * @param string $formId The id of the current form.
+     * @return void
+     */
+    public function requireCSRF(string $formId): void
+    {
+
+        if (!$this->CSRF->validate($formId, $this->request)) {
+            http_response_code(403);
+            $this->toast->showToast(
+                ToastType::WARNING,
+                "Lien externe",
+                "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
+                ""
+            );
+            exit;
+        }
+    }
+
+    /**
+     * Helper to check if the user has a certain role.
+     * @param UserRole $role The minimum role the user must have.
+     * @param bool $strict If set to true, the user must be exactly the provided role.
+     * @return void
+     */
+    public function requireRole(UserRole $role, bool $strict = false): void
+    {
+        if (!isset($_SESSION['current_role'])) {
+            $this->destroySession();
+
+            http_response_code(401); // Unauthorized
+            echo json_encode(["authEvent" => "expired"]);
+            exit;
+        }
+
+        $currentRole = UserRole::fromString($_SESSION['current_role']);
+
+        if ($strict && $currentRole !== $role) {
+            $this->toast->fatalError(
+                403, // Forbidden
+                "Il semblerait que vous n'ayez pas les permissions nécéssaires."
+            );
+        }
+
+        if (!$currentRole->isAtLeast($role)) {
+            $this->toast->fatalError(
+                403, // Forbidden
+                "Il semblerait que vous n'ayez pas les permissions nécéssaires."
+            );
+        }
+    }
+
+    /**
+     * Helper to centralize the way JSON data should be output to the client.
+     * @param array | JsonSerializable $data The data to encode and send to the client.
+     * @param int $responseCode The response code of the request. Default is OK (200)
+     * @return void
+     */
+    public function sendJSON(array | JsonSerializable $data, int $responseCode = 200): void
+    {
+        http_response_code($responseCode);
+        header("Content-Type: application/JSON; charset: utf-8");
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Helper to easily send flash toasts to the frontend for form requests.
+     * @param ToastType $type The type of the toast.
+     * @param string $title The title of the toast.
+     * @param string $message The message of the toast.
+     * @param string $redirect The page to redirect the user to.
+     * @param string $action The action to perform when the frontend receives the toast.
+     * Refer to the frontend root layout to know which actions are currently supported and to add your own ones.
+     * @return void
+     */
+    public function flashToast(
+        ToastType $type,
+        string $title,
+        string $message,
+        string $redirect = "/",
+        string $action = ""
+    ): void {
+        http_response_code(302); // Temporary redirect
+        $this->toast->showToast(
+            $type,
+            $title,
+            $message,
+            $redirect,
+            true,
+            $action
+        );
+        header("Location: $redirect");
+    }
+
+    /**
+     * A helper to send flash error toasts.
+     * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
+     * @param string $redirect The page to redirect the user to (default = "index.html").
+     * @return void
+     */
+    #[NoReturn]
+    public function flashFatalError(
+        string $msg = "Une erreur interne est survenue.",
+        string $redirect = "/"
+    ): void {
+        $this->flashToast(
+            ToastType::ERROR,
+            "Erreur",
+            $msg,
+            $redirect
+        );
+        exit;
+    }
+}

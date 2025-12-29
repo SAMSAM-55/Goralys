@@ -2,6 +2,12 @@
 
 Goralys is a lightweight web app to manage "Grand Oral" topics for students and teachers at a high school.
 
+
+> ⚠️ Notice:    
+> The current `features/backend` branch is incomplete and considered unstable.  
+> Major changes are still in progress, the codebase should not be used in production.
+> Also, please note that the `PHP/` folder is now obsolete, I just keep it to have a stable backend/frontend combo while I refactor the frontend
+
 ## Features
 
 - Student/teacher/admin roles with automatic role detection at registration ([PHP/register.php](PHP/register.php)).
@@ -9,7 +15,7 @@ Goralys is a lightweight web app to manage "Grand Oral" topics for students and 
 - Session-backed user data caching for fast frontend rendering ([PHP/login.php](PHP/login.php) uses [`Goralys\Utility\GoralysUtility::cacheStudentTopicsInfo`](PHP/utility.php) indirectly).
 - CSRF protection using a short-lived session token: [`PHP/create_form_token.php`](PHP/create_form_token.php) + [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
 - Toast notification system used by both PHP and JS ([`Goralys\Config\GoralysUtility::showToast`](PHP/config.php) and [`toast.show_toast`](JS/toast.js)).
-
+ 
 ## Quick start (development)
 
 Prerequisites:
@@ -44,6 +50,15 @@ Steps:
      ```
 5. Access the app:
    - Visit `http://localhost/goralys/` (or `http://localhost:8000` if using built-in server).
+
+## Testing
+
+You can use phpunit to run the unit tests for the backend in `/backend/tests`.
+To run the tests, use the following command after installing the projects dependencies with composer:
+
+```bash
+.\vendor\bin\phpunit --configuration phpunit.xml
+```
 
 ## Security notes
 
@@ -91,7 +106,7 @@ Steps:
   - [PHP/config.php](PHP/config.php) — contains DB + mail config
   - [PHP/utility.php](PHP/utility.php) — helper functions including [`Goralys\Utility\GoralysUtility::formatUserId`](PHP/utility.php) and [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php)
   - [PHP/data_structure.txt](PHP/data_structure.txt) — DB schema
-  - [PHP/composer.json](PHP/composer.json) — 3rd-party deps (PHPMailer)
+  - [PHP/composer.json](backend/composer.json) — 3rd-party deps (PHPMailer)
 - Frontend JS
   - [JS/core.js](JS/core.js) — student flows; functions [`core.student_save_draft`](JS/core.js) and [`core.student_submit`](JS/core.js)
   - [JS/user.js](JS/user.js)

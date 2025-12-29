@@ -1,0 +1,75 @@
+<?php
+
+namespace Goralys\Tests\Fakes;
+
+use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Data\UserCreateDTO;
+use Goralys\Core\User\Data\UserFullDTO;
+use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
+
+class FakeUserRepository implements UserRepositoryInterface
+{
+    private mixed $updateResult = true;
+    private mixed $getResult = null;
+    private bool $existsResult = false;
+    private bool $usernameValidResult = false;
+
+    /**
+     * Set the result for update/save operations.
+     * @param mixed $updateResult
+     */
+    public function setUpdateResult(mixed $updateResult): void
+    {
+        $this->updateResult = $updateResult;
+    }
+
+    /**
+     * Set the result for get/find operations.
+     * @param mixed $getResult
+     */
+    public function setGetResult(mixed $getResult): void
+    {
+        $this->getResult = $getResult;
+    }
+
+    public function getByUsername(string $username): UserFullDTO
+    {
+        return $this->getResult;
+    }
+
+    public function exists(string $username): bool
+    {
+        return $this->existsResult;
+    }
+
+    public function isUsernameValid(string $username): bool
+    {
+        return $this->usernameValidResult;
+    }
+
+    public function save(UserCreateDTO $userData): bool
+    {
+        return (bool)$this->updateResult;
+    }
+
+    public function getLoginDTO(string $username): ?UserLoginDTO
+    {
+        return $this->getResult;
+    }
+
+    public function getRoleForUsername(string $username): ?UserRole
+    {
+        return $this->getResult;
+    }
+
+    public function setUsernameValidResult(bool $usernameValidResult): void
+    {
+        $this->usernameValidResult = $usernameValidResult;
+    }
+
+    public function setExistsResult(bool $existsResult): void
+    {
+        $this->existsResult = $existsResult;
+    }
+}
