@@ -12,12 +12,12 @@ use Goralys\App\Utils\Toast\Data\ToastDTO;
 class ToastBuilderService implements ToastBuilderInterface
 {
     /**
-     * Builds a toast DTO from its type, title, message, redirect and isJS property.
+     * Builds a toast DTO from its type, title, message, redirect, and isJS property.
      * @param ToastType $toastType The type of the toast
      * @param string $toastTitle The title of the toast
      * @param string $toastMessage The message of the toast
-     * @param string $redirect The page to redirect the user to
-     * @param bool $isJS If the toast should be sent as a JSON or not (default =  false).
+     * @param string $redirect The page to redirect the user to.
+     * @param bool $flash If the toast is flash or not.
      * @return ToastDTO The data of the toast
      */
     public function buildToast(
@@ -25,28 +25,19 @@ class ToastBuilderService implements ToastBuilderInterface
         string $toastTitle,
         string $toastMessage,
         string $redirect,
-        bool $isJS = false
+        bool $flash = false
     ): ToastDTO {
-        if ($isJS) {
-            $toastInfo = [
-                "toast" => true,
-                "toastType" => $toastType->value,
-                "toastTitle" => $toastTitle,
-                "toastMessage" => $toastMessage,
-                "redirect" =>  $redirect
-            ];
-        } else {
-            $toastInfo = [
-                "toast" => "true",
-                "toastType" => $toastType->value,
-                "toastTitle" => $toastTitle,
-                "toastMessage" => $toastMessage,
-            ];
-        }
+        $toastInfo = [
+            "toast" => true,
+            "toastType" => $toastType->value,
+            "toastTitle" => $toastTitle,
+            "toastMessage" => $toastMessage,
+            "redirect" =>  $redirect
+        ];
         return new ToastDTO(
             $toastInfo,
             $redirect,
-            $isJS
+            $flash
         );
     }
 }

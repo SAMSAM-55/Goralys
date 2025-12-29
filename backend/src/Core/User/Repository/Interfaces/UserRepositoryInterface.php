@@ -10,7 +10,7 @@ use Goralys\Core\User\Data\UserLoginDTO;
 interface UserRepositoryInterface
 {
     public function getByUsername(string $username): UserFullDTO;
-    public function exits(string $username): bool;
+    public function exists(string $username): bool;
     public function isUsernameValid(string $username): bool;
     public function save(UserCreateDTO $userData): bool;
     public function getLoginDTO(string $username): ?UserLoginDTO;

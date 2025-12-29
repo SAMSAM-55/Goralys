@@ -6,6 +6,7 @@ use Goralys\Platform\DB\Data\StmtDto;
 use Goralys\Platform\DB\Interfaces\PrepareInterface;
 use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use mysqli;
 use mysqli_stmt;
@@ -16,11 +17,11 @@ use mysqli_sql_exception;
  */
 class PrepareService implements PrepareInterface
 {
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
     private mysqli $conn;
 
     public function __construct(
-        GoralysLogger $logger,
+        LoggerInterface $logger,
         mysqli $conn
     ) {
         $this->logger = $logger;
@@ -61,12 +62,27 @@ class PrepareService implements PrepareInterface
     {
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
+        if (strlen($stmtData->getTypes()) !== count($stmtData->getArgs())) {
+            $this->logger->error(
+                LoggerInitiator::PLATFORM,
+                "Invalid param count for statement with query : " . $stmtData->getQuery()
+            );
+            throw new GoralysPrepareException("Failed to prepare statement.");
+        }
+
         try {
             $stmt = $this->conn->prepare($stmtData->getQuery());
 
+            $args = $stmtData->getArgs();
+            $refs = [];
+
+            foreach ($args as &$a) {
+                $refs[] = &$a;
+            }
+
             $stmt->bind_param(
                 $stmtData->getTypes(),
-                ...$stmtData->getArgs()
+                ...$refs
             );
         } catch (mysqli_sql_exception $e) {
             $this->logger->error(

@@ -7,25 +7,10 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
 
 // --------------- Init --------------- //
+
 $kernel = bootKernel();
 
-// --------------- Auth Check --------------- //
-
-if (!isset($_SESSION['current_id'])) {
-    $kernel->logger->warning(
-        LoggerInitiator::APP,
-        "Tried to access forbidden user data without authentication."
-    );
-
-    http_response_code(403); // Forbidden
-    echo json_encode(
-        [
-            "success" => false,
-            "error" => "Not authenticated"
-        ]
-    );
-    exit;
-}
+$kernel->requireAuth("get user profile");
 
 // --------------- Build User Data --------------- //
 

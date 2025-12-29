@@ -1,0 +1,30 @@
+<?php
+
+use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
+use Goralys\Shared\Exception\GoralysRuntimeException;
+
+require __DIR__ . "/../../../vendor/autoload.php";
+require __DIR__ . "/../../../src/Kernel/bootstrap.php";
+
+// --------------- Init --------------- //
+
+$kernel = bootKernel();
+
+// -------- Process the toast -------- //
+
+try {
+    $kernel->logger->debug(
+        LoggerInitiator::APP,
+        "Attempting to retrieve the flash toast, current session: " . print_r($_SESSION, true)
+    );
+    $toast = $kernel->toast->flashService->getToast();
+} catch (GoralysRuntimeException) {
+    $kernel->sendJSON(['success' => false]);
+    exit;
+}
+
+$kernel->sendJSON([
+    "success" => true,
+    "toast" => $toast->getToastInfo(),
+    "action" => $toast->getAction()
+]);

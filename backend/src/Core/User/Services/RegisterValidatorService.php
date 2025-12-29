@@ -4,6 +4,7 @@ namespace Goralys\Core\User\Services;
 
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Core\User\Interfaces\RegisterValidatorServiceInterface;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
@@ -13,14 +14,14 @@ use Goralys\Shared\Exception\DB\GoralysQueryException;
  */
 class RegisterValidatorService implements RegisterValidatorServiceInterface
 {
-    private UserRepository $repo;
+    private UserRepositoryInterface $repo;
 
     /**
      * Initializes the user repository used by the service.
-     * @param UserRepository $repo The injected user repository.
+     * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        UserRepository $repo
+        UserRepositoryInterface $repo
     ) {
         $this->repo = $repo;
     }
@@ -34,7 +35,7 @@ class RegisterValidatorService implements RegisterValidatorServiceInterface
      */
     public function canRegister(UserRegisterDTO $data): bool
     {
-        $exits = $this->repo->exits($data->getUsername());
+        $exits = $this->repo->exists($data->getUsername());
         $valid = $this->repo->isUsernameValid($data->getUsername());
 
         return $valid && !$exits;

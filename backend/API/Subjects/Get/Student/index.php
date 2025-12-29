@@ -4,31 +4,17 @@ require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
 use Goralys\Kernel\GoralysKernel;
-use Goralys\App\Security\CSRF\Services\CSRFService;
-use Goralys\App\Subjects\Controllers\SubjectsController;
-use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 
 
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
+$request = $kernel->getRequest();
 
-// --------------- CSRF --------------- //
-
-$csrfHandler = new CSRFService($kernel->logger);
-$token = $csrfHandler->getToken();
-
-if (!$csrfHandler->validate("get-all-subjects", $token)) {
-    http_response_code(403);
-    $kernel->toast->showToast(
-        ToastType::WARNING,
-        "Lien externe",
-        "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
-        "index.html"
-    );
-    exit;
-}
+$kernel->requireAuth("get student's subject");
+$kernel->requireRole(UserRole::STUDENT);
+$kernel->requireCSRF("get-student-subjects");
 
 $kernel->run(function (GoralysKernel $kernel) {
     if (!$kernel->connect()) {
@@ -39,13 +25,11 @@ $kernel->run(function (GoralysKernel $kernel) {
         );
     }
 
-    $subjectsController = new SubjectsController($kernel->logger, $kernel->db);
+    // ------- Get the subjects ------- //
 
-    // --------------- Inputs --------------- //
+    $studentUsername = $_SESSION['current_username'];
 
-    $studentUsername = $kernel->getInputByKey("student-username");
-
-    $result = $subjectsController->getForRole(
+    $result = $kernel->subjects->getForRole(
         UserRole::STUDENT,
         $studentUsername
     );
@@ -58,8 +42,6 @@ $kernel->run(function (GoralysKernel $kernel) {
         );
     }
 
-    echo print_r(json_encode($result, JSON_UNESCAPED_UNICODE), true);
-
-    http_response_code(200); // OK
+    $kernel->sendJSON($result);
     exit;
 });

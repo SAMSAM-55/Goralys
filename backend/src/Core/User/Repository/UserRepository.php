@@ -9,7 +9,7 @@ use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
@@ -20,16 +20,16 @@ use mysqli_result;
  */
 class UserRepository implements UserRepositoryInterface
 {
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
     private DbContainer $db;
 
     /**
      * Initializes the logger and the database container for the repository.
-     * @param GoralysLogger $logger The injected logger.
+     * @param LoggerInterface $logger The injected logger.
      * @param DbContainer $db The injected database container.
      */
     public function __construct(
-        GoralysLogger $logger,
+        LoggerInterface $logger,
         DbContainer $db
     ) {
         $this->logger = $logger;
@@ -109,7 +109,7 @@ class UserRepository implements UserRepositoryInterface
      * @return bool If the user exits or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
-    public function exits(string $username): bool
+    public function exists(string $username): bool
     {
         return $this->db->fetch(
             "SELECT * FROM saje5795_goralys.users WHERE user_id = ? LIMIT 1",
@@ -155,6 +155,8 @@ class UserRepository implements UserRepositoryInterface
             "s",
             $username
         );
+
+        echo $result->num_rows;
 
         if ($result->num_rows === 0) {
             $this->logger->error(

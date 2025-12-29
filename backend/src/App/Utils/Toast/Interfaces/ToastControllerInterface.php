@@ -10,13 +10,13 @@ interface ToastControllerInterface
         ToastType $toastType,
         string $toastTitle,
         string $toastMessage,
-        string $redirect,
-        bool $isJS = false
+        string $redirect
     ): void;
 
     public function fatalError(
         int $responseCode,
         string $msg = "Une erreur interne est survenue.",
-        string $redirect = "index.html"
+        string $redirect = "index.html",
+        bool $flash = false
     ): void;
 }

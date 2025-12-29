@@ -16,11 +16,11 @@ class StmtDto
         string $query,
         string $types,
         mixed $value1,
-        mixed ...$args
+        mixed ...$_
     ) {
         $this->query = $query;
         $this->types = $types;
-        $this->args = array_merge([$value1], $args);
+        $this->args = [$value1, ...$_];
     }
 
     /**

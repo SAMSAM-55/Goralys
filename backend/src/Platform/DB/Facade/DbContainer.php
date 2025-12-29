@@ -8,8 +8,8 @@ use Goralys\Platform\DB\Services\ConnectService;
 use Goralys\Platform\DB\Services\PrepareService;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Loader\Services\EnvService;
-use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysConnectException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
@@ -26,15 +26,15 @@ use mysqli_result;
 class DbContainer implements DbContainerInterface
 {
     private mysqli $conn;
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
 
 
     /**
      * Initializes the logger of the database container.
-     * @param GoralysLogger $logger The injected logger.
+     * @param LoggerInterface $logger The injected logger.
      */
     public function __construct(
-        GoralysLogger $logger,
+        LoggerInterface $logger,
     ) {
         $this->logger = $logger;
     }
@@ -48,7 +48,7 @@ class DbContainer implements DbContainerInterface
      */
     public function connect(): bool
     {
-        $env = new EnvService($this->logger);
+        $env = new EnvService();
         $service = new ConnectService($this->logger);
 
         $this->conn = $service->connectToDatabase(new DbDto(

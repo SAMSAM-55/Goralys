@@ -2,14 +2,15 @@
 
 namespace Goralys\Core\Subject\Services;
 
+use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Subject\Data\Enums\SubjectStatus;
 use Goralys\Core\Subject\Data\SubjectDTO;
 use Goralys\Core\Subject\Data\SubjectsCollection;
 use Goralys\Core\Subject\Interfaces\GetSubjectsServiceInterface;
-use Goralys\Core\Subject\Repo\SubjectsRepository;
+use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 use mysqli_result;
@@ -19,14 +20,15 @@ use mysqli_result;
  */
 class GetSubjectsService implements GetSubjectsServiceInterface
 {
-    private GoralysLogger $logger;
-    private SubjectsRepository $repo;
+    private LoggerInterface $logger;
+    private SubjectsRepositoryInterface $repo;
     private UsernameFormatterService $formatter;
+    private SubjectsUsernameManager $usernameManager;
 
     /**
      * Initializes the logger, database container and a utility service - the username formatter - used by the service.
-     * @param GoralysLogger $logger The injected logger
-     * @param SubjectsRepository $repo The injected subjects repository
+     * @param LoggerInterface $logger The injected logger
+     * @param SubjectsRepositoryInterface $repo The injected subjects repository
      * @param UsernameFormatterService $formatter The injected username formatter
      * This formatter is used to transform the usernames stored inside the database with the format f.lastnameX to
      * lastname. f with f the first letter of the first name.
@@ -35,13 +37,15 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * or get rid of it completely depending on your project.
      */
     public function __construct(
-        GoralysLogger $logger,
-        SubjectsRepository $repo,
-        UsernameFormatterService $formatter
+        LoggerInterface $logger,
+        SubjectsRepositoryInterface $repo,
+        UsernameFormatterService $formatter,
+        SubjectsUsernameManager $usernameManager,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
         $this->formatter = $formatter;
+        $this->usernameManager = $usernameManager;
     }
 
     /**
@@ -62,11 +66,14 @@ class GetSubjectsService implements GetSubjectsServiceInterface
         while ($row = $result->fetch_assoc()) {
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($studentUsername),
-                $row['subject'],
+                $this->usernameManager->store($studentUsername),
+                $row['subject'] ?? "",
                 SubjectStatus::from($row['subject_status']),
-                $row['comment'],
+                $row['comment'] ?? "",
+                $row['last_rejected'] ?? "",
                 $row['topic'],
-                $this->formatter->formatUsername($row['teacher'])
+                $this->formatter->formatUsername($row['teacher']),
+                $this->usernameManager->store($row['teacher']),
             );
 
             $subjects->addSubject($subject);
@@ -93,11 +100,14 @@ class GetSubjectsService implements GetSubjectsServiceInterface
         while ($row = $result->fetch_assoc()) {
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
+                $this->usernameManager->store($row['student']),
                 $row['subject'],
                 SubjectStatus::from($row['subject_status']),
-                $row['comment'],
+                $row['comment'] ?? "",
+                $row['last_rejected'] ?? "",
                 $row['topic'],
-                $this->formatter->formatUsername($teacherUsername)
+                $this->formatter->formatUsername($teacherUsername),
+                $this->usernameManager->store($teacherUsername),
             );
 
             $subjects->addSubject($subject);
@@ -124,11 +134,14 @@ class GetSubjectsService implements GetSubjectsServiceInterface
         while ($row = $result->fetch_assoc()) {
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
+                $this->usernameManager->store($row['student']),
                 $row['subject'],
                 SubjectStatus::from($row['subject_status']),
                 $row['comment'] ?? "",
+                $row['last_rejected'] ?? "",
                 $row['topic'],
-                $this->formatter->formatUsername($row['teacher'])
+                $this->formatter->formatUsername($row['teacher']),
+                $this->usernameManager->store($row['teacher']),
             );
 
             $subjects->addSubject($subject);
@@ -191,7 +204,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "Granted access to all subjects for user : " . $_SESSION['current_username']
+            "Granted access to all subjects for user : " . ($_SESSION['current_username'] ?? "")
         );
 
         return $this->formatAllSubjects($result);

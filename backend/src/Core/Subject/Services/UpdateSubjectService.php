@@ -4,29 +4,28 @@ namespace Goralys\Core\Subject\Services;
 
 use Goralys\Core\Subject\Data\Enums\SubjectStatus;
 use Goralys\Core\Subject\Interfaces\UpdateSubjectServiceInterface;
-use Goralys\Core\Subject\Repo\SubjectsRepository;
+use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
-use mysqli_result;
 
 /**
  * The service used to update the subjects info inside the database via the subjects repository
  */
 class UpdateSubjectService implements UpdateSubjectServiceInterface
 {
-    private GoralysLogger $logger;
-    private SubjectsRepository $repo;
+    private LoggerInterface $logger;
+    private SubjectsRepositoryInterface $repo;
 
     /**
      * Initializes the logger and the repository used by the service
-     * @param GoralysLogger $logger The injected logger
-     * @param SubjectsRepository $repo The injected repository
+     * @param LoggerInterface $logger The injected logger
+     * @param SubjectsRepositoryInterface $repo The injected repository
      */
     public function __construct(
-        GoralysLogger $logger,
-        SubjectsRepository $repo
+        LoggerInterface $logger,
+        SubjectsRepositoryInterface $repo
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
@@ -71,9 +70,10 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
     public function updateSubject(
         string $teacherUsername,
         string $studentUsername,
+        string $topic,
         string $newSubject
     ): bool {
-        $result = $this->repo->updateSubject($teacherUsername, $studentUsername, $newSubject);
+        $result = $this->repo->updateSubject($teacherUsername, $studentUsername, $topic, $newSubject);
 
         $this->handleResult($result, $teacherUsername, $studentUsername, "subject");
         return $result;
@@ -82,7 +82,7 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
     /**
      * Update the comment of a given subject.
      * The comment is written by the teacher and visible for the teacher and the student.
-     * It acts as a feedback to guide the student.
+     * It acts as feedback to guide the student.
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
      * @param string $newComment The new teacher's comment about the subject.
@@ -92,9 +92,10 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
     public function updateComment(
         string $teacherUsername,
         string $studentUsername,
+        string $topic,
         string $newComment
     ): bool {
-        $result = $this->repo->updateComment($teacherUsername, $studentUsername, $newComment);
+        $result = $this->repo->updateComment($teacherUsername, $studentUsername, $topic, $newComment);
 
         $this->handleResult($result, $teacherUsername, $studentUsername, "comment");
         return $result;
@@ -112,9 +113,10 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
     public function updateSubjectStatus(
         string $teacherUsername,
         string $studentUsername,
+        string $topic,
         SubjectStatus $newStatus
     ): bool {
-        $result = $this->repo->updateStatus($teacherUsername, $studentUsername, $newStatus);
+        $result = $this->repo->updateStatus($teacherUsername, $studentUsername, $topic, $newStatus);
 
         $this->handleResult($result, $teacherUsername, $studentUsername, "status");
         return $result;

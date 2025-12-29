@@ -6,6 +6,7 @@ use Goralys\Platform\DB\Data\DbDto;
 use Goralys\Platform\DB\Interfaces\ConnectInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysConnectException;
 use mysqli;
 use mysqli_sql_exception;
@@ -15,9 +16,9 @@ use mysqli_sql_exception;
  */
 class ConnectService implements ConnectInterface
 {
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
 
-    public function __construct(GoralysLogger $logger)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

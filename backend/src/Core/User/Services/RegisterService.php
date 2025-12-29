@@ -4,35 +4,38 @@ namespace Goralys\Core\User\Services;
 
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserRegisterDTO;
+use Goralys\Core\User\Interfaces\CreateUserInterface;
+use Goralys\Core\User\Interfaces\GetUserRoleInterface;
 use Goralys\Core\User\Interfaces\RegisterServiceInterface;
+use Goralys\Core\User\Interfaces\RegisterValidatorServiceInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 
 class RegisterService implements RegisterServiceInterface
 {
-    private GoralysLogger $logger;
-    private RegisterValidatorService $validator;
-    private GetUserRoleService $roleGetter;
-    private CreateUserService $userCreator;
+    private LoggerInterface $logger;
+    private RegisterValidatorServiceInterface $validator;
+    private GetUserRoleInterface $roleGetter;
+    private CreateUserInterface $userCreator;
 
     /**
      * Initializes the logger and all the service's sub-services.
-     * @param GoralysLogger $logger The injected logger
-     * @param RegisterValidatorService $validator The injected validator.
+     * @param LoggerInterface $logger The injected logger
+     * @param RegisterValidatorServiceInterface $validator The injected validator.
      * It is used to verify that the can register
-     * @param GetUserRoleService $roleGetter The injected role getter.
+     * @param GetUserRoleInterface $roleGetter The injected role getter.
      * It is used to retrieve the user's role and assign iot automatically.
-     * @param CreateUserService $userCreator The injected user creator.
+     * @param CreateUserInterface $userCreator The injected user creator.
      * It is used to create the user inside the database.
      */
     public function __construct(
-        GoralysLogger $logger,
-        RegisterValidatorService $validator,
-        GetUserRoleService $roleGetter,
-        CreateUserService $userCreator
+        LoggerInterface $logger,
+        RegisterValidatorServiceInterface $validator,
+        GetUserRoleInterface $roleGetter,
+        CreateUserInterface $userCreator
     ) {
         $this->logger = $logger;
 

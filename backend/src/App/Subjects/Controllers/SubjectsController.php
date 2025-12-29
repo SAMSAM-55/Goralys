@@ -4,6 +4,7 @@ namespace Goralys\App\Subjects\Controllers;
 
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Subjects\Interfaces\SubjectsControllerInterface;
+use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Subject\Data\Enums\SubjectStatus;
 use Goralys\Core\Subject\Data\SubjectsCollection;
 use Goralys\Core\Subject\Repo\SubjectsRepository;
@@ -12,7 +13,7 @@ use Goralys\Core\Subject\Services\UpdateSubjectService;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\DB\Facade\DbContainer;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 
@@ -21,21 +22,22 @@ use Goralys\Shared\Exception\DB\GoralysQueryException;
  */
 class SubjectsController implements SubjectsControllerInterface
 {
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
     private DbContainer $db;
     private SubjectsRepository $repo;
     private UpdateSubjectService $updateService;
     private UsernameFormatterService $formatter;
+    private SubjectsUsernameManager $usernameManager;
     private GetSubjectsService $getService;
 
     /**
      * Initializes the logger and database container for the controller.
      * Also instantiates all of its sub-services.
-     * @param GoralysLogger $logger
+     * @param LoggerInterface $logger
      * @param DbContainer $db
      */
     public function __construct(
-        GoralysLogger $logger,
+        LoggerInterface $logger,
         DbContainer $db
     ) {
         $this->logger = $logger;
@@ -43,14 +45,21 @@ class SubjectsController implements SubjectsControllerInterface
 
         $this->repo = new SubjectsRepository($this->db);
         $this->formatter = new UsernameFormatterService();
+        $this->usernameManager = new SubjectsUsernameManager($this->logger);
         $this->updateService = new UpdateSubjectService($this->logger, $this->repo);
-        $this->getService = new GetSubjectsService($this->logger, $this->repo, $this->formatter);
+        $this->getService = new GetSubjectsService(
+            $this->logger,
+            $this->repo,
+            $this->formatter,
+            $this->usernameManager
+        );
     }
 
     /**
-     * Update a given field for teacher and student pair.
+     * Update a given field for a teacher and student pair.
      * @param string $teacherUsername The username of the teacher.
      * @param string $studentUsername The username of the student.
+     * @param string $topic The name of the topic.
      * @param SubjectFields $field The field to update.
      * @param string|SubjectStatus $newValue The new value of the field.
      * @return bool If the update was successful or not.
@@ -59,6 +68,7 @@ class SubjectsController implements SubjectsControllerInterface
     public function updateField(
         string $teacherUsername,
         string $studentUsername,
+        string $topic,
         SubjectFields $field,
         string|SubjectStatus $newValue
     ): bool {
@@ -66,16 +76,19 @@ class SubjectsController implements SubjectsControllerInterface
             SubjectFields::SUBJECT => $this->updateService->updateSubject(
                 $teacherUsername,
                 $studentUsername,
+                $topic,
                 $newValue
             ),
             SubjectFields::STATUS => $this->updateService->updateSubjectStatus(
                 $teacherUsername,
                 $studentUsername,
+                $topic,
                 $newValue
             ),
             SubjectFields::COMMENT => $this->updateService->updateComment(
                 $teacherUsername,
                 $studentUsername,
+                $topic,
                 $newValue
             )
         };
@@ -91,11 +104,30 @@ class SubjectsController implements SubjectsControllerInterface
      */
     public function getForRole(UserRole $role, string $username = ""): SubjectsCollection|false
     {
+        unset($_SESSION['username-table']);
+
         return match ($role) {
             UserRole::STUDENT => $this->getService->getStudentSubjects($username),
             UserRole::TEACHER => $this->getService->getTeacherSubjects($username),
             UserRole::ADMIN => $this->getService->getAllSubjects(),
             UserRole::UNKNOWN => false
         };
+    }
+
+    /**
+     * Get the status of a given subject.
+     * @param string $teacherUsername The username of the teacher.
+     * @param string $studentUsername The username of the student.
+     * @param string $topic The name of the topic.
+     * @return SubjectStatus The status of the subject.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function getStatus(string $teacherUsername, string $studentUsername, string $topic): SubjectStatus
+    {
+        $result = $this->repo->getStatus($teacherUsername, $studentUsername, $topic);
+
+        $status = $result->fetch_assoc()['status'];
+
+        return SubjectStatus::from($status);
     }
 }

@@ -9,5 +9,13 @@
     "psr-4": {
       "Goralys\\": "./src"
     }
-  }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Goralys\\Tests\\": "./tests"
+    }
+  },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5"
+    }
 }

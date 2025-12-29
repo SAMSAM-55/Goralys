@@ -4,27 +4,27 @@ namespace Goralys\Core\User\Services;
 
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Interfaces\LoginServiceInterface;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
-use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 
 class LoginService implements LoginServiceInterface
 {
-    private GoralysLogger $logger;
-    private UserRepository $repo;
+    private LoggerInterface $logger;
+    private UserRepositoryInterface $repo;
 
     /**
      * Initializes the logger and the user repository used by the service.
-     * @param GoralysLogger $logger The injected logger.
-     * @param UserRepository $repo The injected user repository.
+     * @param LoggerInterface $logger The injected logger.
+     * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        GoralysLogger $logger,
-        UserRepository $repo
+        LoggerInterface $logger,
+        UserRepositoryInterface $repo
     ) {
         $this->logger = $logger;
         $this->repo = $repo;

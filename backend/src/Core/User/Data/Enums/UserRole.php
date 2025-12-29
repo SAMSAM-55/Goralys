@@ -16,17 +16,16 @@ enum UserRole: int
 
     public static function fromString(string $str): UserRole
     {
-        $str = strtolower(trim($str));
+        return match (strtolower(trim($str))) {
+            "admin" => UserRole::ADMIN,
+            "teacher" => UserRole::TEACHER,
+            "student" => UserRole::STUDENT,
+            default => UserRole::UNKNOWN
+        };
+    }
 
-        if ($str == "admin") {
-            return UserRole::ADMIN;
-        }
-        if ($str == "teacher") {
-            return UserRole::TEACHER;
-        }
-        if ($str == "student") {
-            return UserRole::STUDENT;
-        }
-        return UserRole::UNKNOWN;
+    public function isAtLeast(UserRole $reference): bool
+    {
+        return $this->value >= $reference->value;
     }
 }

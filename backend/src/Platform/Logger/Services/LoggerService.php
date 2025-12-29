@@ -16,7 +16,7 @@ class LoggerService
 
     /**
      * Initializes the log path for all instances of the service.
-     * @param string $logDirectory The path to the "Log" directory (you can name it as you want).
+     * @param string $logDirectory The path to the "Logs" directory (you can name it as you want).
      * @return void
      */
     final public static function init(
@@ -42,23 +42,39 @@ class LoggerService
         LoggerType $type,
         string $message
     ): void {
+        if ($type === LoggerType::Debug && LoggerConfigLoader::getGoralysEnv() !== 'dev') {
+            return;
+        }
+
         $filename = LoggerConfigLoader::getInitiatorFile($initiator);
         $time = date("Y-m-d H:i:s");
 
-        // Log to the layer-specific log file
+        // Logs to the layer-specific log file
         if ($file = fopen(LoggerService::$logDirectory . $filename . ".log", "a")) {
+            flock($file, LOCK_EX);
+
             fwrite(
                 $file,
-                "($initiator->value)[$type->name] at $time : $message\n"
+                "($initiator->value)[$type->name] at $time : $message" . PHP_EOL
             );
+
+            fflush($file);
+            flock($file, LOCK_UN);
+            fclose($file);
         }
 
-        // Log to the global log file
+        // Logs to the global log file
         if ($file = fopen(LoggerService::$logDirectory . LoggerConfigLoader::getGlobalFile() . ".log", "a")) {
+            flock($file, LOCK_EX);
+
             fwrite(
                 $file,
-                "($initiator->value)[$type->name] at $time : $message\n"
+                "($initiator->value)[$type->name] at $time : $message" . PHP_EOL
             );
+
+            fflush($file);
+            flock($file, LOCK_UN);
+            fclose($file);
         }
     }
 }

@@ -35,7 +35,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     public function findByStudent(string $studentUsername): mysqli_result
     {
         return $this->db->fetch(
-            "SELECT st.subject, st.subject_status, st.teacher_comment AS comment, 
+            "SELECT st.subject, st.subject_status, st.teacher_comment AS comment, st.last_rejected,
             t.name AS topic, t.teacher_id AS teacher
             FROM saje5795_goralys.student_topics st
             JOIN saje5795_goralys.topics t on t.id = st.topic_id
@@ -55,7 +55,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     {
         return $this->db->fetch(
             "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS comment, 
-            t.name AS topic
+            st.last_rejected, t.name AS topic
             FROM saje5795_goralys.topics t
             JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
             WHERE t.teacher_id = ?",
@@ -74,82 +74,130 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     {
         return $this->db->fetchNoArgs(
             "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS comment, 
-            t.name AS topic, t.teacher_id AS teacher
+            st.last_rejected, t.name AS topic, t.teacher_id AS teacher
             FROM saje5795_goralys.topics t
             JOIN saje5795_goralys.student_topics st on t.id = st.topic_id"
         );
     }
 
     /**
-     * Update a subject's content inside the database.
-     * A subject is always identified by its teacher and student couple.
+     * Get the status of a given subject
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
+     * @param string $topic The name of the topic.
+     * @return mysqli_result The result of the request.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function getStatus(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
+    {
+        return $this->db->fetch(
+            "SELECT st.subject_status AS status
+            FROM saje5795_goralys.topics t
+            JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
+            WHERE t.teacher_id = ?
+            AND st.student_id = ?
+            AND t.name = ?",
+            "sss",
+            $teacherUsername,
+            $studentUsername,
+            $topic
+        );
+    }
+
+    /**
+     * Update a subject's content inside the database.
+     * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
+     * @param string $teacherUsername The teacher's username.
+     * @param string $studentUsername The student's username.
+     * @param string $topic The name of the topic.
      * @param string $newSubject The new subject.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
-    public function updateSubject(string $teacherUsername, string $studentUsername, string $newSubject): bool
-    {
+    public function updateSubject(
+        string $teacherUsername,
+        string $studentUsername,
+        string $topic,
+        string $newSubject
+    ): bool {
         return $this->db->run(
             "UPDATE saje5795_goralys.student_topics st
             JOIN saje5795_goralys.topics t on t.id = st.topic_id
-            SET st.subject_status = ?
+            SET st.subject = ?, st.subject_status = 0
             WHERE t.teacher_id = ?
-            AND st.student_id = ?",
-            "sss",
+            AND st.student_id = ?
+            AND t.name = ?
+            AND (st.subject_status = 0 OR st.subject_status = 2)",
+            "ssss",
             $newSubject,
             $teacherUsername,
-            $studentUsername
+            $studentUsername,
+            $topic
         );
     }
 
     /**
      * Update a subject's status inside the database.
-     * A subject is always identified by its teacher and student couple.
+     * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
+     * @param string $topic The name of the topic.
      * @param SubjectStatus $newStatus The new status of the subject.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
-    public function updateStatus(string $teacherUsername, string $studentUsername, SubjectStatus $newStatus): bool
-    {
+    public function updateStatus(
+        string $teacherUsername,
+        string $studentUsername,
+        string $topic,
+        SubjectStatus $newStatus
+    ): bool {
         return $this->db->run(
             "UPDATE saje5795_goralys.student_topics st
             JOIN saje5795_goralys.topics t on t.id = st.topic_id
-            SET st.subject_status = ?
+            SET st.subject_status = ?,
+                st.last_rejected = IF(? = 2, st.subject, st.last_rejected)
             WHERE t.teacher_id = ?
-            AND st.student_id = ?",
-            "iss",
+            AND st.student_id = ?
+            AND t.name = ?",
+            "iisss",
+            $newStatus->value,
             $newStatus->value,
             $teacherUsername,
-            $studentUsername
+            $studentUsername,
+            $topic
         );
     }
 
     /**
      * Update a subject's comment inside the database.
      * The comment is written by the teacher and seen by both the teacher and the student.
-     * A subject is always identified by its teacher and student couple.
+     * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
+     * @param string $topic The name of the topic.
      * @param string$newComment The new comment for the subject.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
-    public function updateComment(string $teacherUsername, string $studentUsername, string $newComment): bool
-    {
+    public function updateComment(
+        string $teacherUsername,
+        string $studentUsername,
+        string $topic,
+        string $newComment
+    ): bool {
         return $this->db->run(
             "UPDATE saje5795_goralys.student_topics st
             JOIN saje5795_goralys.topics t on t.id = st.topic_id
             SET st.teacher_comment = ?
             WHERE t.teacher_id = ?
-            AND st.student_id = ?",
-            "sss",
+            AND st.student_id = ?
+            AND t.name = ?",
+            "ssss",
             $newComment,
             $teacherUsername,
-            $studentUsername
+            $studentUsername,
+            $topic
         );
     }
 }

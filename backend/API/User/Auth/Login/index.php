@@ -3,49 +3,45 @@
 require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
-use Goralys\App\Security\CSRF\Services\CSRFService;
-use Goralys\App\User\Controllers\AuthController;
+use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Kernel\GoralysKernel;
 
 // --------------- Init --------------- //
 
-$kernel = bootKernel();
-// --------------- CSRF --------------- //
+$kernel = bootKernel(true);
+$request = $kernel->getRequest();
+$kernel->requireCSRF("login");
 
-$csrfHandler = new CSRFService($kernel->logger);
-$token = $csrfHandler->getToken();
-
-if (!$csrfHandler->validate("login", $token)) {
-    http_response_code(403);
-    $kernel->toast->showToast(
-        ToastType::WARNING,
-        "Lien externe",
-        "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
-        "index.html"
-    );
-    exit;
-}
-
-$kernel->run(function (GoralysKernel $kernel) {
+$kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement."
+        $kernel->flashFatalError(
+            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
+            "/user/login"
         );
     }
 
     // --------------- Inputs --------------- //
-    $username = trim($_POST['user-name'] ?? "");
-    $password = trim($_POST['password-login'] ?? "");
+
+    if (!$request->validate("username", "password")) {
+        $kernel->flashtoast(
+            ToastType::WARNING,
+            "Formulaire",
+            "Veuillez remplir tous les champs.",
+            "/user/login"
+        );
+    }
+
+    $username = $request->get("username");
+    $password = $request->get("password");
 
     if (empty($username) || empty($password)) {
-        $kernel->toast->showToast(
+        $kernel->flashToast(
             ToastType::WARNING,
             "Connexion",
             "Veuillez remplir tous les champs",
-            "index.html"
+            "/user/login"
         );
     }
 
@@ -55,15 +51,23 @@ $kernel->run(function (GoralysKernel $kernel) {
     );
 
     // --------------- Login --------------- //
-    $auth = new AuthController($kernel->logger, $kernel->db);
-    $auth->login($userData);
 
-    http_response_code(200); // OK
-    $kernel->toast->showToast(
+    if (!$kernel->auth->login($userData)) {
+        $kernel->flashToast(
+            ToastType::ERROR,
+            "Connexion",
+            "Mot de passe ou identifiant incorrect.",
+            "/user/login"
+        );
+        exit;
+    }
+
+    $kernel->flashToast(
         ToastType::SUCCESS,
         "Connexion",
         "Vous avez bien été connecté à votre compte.",
-        "index.html"
+        "/",
+        "login-success"
     );
     exit;
 });

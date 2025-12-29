@@ -16,18 +16,6 @@ use Goralys\Platform\Logger\GoralysLogger;
  */
 class EnvService implements EnvInterface
 {
-    private GoralysLogger $logger;
-
-    /**
-     * Initializes the logger for the environment loader
-     * @param GoralysLogger $logger The injected loader
-     */
-    public function __construct(
-        GoralysLogger $logger,
-    ) {
-        $this->logger = $logger;
-    }
-
     /**
      * Load the environment variables inside $_ENV
      * @param string $path The path to the .env file
@@ -38,29 +26,7 @@ class EnvService implements EnvInterface
         try {
             $env = Dotenv::createImmutable($path); // Load the .env file inside the project root
             $env->load();
-        } catch (InvalidPathException) {
-            $this->logger->fatal(
-                LoggerInitiator::PLATFORM,
-                "Failed to load the environment variables (invalid path)"
-            );
-            return false;
-        } catch (InvalidFileException) {
-            $this->logger->fatal(
-                LoggerInitiator::PLATFORM,
-                "Failed to load the environment variables (invalid file)"
-            );
-            return false;
-        } catch (InvalidEncodingException) {
-            $this->logger->fatal(
-                LoggerInitiator::PLATFORM,
-                "Failed to load the environment variables (invalid encoding)"
-            );
-            return false;
-        } catch (ValidationException) {
-            $this->logger->fatal(
-                LoggerInitiator::PLATFORM,
-                "Failed to load the environment variables (validation failed)"
-            );
+        } catch (InvalidPathException | InvalidFileException | InvalidEncodingException | ValidationException) {
             return false;
         }
         return true;

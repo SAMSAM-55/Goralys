@@ -9,16 +9,16 @@ class ToastDTO
 {
     private array $toastInfo;
     private string $redirect;
-    private bool $JS;
+    private bool $flash;
 
     public function __construct(
         array $toastInfo,
         string $redirect,
-        bool $isJS
+        bool $flash = false
     ) {
         $this->toastInfo = $toastInfo;
         $this->redirect = $redirect;
-        $this->JS = $isJS;
+        $this->flash = $flash;
     }
 
     // Getters
@@ -30,8 +30,8 @@ class ToastDTO
     {
         return $this->redirect;
     }
-    final public function isJs(): bool
+    final public function isFlash(): bool
     {
-        return $this->JS;
+        return $this->flash;
     }
 }

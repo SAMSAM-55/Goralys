@@ -2,9 +2,11 @@
 
 namespace Goralys\App\Security\CSRF\Services;
 
+use Goralys\App\HTTP\Request\GoralysRequest;
+use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Security\CSRF\Interfaces\CSRFServiceInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Random\RandomException;
 
 /**
@@ -12,43 +14,16 @@ use Random\RandomException;
  */
 class CSRFService implements CSRFServiceInterface
 {
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
 
     /**
      * Initializes the logger for the service.
-     * @param GoralysLogger $logger The injected logger.
+     * @param LoggerInterface $logger The injected logger.
      */
     public function __construct(
-        GoralysLogger $logger
+        LoggerInterface $logger
     ) {
         $this->logger = $logger;
-    }
-
-    /**
-     * Retrieves the token sent to the endpoint either inside of `$_POST` or `php://input`.
-     * @return string The retrieved token
-     */
-    public function getToken(): string
-    {
-        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['csrf-token'])) {
-                return $_POST['csrf-token'];
-            }
-            return "";
-        }
-
-        $rawInput = file_get_contents("php://input");
-        if (!$rawInput) {
-            return "";
-        }
-
-        $decoded = json_decode($rawInput, true);
-
-        if (!is_array($decoded)) {
-            return "";
-        }
-
-        return $decoded['csrf-token'] ?? "";
     }
 
     /**
@@ -58,7 +33,7 @@ class CSRFService implements CSRFServiceInterface
      */
     public function getForForm(string $formId): string
     {
-        return $_SESSION[$formId . "-csrf-token"] ?? "";
+        return $_SESSION["csrf-tokens-table"][$formId] ?? "";
     }
 
     /**
@@ -70,7 +45,12 @@ class CSRFService implements CSRFServiceInterface
     {
         try {
             $token = bin2hex(random_bytes(8));
-            $_SESSION[$formId . "-csrf-token"] = $token;
+            $_SESSION["csrf-tokens-table"][$formId] = $token;
+            $this->logger->debug(
+                LoggerInitiator::APP,
+                "Successfuly created new token for form " . $formId . ", token : " . $token .
+                ". New session : " . print_r($_SESSION, true)
+            );
             return true;
         } catch (RandomException $e) {
             $this->logger->error(
@@ -85,29 +65,35 @@ class CSRFService implements CSRFServiceInterface
      * Validates a given CSRF token for a specific form.
      * It automatically invalidates the token even if the validation fails
      * @param string $formId The id of the form to verify the token for.
-     * @param string $token The CSRF token.
+     * @param RequestInterface $request The current HTTP request
      * @return bool If the token is valid or not.
      */
-    public function validate(string $formId, string $token): bool
+    public function validate(string $formId, RequestInterface $request): bool
     {
-        if (!isset($_SESSION[$formId . "-csrf-token"])) {
+        $token = $request->get('csrf-token');
+
+        if (!isset($_SESSION["csrf-tokens-table"][$formId])) {
             $this->logger->error(
                 LoggerInitiator::APP,
                 "Foreign token form id encountered : " . $formId
             );
+            $this->logger->debug(
+                LoggerInitiator::APP,
+                "Current session : " . print_r($_SESSION, true)
+            );
             return false;
         }
 
-        if ($_SESSION[$formId . "-csrf-token"] !== $token) {
+        if ($_SESSION["csrf-tokens-table"][$formId] !== $token) {
             $this->logger->error(
                 LoggerInitiator::APP,
                 "Failed to validate token for form : " . $formId . "(" . $token . ")"
             );
-            unset($_SESSION[$formId . "-csrf-token"]);
+            unset($_SESSION["csrf-tokens-table"][$formId]);
             return false;
         }
 
-        unset($_SESSION[$formId . "-csrf-token"]);
+        unset($_SESSION["csrf-tokens-table"][$formId]);
         return true;
     }
 }

@@ -10,6 +10,7 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 class LoggerConfigLoader
 {
     private static array $loggerFiles;
+    private static string $goralysEnv;
     private static bool $isInitialized = false;
 
     /**
@@ -25,6 +26,7 @@ class LoggerConfigLoader
                     "PLATFORM" => $_ENV["LOGGER_PLATFORM_FILENAME"] ?? "Goralys_Platform",
                     "GLOBAL" => $_ENV["LOGGER_GLOBAL_FILENAME"] ?? "Goralys_Global"
             ];
+            self::$goralysEnv = $_ENV['GORALYS_ENVIRONMENT'];
             self::$isInitialized = true;
         }
     }
@@ -48,5 +50,15 @@ class LoggerConfigLoader
     final public static function getGlobalFile(): string
     {
         return self::$loggerFiles["GLOBAL"];
+    }
+
+    /**
+     * Get the current environment.
+     * The two possible values are 'dev' and 'prod'.
+     * @return string The current environment.
+     */
+    public static function getGoralysEnv(): string
+    {
+        return self::$goralysEnv;
     }
 }

@@ -11,6 +11,6 @@ interface ToastBuilderInterface
         string $toastTitle,
         string $toastMessage,
         string $redirect,
-        bool $isJS = false
+        bool $flash = false
     );
 }

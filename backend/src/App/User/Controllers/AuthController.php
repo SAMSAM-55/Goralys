@@ -2,6 +2,7 @@
 
 namespace Goralys\App\User\Controllers;
 
+use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\App\User\Interfaces\AuthControllerInterface;
@@ -12,7 +13,7 @@ use Goralys\Core\User\Services\LoginService;
 use Goralys\Core\User\Services\RegisterService;
 use Goralys\Core\User\Services\RegisterValidatorService;
 use Goralys\Platform\DB\Facade\DbContainer;
-use Goralys\Platform\Logger\GoralysLogger;
+use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
@@ -22,21 +23,33 @@ use Goralys\Shared\Exception\User\UserNotFoundException;
  */
 class AuthController implements AuthControllerInterface
 {
-    private GoralysLogger $logger;
+    private LoggerInterface $logger;
     private DbContainer $db;
     private UserRepository $repo;
+    /**
+     * The lifetime of the PHP session, this variable is passes by the kernel when the controller is constructed.
+     * @var int
+     */
+    private readonly int $sessionLifetime;
+    private readonly float $sessionMultiplier;
 
     /**
      * Initializes the logger and the database container used by the controller.
-     * @param GoralysLogger $logger
-     * @param DbContainer $db
+     * @param LoggerInterface $logger The injected logger.
+     * @param DbContainer $db The injected database container.
+     * @param int $sessionLifetime The lifetime of the PHP session.
+     * @param float $sessionLifetimeMultiplier The lifetime multiplier of the PHP session.
      */
     public function __construct(
-        GoralysLogger $logger,
-        DbContainer $db
+        LoggerInterface $logger,
+        DbContainer $db,
+        int $sessionLifetime,
+        float $sessionLifetimeMultiplier
     ) {
         $this->logger = $logger;
         $this->db = $db;
+        $this->sessionLifetime = $sessionLifetime;
+        $this->sessionMultiplier = $sessionLifetimeMultiplier;
 
         $this->repo = new UserRepository($this->logger, $this->db);
     }
@@ -46,6 +59,7 @@ class AuthController implements AuthControllerInterface
      * @param UserRegisterDTO $userData The necessary data to register the user.
      * @return bool If the creation was successful or not.
      * @throws GoralysQueryException|GoralysPrepareException Only thrown if the database request goes wrong.
+     * @throws UserNotFoundException If the user id was invalid.
      */
     public function register(UserRegisterDTO $userData): bool
     {
@@ -73,28 +87,32 @@ class AuthController implements AuthControllerInterface
      * @param UserLoginDTO $userData The necessary credentials to log in the user.
      * @return bool If the login was successful or not.
      * @throws GoralysQueryException|GoralysPrepareException Only thrown if the database request goes wrong.
-     * @throws UserNotFoundException If the user could not be found.
      */
     public function login(UserLoginDTO $userData): bool
     {
         $service = new LoginService($this->logger, $this->repo);
 
-        if (!$service->login($userData)) {
+        try {
+            if (!$service->login($userData)) {
+                return false;
+            }
+
+            session_regenerate_id(true);
+            $sessionData = $this->repo->getByUsername($userData->getUsername());
+
+            $_SESSION['current_id'] = $sessionData->getId();
+            $_SESSION['current_full_name'] = $sessionData->getFullName();
+            $_SESSION['current_username'] = $sessionData->getUsername();
+            $_SESSION['current_role'] = $sessionData->getRole()->toString();
+
+            return true;
+        } catch (UserNotFoundException) {
             return false;
         }
-
-        $sessionData = $this->repo->getByUsername($userData->getUsername());
-
-        $_SESSION['current_id'] = $sessionData->getId();
-        $_SESSION['current_full_name'] = $sessionData->getFullName();
-        $_SESSION['current_username'] = $sessionData->getUsername();
-        $_SESSION['current_role'] = $sessionData->getRole()->toString();
-
-        return true;
     }
 
     /**
-     * Log the user out.
+     * Logs the user out.
      * @return bool If the logout was successful or not.
      */
     public function logout(): bool
@@ -102,5 +120,27 @@ class AuthController implements AuthControllerInterface
         session_unset();
         session_destroy();
         return true;
+    }
+
+    /**
+     * Checks if the user is authenticated.
+     * The authentification cookie expires after an hour.
+     * @param int $sinceLastConnection The time elapsed since the last user connection
+     * @return UserAuthStatus If the user is authenticated.
+     */
+    public function getAuthStatus(int $sinceLastConnection): UserAuthStatus
+    {
+        if (!isset($_SESSION) || !isset($_SESSION['current_id'])) {
+            return UserAuthStatus::NOT_AUTHENTICATED;
+        } elseif (
+            $sinceLastConnection > $this->sessionMultiplier * $this->sessionLifetime
+            || $sinceLastConnection === -1
+        ) {
+            return UserAuthStatus::NOT_AUTHENTICATED;
+        }
+
+        return $sinceLastConnection > $this->sessionLifetime
+                ? UserAuthStatus::SESSION_EXPIRED
+                : UserAuthStatus::AUTHENTICATED;
     }
 }

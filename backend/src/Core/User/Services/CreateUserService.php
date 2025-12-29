@@ -5,6 +5,7 @@ namespace Goralys\Core\User\Services;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Interfaces\CreateUserInterface;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
@@ -14,14 +15,14 @@ use Goralys\Shared\Exception\DB\GoralysQueryException;
  */
 class CreateUserService implements CreateUserInterface
 {
-    private UserRepository $repo;
+    private UserRepositoryInterface $repo;
 
     /**
      * Initializes the user repository used by the service.
-     * @param UserRepository $repo The injected user repository.
+     * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        UserRepository $repo
+        UserRepositoryInterface $repo
     ) {
         $this->repo = $repo;
     }
