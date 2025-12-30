@@ -1,0 +1,46 @@
+<?php
+
+require __DIR__ . "/../../../../vendor/autoload.php";
+require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
+
+use Goralys\Kernel\GoralysKernel;
+use Goralys\Core\User\Data\Enums\UserRole;
+
+// --------------- Init --------------- //
+
+$kernel = bootKernel();
+$request = $kernel->getRequest();
+$kernel->requireRole(UserRole::TEACHER, true);
+
+$kernel->requireAuth("get teacher's subjects");
+$kernel->requireCSRF("get-teacher-subjects");
+
+$kernel->run(function (GoralysKernel $kernel) {
+    if (!$kernel->connect()) {
+        $kernel->toast->fatalError(
+            500, // Internal server error
+            "Une erreur interne est survenue lors de la récupération de vos questions, 
+            veuillez réessayer ultérieurement."
+        );
+    }
+
+    // ------- Get the subjects ------- //
+
+    $teacherUsername = $_SESSION['current_username'];
+
+    $result = $kernel->subjects->getForRole(
+        UserRole::TEACHER,
+        $teacherUsername
+    );
+
+    if (!$result) {
+        $kernel->toast->fatalError(
+            500, // Internal server error
+            "Une erreur interne est survenue lors de la récupération de vos questions, 
+            veuillez réessayer ultérieurement."
+        );
+    }
+
+    $kernel->sendJSON($result);
+    exit;
+});

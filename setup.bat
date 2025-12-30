@@ -16,7 +16,7 @@ if errorlevel 1 (
 )
 
 echo Installing dependencies ...
-call composer install --working-dir=PHP
+call composer install --working-dir=backend
 if errorlevel 1 (
     echo [ERROR] Composer install failed.
     pause
@@ -27,7 +27,7 @@ echo.
 
 echo Creating .env file ...
 
-if exist ".env" (
+if exist "./backend/.env" (
     echo "An existing .env file was found, do you want to overwrite it ? This will delete all previous configuration."
     set /p OVERWRITE="Overwrite ? (Y/n) :"
     if /I not "!OVERWRITE!" == "Y" (
@@ -43,7 +43,11 @@ echo DATABASE_NAME="your db name"
 echo MAIL_DOMAIN="your mail domain"
 echo MAIL_USER="your mail user (address)"
 echo MAIL_PASSWORD="your mail password"
-) > .env
+echo FOLDER="/"
+echo PHP_SESSION_LIFETIME=3600
+echo PHP_SESSION_LIFETIME_MULTIPLIER=1.25
+echo GORALYS_ENVIRONMENT="dev"
+) > ./backend/.env
 
 echo .env created successfully!
 

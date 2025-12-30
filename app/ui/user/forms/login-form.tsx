@@ -1,0 +1,32 @@
+import {Card} from "@/app/ui/card";
+import {FloatingInput} from "@/app/ui/inputs/floating-input";
+import {Button} from "@/app/ui/button";
+import {useEffect, useState} from "react";
+import {fetchCsrfClient} from "@/app/lib/fetch/fetch.client";
+
+export default function LoginForm() {
+    const [csrfToken, setCsrfToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        const run = async () => setCsrfToken(await fetchCsrfClient("login"));
+
+        run();
+    }, []);
+
+    return (
+        <Card className="relative flex-col h-65 bg-sky-200">
+
+            <h1 className="text-xl">Connectez vous à votre compte Goralys</h1>
+
+            <form className="relative flex flex-col h-full" action="/api/User/Auth/Login/" method="POST" autoComplete="on">
+                <FloatingInput id="username" label="Identifiant" helper="Identifiant au format p.nomX" autocomplete="username" required />
+
+                <FloatingInput id="password" label="Mot de passe" autocomplete="current-password" password required />
+
+                <input type="hidden" name="csrf-token" value={(csrfToken ? csrfToken : "no-token").trim()} />
+
+                <Button type="submit" text="Se connecter" className="absolute! bottom-0"/>
+            </form>
+        </Card>
+    );
+}

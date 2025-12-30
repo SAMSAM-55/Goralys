@@ -1,0 +1,54 @@
+-- GORALYS DATABASE SCHEMA
+-- version 1.4
+
+-- Makes sure all previous tables are deleted
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS users_temp;
+DROP TABLE IF EXISTS topics;
+DROP TABLE IF EXISTS student_topics;
+
+-- -----------------------------------------------------
+-- USERS TABLE (main active accounts)
+-- -----------------------------------------------------
+
+CREATE TABLE users (
+                       id INT AUTO_INCREMENT PRIMARY KEY,
+                       user_id VARCHAR(32) NOT NULL UNIQUE,         -- e.g. "j.dupont3"
+                       full_name VARCHAR(100) NOT NULL,
+                       password_hash VARCHAR(255),
+                       role ENUM('teacher', 'student', 'admin') NOT NULL,
+                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- ADMINS_LIST TABLE (only source to create admins)
+-- -----------------------------------------------------
+CREATE TABLE admins_list (
+                            user_id VARCHAR(32) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- TOPICS TABLE
+-- -----------------------------------------------------
+CREATE TABLE topics (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        topic_code VARCHAR(32) NOT NULL,      -- e.g. "maths_2025_jd"
+                        name VARCHAR(100) NOT NULL,
+                        teacher_id VARCHAR(32) NOT NULL
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- STUDENT_TOPICS TABLE (Many-to-Many)
+-- -----------------------------------------------------
+CREATE TABLE student_topics (
+                                student_id VARCHAR(32) NOT NULL,
+                                topic_id INT NOT NULL,                       -- FK → topics.id
+                                subject VARCHAR(255),
+                                last_rejected VARCHAR(255),
+                                teacher_comment VARCHAR(255),
+                                subject_status TINYINT(1) DEFAULT 0, -- 0=not submitted, 1=submitted, 2=rejected, 3=approved
+                                PRIMARY KEY (student_id, topic_id),
+                                FOREIGN KEY (topic_id) REFERENCES topics(id)
+                                    ON DELETE CASCADE
+                                    ON UPDATE CASCADE
+) ENGINE=InnoDB;

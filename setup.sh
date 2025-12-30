@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 echo "=================================================="
 echo "=====             Goralys setup              ====="
 echo "=================================================="
@@ -9,20 +11,25 @@ if ! command -v composer >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Installing dependencies ..."
-composer install --working-dir=PHP
-if [ $? -ne 0 ]; then
-    echo "[ERROR] Composer install failed."
+if [ ! -d "./backend" ]; then
+    echo "[ERROR] backend directory not found."
     exit 1
 fi
+
+echo "Installing dependencies ..."
+composer install --working-dir=backend || {
+    echo "[ERROR] Composer install failed."
+    exit 1
+}
 echo "Successfully installed dependencies."
 echo
 
 echo "Creating .env file ..."
 
-if [ -f .env ]; then
-    echo "An existing .env file was found, do you want to overwrite it? This will delete all previous configuration."
-    read -p "Overwrite ? (Y/n) : " OVERWRITE
+if [ -f ./backend/.env ]; then
+    echo "An existing .env file was found, do you want to overwrite it?"
+    printf "Overwrite ? (Y/n) : "
+    read OVERWRITE
     if [[ "$OVERWRITE" != "Y" && "$OVERWRITE" != "y" ]]; then
         echo "Keeping the existing .env file."
         echo
@@ -34,7 +41,7 @@ if [ -f .env ]; then
     fi
 fi
 
-cat > .env <<EOF
+cat > ./backend/.env <<EOF
 DATABASE_HOST="localhost"
 DATABASE_ID="your db id (user)"
 DATABASE_PASSWORD="your db password"
@@ -42,6 +49,10 @@ DATABASE_NAME="your db name"
 MAIL_DOMAIN="your mail domain"
 MAIL_USER="your mail user (address)"
 MAIL_PASSWORD="your mail password"
+FOLDER="/"
+PHP_SESSION_LIFETIME=3600
+PHP_SESSION_LIFETIME_MULTIPLIER=1.25
+GORALYS_ENVIRONMENT="dev"
 EOF
 
 echo ".env created successfully!"
