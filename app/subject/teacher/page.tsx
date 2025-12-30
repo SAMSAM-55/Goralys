@@ -13,7 +13,7 @@ export default function Page() {
                 <div className="flex flex-col gap-2">
                     {subjects?.map((s) => (
                         <TeacherCard
-                            key={s.studentToken + s.teacherToken + s.topic}
+                            key={`card-teacher-for-${s.student}-${s.topic}`}
                             subjectData={s}
                             onUpdateAction={refetch}
                         />

@@ -28,7 +28,10 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
 
         if (comment?.trim() === subjectData.comment.trim()
             && !confirm("Le commentaire n’a pas été modifié. Voulez-vous quand même rejeter cette question ?")) {
-            commentRef?.current?.focus();
+            requestAnimationFrame(() => {
+                commentRef?.current?.blur();
+                commentRef?.current?.focus();
+            });
             return;
         }
 
@@ -108,7 +111,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
                                  disabled={true}
                                  status={subjectData.status}
                                  value={subjectData.subject}/>
-            <CommentTeacher subjectData={subjectData} disabled={subjectData.status !== "submitted"} ref={commentRef} onChange={(e) => {setComment(e.target.value)}} />
+            <CommentTeacher key={`comment-teacher-for-${subjectData.student}-${subjectData.topic}`} subjectData={subjectData} disabled={subjectData.status !== "submitted"} ref={commentRef} onChange={(e) => {setComment(e.target.value)}} />
             {subjectData.status === "submitted"
             && <>
                 <Button className="-mb-1! mt-1! shadow-none!" text="Ne pas valider la question" type="button" onClick={rejectSubject} />
