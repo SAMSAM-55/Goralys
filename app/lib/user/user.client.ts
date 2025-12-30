@@ -1,0 +1,34 @@
+'use client'
+
+import {setCookie} from "@/app/lib/cookies";
+import Cookies from "universal-cookie";
+import {goralysFetchClient} from "@/app/lib/fetch/fetch.client";
+
+export async function cacheUserDataClient() {
+    const res = await goralysFetchClient('/api/User/Profile/Get');
+
+    if (!res.ok) {return;}
+
+    const data = (await res.json())['data'];
+
+    const cookie = new Cookies();
+
+    setCookie(cookie, "username", data['username'], 1.5*60*60);
+    setCookie(cookie, "full-name", data['full_name'], 1.5*60*60);
+    setCookie(cookie, "user-role", data['role'], 1.5*60*60);
+}
+
+export function emptyUserCacheClient() {
+    const cookies = new Cookies();
+
+    console.log("Cookies: ", cookies.getAll())
+
+    Object.keys(cookies.getAll())
+        .forEach((name) => {
+            cookies.remove(name, { path: "/" });
+        });
+
+    cookies.update();
+
+    console.log("Cookies after cleanup : ", cookies.getAll())
+}

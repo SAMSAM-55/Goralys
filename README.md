@@ -2,28 +2,22 @@
 
 Goralys is a lightweight web app to manage "Grand Oral" topics for students and teachers at a high school.
 
-
-> ⚠️ Notice:    
-> The current `features/backend` branch is incomplete and considered unstable.  
-> Major changes are still in progress, the codebase should not be used in production.
-> Also, please note that the `PHP/` folder is now obsolete, I just keep it to have a stable backend/frontend combo while I refactor the frontend
-
 ## Features
 
-- Student/teacher/admin roles with automatic role detection at registration ([PHP/register.php](PHP/register.php)).
-- Two-topic student workflow: draft, submit, and read-only once submitted ([JS/core.js](JS/core.js), [PHP/subject/update_student.php](PHP/subject/update_student.php), [PHP/subject/submit_student.php](PHP/subject/submit_student.php)).
-- Session-backed user data caching for fast frontend rendering ([PHP/login.php](PHP/login.php) uses [`Goralys\Utility\GoralysUtility::cacheStudentTopicsInfo`](PHP/utility.php) indirectly).
-- CSRF protection using a short-lived session token: [`PHP/create_form_token.php`](PHP/create_form_token.php) + [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
-- Toast notification system used by both PHP and JS ([`Goralys\Config\GoralysUtility::showToast`](PHP/config.php) and [`toast.show_toast`](JS/toast.js)).
- 
+- Student/teacher/admin roles with automatic role detection at registration ([`AuthController::register`](backend/src/App/User/Controllers/AuthController.php)).
+- Two-topic student workflow: draft, submit, and read-only once submitted ([`useSubjects`](app/hooks/useSubjects.ts), [`SubjectsController`](backend/src/App/Subjects/Controllers/SubjectsController.php)).
+- Session-backed user data caching for fast frontend rendering ([`AuthController::login`](backend/src/App/User/Controllers/AuthController.php) manages session data).
+- CSRF protection using a short-lived session token: [`CSRFService`](backend/src/App/Security/CSRF/Services/CSRFService.php) + [`fetchCsrfClient`](app/lib/fetch/fetch.client.ts).
+- Toast notification system used by both PHP and Next.js ([`ToastController::showToast`](backend/src/App/Utils/Toast/Controllers/ToastController.php) and [`toast-provider.tsx`](app/ui/toast/toast-provider.tsx)).
+
 ## Quick start (development)
 
 Prerequisites:
 - PHP 8.1+ with mysqli
 - Composer (for PHPMailer)
-- Apache (recommended) or PHP built-in server for testing
+- pnpm package manager
 
-To simulate a local PHP server with apache and mysql on windows, you can use [xampp](https://www.apachefriends.org) (also available on linux and macOS)
+To simulate a local PHP server with mysql on Windows, you can use [XAMPP](https://www.apachefriends.org) (also available on Linux and macOS)
 
 (Optional):
 - PHP_CodeSniffer
@@ -34,93 +28,68 @@ Steps:
    ```bash
    .\setup.bat
    ```
-   Or if you use linux:
+   Or if you use Linux:
    ```bash
    ./setup.sh
    ```
 2. Configure environment:
-   - For development, modify the values inside .env (created using setup.bat)
+    - For development, modify the values inside .env (created using setup.bat)
 3. Database:
-   - Create the database and tables using the schema at [PHP/data_structure.txt](PHP/data_structure.txt).
-4. Web server:
-   - Place the project under your document root (example path `/goralys/`) and enable `.htaccess` rules in the bundled [.htaccess](.htaccess).
-   - Alternatively run PHP's built-in server (note: .htaccess rewrites won't apply):
-     ```bash
-     php -S localhost:8000
-     ```
+    - Create the database and tables using the schema at [backend/data_structure.sql](backend/data_structure.sql).
+4. Run dev server:
+    - Run Next and PHP's built-in server for the API, by default the next rewrite port for the API is 80:
+      ```bash
+      pnpm run dev
+      php -S localhost:80
+      ```
 5. Access the app:
-   - Visit `http://localhost/goralys/` (or `http://localhost:8000` if using built-in server).
+    - Visit `http://localhost/goralys/` (or `http://localhost:8000` if using built-in server).
 
 ## Testing
 
-You can use phpunit to run the unit tests for the backend in `/backend/tests`.
+You can use phpunit to run the unit tests for the backend in `backend/tests`.
 To run the tests, use the following command after installing the projects dependencies with composer:
 
 ```bash
-.\vendor\bin\phpunit --configuration phpunit.xml
+.\backend\vendor\bin\phpunit --configuration backend\phpunit.xml
 ```
 
 ## Security notes
 
 - CSRF:
-  - Token validated by [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php).
+    - Token validated by [`CSRFService::validate`](backend/src/App/Security/CSRF/Services/CSRFService.php).
 - Passwords:
-  - Passwords are hashed using PHP's `password_hash` ([PHP/register.php](PHP/register.php)) and verified with `password_verify` ([PHP/login.php](PHP/login.php)).
+    - Passwords are hashed using PHP's `password_hash` ([`RegisterService::register`](backend/src/Core/User/Services/RegisterService.php)) and verified with `password_verify` ([`LoginService::login`](backend/src/Core/User/Services/LoginService.php)).
 - Sensitive config:
-  - You *must* use `.env` to configure your project.
-
-## Currently working on
-(07/11/2025) I am currently implementing the backend and frontend for admins accounts
+    - You *must* use `.env` to configure your project.
 
 *Note: the `develop` branch serves as a pre-production playground, so some commits may include experimental or buggy code — I try to minimize this as much as possible.*
 
 ## Key code pointers
 
-- Server-side toast utility: [`Goralys\Utility\GoralysUtility::showToast`](PHP/config.php) — [PHP/config.php](PHP/config.php)
-- Form token creation & policy: [PHP/create_form_token.php](PHP/create_form_token.php) and validator [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php) — [PHP/utility.php](PHP/utility.php)
-- Student subject UI & flows: [`core.js`, section: `Student functions`](JS/core.js) — [JS/core.js](JS/core.js)
-- Core client-side logic for subject management/handling: [core.js](JS/core.js)
-- Client-side toast handling: [`toast.show_toast`](JS/toast.js) — [JS/toast.js](JS/toast.js)
-- Automatic header update: [`update_header`](JS/header.js) — [JS/header.js](JS/header.js)
+- Main Kernel (Initialization & Routing): [`GoralysKernel`](backend/src/Kernel/GoralysKernel.php)
+- Authentication & Sessions: [`AuthController`](backend/src/App/User/Controllers/AuthController.php)
+- Subjects Management: [`SubjectsController`](backend/src/App/Subjects/Controllers/SubjectsController.php)
+- Database schema: [backend/data_structure.sql](backend/data_structure.sql)
+- Frontend Subject logic: [`useSubjects` hook](app/hooks/useSubjects.ts)
+- Toast notification: [`ToastController`](backend/src/App/Utils/Toast/Controllers/ToastController.php) and [`toast-provider.tsx`](app/ui/toast/toast-provider.tsx)
+- CSRF Service: [`CSRFService`](backend/src/App/Security/CSRF/Services/CSRFService.php)
 
-## Contents & quick links
+## Project structure
 
-- Pages
-  - [index.html](index.html)
-  - [account.html](account.html)
-  - [login_page.php](login_page.php)
-  - [register_page.php](register_page.php)
-  - [subject-student_page.php](subject-student_page.php)
-- PHP endpoints / routers
-  - [PHP/subject_router.php](PHP/subject_router.php) — contains the routing logic for subject pages
-  - [PHP/login.php](PHP/login.php)
-  - [PHP/register.php](PHP/register.php)
-  - [PHP/logout.php](PHP/logout.php)
-  - [PHP/confirm_email.php](PHP/confirm_email.php)
-  - [PHP/create_form_token.php](PHP/create_form_token.php)
-- Student subject APIs
-  - [PHP/subject/fetch_student_subjects.php](PHP/subject/fetch_student_subjects.php)
-  - [PHP/subject/update_student.php](PHP/subject/update_student.php)
-  - [PHP/subject/submit_student.php](PHP/subject/submit_student.php)
-- Utilities & config
-  - [PHP/config.php](PHP/config.php) — contains DB + mail config
-  - [PHP/utility.php](PHP/utility.php) — helper functions including [`Goralys\Utility\GoralysUtility::formatUserId`](PHP/utility.php) and [`Goralys\Utility\GoralysUtility::verifyCSRF`](PHP/utility.php)
-  - [PHP/data_structure.txt](PHP/data_structure.txt) — DB schema
-  - [PHP/composer.json](backend/composer.json) — 3rd-party deps (PHPMailer)
-- Frontend JS
-  - [JS/core.js](JS/core.js) — student flows; functions [`core.student_save_draft`](JS/core.js) and [`core.student_submit`](JS/core.js)
-  - [JS/user.js](JS/user.js)
-  - [JS/header.js](JS/header.js) — [`update_header`](JS/header.js)
-  - [JS/toast.js](JS/toast.js) — [`toast.show_toast`](JS/toast.js)
-  - [JS/input.js](JS/input.js)
-- Styles
-  - [CSS/config.css](CSS/config.css)
-  - [CSS/style.css](CSS/style.css)
-  - [CSS/input.css](CSS/input.css)
-  - [CSS/login-register.css](CSS/login-register.css)
-  - [CSS/subject.css](CSS/subject.css)
-  - [CSS/account.css](CSS/account.css)
-  - [CSS/toast.css](CSS/toast.css)
+### Frontend (Next.js)
+- `app/`: Contains the application pages and logic.
+- `app/subject/`: Student, Teacher, and Admin dashboards.
+- `app/hooks/`: React hooks for data fetching and state management.
+- `app/ui/`: Reusable UI components.
+
+### Backend (PHP)
+- `backend/API/`: API endpoints, acting as entry points for the kernel.
+- `backend/src/Kernel/`: The core of the backend, handles initialization and request management.
+- `backend/src/App/`: Controllers and application-level services.
+- `backend/src/Core/`: Business logic and core domain services.
+- `backend/src/Platform/`: Low-level platform services (DB, Logger, Loader).
+- `backend/tests/`: Unit and integration tests.
 
 ## License and contributing information
 
@@ -129,5 +98,4 @@ All contributions are welcome as long as they respect the terms inside [`Contrib
 
 ## Notes
 
-All the files ending in `_page.php` are old html files renamed to avoid duplicates when implementing CSRF validation.
-Any pull request containing sensitive information inside ``PHP/config.php` will have no chance to be merged.
+Any pull request containing sensitive information inside `.env` will have no chance to be merged.
