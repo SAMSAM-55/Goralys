@@ -76,3 +76,16 @@ export type Toast = {
 export type AuthEvent = "unauthenticated" | "expired";
 
 export type UserEvent = "login" | "logout" | "register";
+
+export type ConfirmProps = {
+    title: string,
+    message: string,
+    visible: boolean,
+    onConfirm: () => void,
+    onCancel: () => void,
+};
+
+export type ConfirmOptions = {
+    title: string,
+    message: string,
+};

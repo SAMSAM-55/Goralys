@@ -5,12 +5,14 @@ import {Button} from "@/app/ui/button";
 import {useRef, useState} from "react";
 import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import {useToast} from "@/app/ui/toast/toast-provider";
+import {useConfirm} from "@/app/ui/confirm/confirm-provider";
 import Cookies from "universal-cookie";
 import {SubjectInputTeacher} from "@/app/ui/inputs/subject-input-teacher";
 import CommentTeacher from "@/app/ui/subjects/comment-teacher";
 
 export default function TeacherCard({subjectData, onUpdateAction}: {subjectData: Subject, onUpdateAction: () => void}) {
     const toast = useToast();
+    const confirm = useConfirm();
     const [comment, setComment] = useState<string | null>(subjectData.comment);
     const cookies = new Cookies();
     const commentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -26,13 +28,19 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
 
         }
 
-        if (comment?.trim() === subjectData.comment.trim()
-            && !confirm("Le commentaire n’a pas été modifié. Voulez-vous quand même rejeter cette question ?")) {
-            requestAnimationFrame(() => {
-                commentRef?.current?.blur();
-                commentRef?.current?.focus();
+        if (comment?.trim() === subjectData.comment.trim()) {
+            const confirmed = await confirm.showConfirm({
+                title: "Confirmer le rejet",
+                message: "Le commentaire n’a pas été modifié. Voulez-vous quand même rejeter cette question ?",
             });
-            return;
+
+            if (!confirmed) {
+                requestAnimationFrame(() => {
+                    commentRef?.current?.blur();
+                    commentRef?.current?.focus();
+                });
+                return;
+            }
         }
 
         const csrfToken = await fetchCsrfClient("reject-subject");

@@ -3,6 +3,7 @@ import "./globals.css";
 import {SideNav} from "@/app/ui/nav/side-nav";
 import {lusitana} from "@/app/lib/fonts";
 import {ToastProvider} from "@/app/ui/toast/toast-provider";
+import {ConfirmProvider} from "@/app/ui/confirm/confirm-provider";
 import React from "react";
 import {AuthListener} from "@/app/lib/auth/auth-listener";
 import FlashToastListener from "@/app/ui/toast/flash-toast-listener";
@@ -30,15 +31,18 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     <body className={`${lusitana.className} antialiased text-gray-900 bg-gray-50`}>
 
     <div id="toast-root"></div>
+    <div id="confirm-root"></div>
 
     <ToastProvider>
-        <AuthListener />
-        <UserListener />
-        <FlashToastListener />
-        <div className="flex flex-row min-h-screen">
-            <SideNav />
-            {children}
-        </div>
+        <ConfirmProvider>
+            <AuthListener />
+            <UserListener />
+            <FlashToastListener />
+            <div className="flex flex-row min-h-screen">
+                <SideNav />
+                {children}
+            </div>
+        </ConfirmProvider>
     </ToastProvider>
     </body>
     </html>

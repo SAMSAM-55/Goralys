@@ -51,19 +51,3 @@ export async function fetchCsrfClient(formId: string): Promise<string | null> {
     const json = await res.json();
     return json['csrf-token'];
 }
-
-export async function tryJsonClient<T = never>(res: Response): Promise<T | null> {
-    const contentType = res.headers.get("content-type");
-
-    if (!res.ok || !contentType?.includes("application/json")) {
-        emitAuthEvent("unauthenticated");
-        return null;
-    }
-
-    try {
-        return await res.json();
-    } catch {
-        emitAuthEvent("unauthenticated");
-        return null;
-    }
-}
