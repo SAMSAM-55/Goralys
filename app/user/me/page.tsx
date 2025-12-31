@@ -4,6 +4,9 @@ import {Button} from "@/app/ui/button";
 import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import {useToast} from "@/app/ui/toast/toast-provider";
 import {emitUserEvent} from "@/app/lib/auth/user-event";
+import {Card} from "@/app/ui/card";
+import {FloatingInput} from "@/app/ui/inputs/floating-input";
+import Cookies from "universal-cookie";
 
 export default function Page() {
     const toast = useToast();
@@ -24,5 +27,15 @@ export default function Page() {
         })
     }
 
-    return <Button key="logout-button" text="Logout" type="button" onClick={logout} />
+    const cookies = new Cookies()
+    const username: string = cookies.get("username");
+    const fullName: string = cookies.get("full-name");
+
+    return (<Card className="flex-col absolute top-25 bg-sky-200 left-1/2 -translate-x-1/2 w-100!">
+        <p className="underline-offset-1 underline text-2xl">Vos informations:</p>
+        <FloatingInput id="username" label="Identifiant" defaultValue={username} />
+        <FloatingInput id="username" label="Prénom" defaultValue={fullName.split(" ")[0]} />
+        <FloatingInput id="username" label="Nom" defaultValue={fullName.split(" ")[1]} />
+        <Button key="logout-button" text="Se déconnecter" type="button" onClick={logout} />
+    </Card>);
 }

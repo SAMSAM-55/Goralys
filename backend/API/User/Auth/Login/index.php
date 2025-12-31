@@ -12,7 +12,7 @@ use Goralys\Kernel\GoralysKernel;
 
 $kernel = bootKernel(true);
 $request = $kernel->getRequest();
-$kernel->requireCSRF("login");
+$kernel->requireCSRF("login", "/user/login");
 
 $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     if (!$kernel->connect()) {

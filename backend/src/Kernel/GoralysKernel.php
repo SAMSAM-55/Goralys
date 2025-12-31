@@ -361,13 +361,23 @@ class GoralysKernel
      * Helper to use CSRF in an API endpoint.
      * It should always be called after you already called getRequest on the kernel.
      * @param string $formId The id of the current form.
+     * @param string|null $redirect The page to redirect the user to.
      * @return void
      */
-    public function requireCSRF(string $formId): void
+    public function requireCSRF(string $formId, string | null $redirect = null): void
     {
 
         if (!$this->CSRF->validate($formId, $this->request)) {
             http_response_code(403);
+            if ($this->useFlash) {
+                $this->flashToast(
+                        ToastType::WARNING,
+                        "Lien externe",
+                        "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
+                        $redirect ?? ""
+                );
+                exit;
+            }
             $this->toast->showToast(
                 ToastType::WARNING,
                 "Lien externe",

@@ -10,9 +10,9 @@ use Goralys\Kernel\GoralysKernel;
 
 // --------------- Init --------------- //
 
-$kernel = bootKernel();
+$kernel = bootKernel(true);
 $request = $kernel->getRequest();
-$kernel->requireCSRF("register");
+$kernel->requireCSRF("register", "/user/register");
 
 $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     if (!$kernel->connect()) {
