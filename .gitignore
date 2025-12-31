@@ -43,4 +43,3 @@ next-env.d.ts
 /backend/Logs
 /backend/.phpunit.result.cache
 /backend/vendor
-/.idea
