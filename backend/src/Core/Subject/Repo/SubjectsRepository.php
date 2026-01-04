@@ -81,7 +81,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     }
 
     /**
-     * Get the status of a given subject
+     * Get the status of a given subject.
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
      * @param string $topic The name of the topic.
@@ -92,6 +92,30 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     {
         return $this->db->fetch(
             "SELECT st.subject_status AS status
+            FROM saje5795_goralys.topics t
+            JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
+            WHERE t.teacher_id = ?
+            AND st.student_id = ?
+            AND t.name = ?",
+            "sss",
+            $teacherUsername,
+            $studentUsername,
+            $topic
+        );
+    }
+
+    /**
+     * Get the path to a student's draft for a given subject.
+     * @param string $teacherUsername The teacher's username.
+     * @param string $studentUsername The student's username.
+     * @param string $topic The name of the topic.
+     * @return mysqli_result The result of the request.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function getDraftPath(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
+    {
+        return $this->db->fetch(
+            "SELECT st.draft_path AS path
             FROM saje5795_goralys.topics t
             JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
             WHERE t.teacher_id = ?
@@ -195,6 +219,38 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             AND t.name = ?",
             "ssss",
             $newComment,
+            $teacherUsername,
+            $studentUsername,
+            $topic
+        );
+    }
+
+    /**
+     * Update a subject's draft path inside the database.
+     * The comment is written by the teacher and seen by both the teacher and the student.
+     * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
+     * @param string $teacherUsername The teacher's username.
+     * @param string $studentUsername The student's username.
+     * @param string $topic The name of the topic.
+     * @param string$newPath The new path to the student's draft.
+     * @return bool If the update was successful or not.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function updateDraftPath(
+        string $teacherUsername,
+        string $studentUsername,
+        string $topic,
+        string $newPath
+    ): bool {
+        return $this->db->run(
+            "UPDATE saje5795_goralys.student_topics st
+            JOIN saje5795_goralys.topics t on t.id = st.topic_id
+            SET st.draft_path = ?
+            WHERE t.teacher_id = ?
+            AND st.student_id = ?
+            AND t.name = ?",
+            "ssss",
+            $newPath,
             $teacherUsername,
             $studentUsername,
             $topic

@@ -54,7 +54,7 @@ class GoralysRequest implements RequestInterface
             $value = $this->input[$k];
 
             if (is_string($value)) {
-                if (trim($value) === "") {
+                if (empty(trim($value))) {
                     return false;
                 }
             } elseif ($value === null) {

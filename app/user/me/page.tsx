@@ -28,8 +28,8 @@ export default function Page() {
     }
 
     const cookies = new Cookies()
-    const username: string = cookies.get("username");
-    const fullName: string = cookies.get("full-name");
+    const username: string = cookies.get("username") ?? "";
+    const fullName: string = cookies.get("full-name") ?? " ";
 
     return (<Card className="flex-col absolute top-25 bg-sky-200 left-1/2 -translate-x-1/2 w-100!">
         <p className="underline-offset-1 underline text-2xl">Vos informations:</p>

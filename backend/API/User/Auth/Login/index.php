@@ -66,7 +66,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         ToastType::SUCCESS,
         "Connexion",
         "Vous avez bien été connecté à votre compte.",
-        "/",
+        "/subject/",
         "login-success"
     );
     exit;

@@ -13,6 +13,7 @@ interface SubjectsRepositoryInterface
     public function findByTeacher(string $teacherUsername): mysqli_result;
     public function findAll(): mysqli_result;
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): mysqli_result;
+    public function getDraftPath(string $teacherUsername, string $studentUsername, string $topic): mysqli_result;
 
     // Updates
     public function updateSubject(
@@ -32,5 +33,11 @@ interface SubjectsRepositoryInterface
         string $studentUsername,
         string $topic,
         string $newComment
+    ): bool;
+    public function updateDraftPath(
+        string $teacherUsername,
+        string $studentUsername,
+        string $topic,
+        string $newPath
     ): bool;
 }

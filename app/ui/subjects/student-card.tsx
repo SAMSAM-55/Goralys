@@ -8,10 +8,12 @@ import CommentStudent from "@/app/ui/subjects/comment-student";
 import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import {useToast} from "@/app/ui/toast/toast-provider";
 import Cookies from "universal-cookie";
+import {useDraftModal} from "@/app/ui/modals/drafts/draft-modal-provider";
 
 export default function StudentCard({subjectData, onUpdateAction}: {subjectData: Subject, onUpdateAction: () => void}) {
     const toast = useToast();
     const [subject, setSubject] = useState<string | null>(subjectData.subject);
+    const modal = useDraftModal();
     const cookies = new Cookies();
 
     async function saveDraft() {
@@ -29,7 +31,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),
-        })
+        });
 
         const data = await res.json();
 
@@ -58,20 +60,29 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         const csrfToken = await fetchCsrfClient("submit-subject");
+        const file = await modal.showDraftModal();
 
-        const payload = {
-            'teacher-token': subjectData.teacherToken,
-            'student-token': subjectData.studentToken,
-            'topic': subjectData.topic,
-            'subject': subject,
-            'csrf-token': csrfToken,
-        };
+        if (file === "modalClosed") return;
 
-        const res = await goralysFetchClient("/api/Subjects/Student/Submit", {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify(payload),
-        });
+        const formData = new FormData();
+        formData.append('teacher-token', subjectData.teacherToken);
+        formData.append('student-token', subjectData.studentToken);
+        formData.append('topic', subjectData.topic);
+        formData.append('subject', subject ?? '');
+        formData.append('csrf-token', csrfToken ?? '');
+
+        if (file) {
+            formData.append('draft-file', file);
+        }
+
+        const res = await goralysFetchClient(
+            "/api/Subjects/Student/Submit/",
+            {
+                method: "POST",
+                credentials: "include",
+                body: formData,
+            }
+        );
 
         const data = await res.json();
 
@@ -89,16 +100,24 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
     }
 
+    const key = subjectData.teacher + subjectData.topic
     return (
         <div className="h-fit w-200 flex flex-col bg-sky-200 gap-1 p-1 mb-1 mt-1" >
             <div className="flex flex-row w-full justify-between">
                 <strong>{subjectData.topic}</strong>
                 <strong>{subjectData.teacher}</strong>
             </div>
-            <SubjectInputStudent id={subjectData.studentToken + subjectData.teacherToken + "-subject"} label="Votre Question"
-                                 disabled={subjectData.status === 'submitted' || subjectData.status === 'approved'} value={subjectData.subject}
-                                 onChange={(e) => {setSubject(e.target.value)}} status={subjectData.status}/>
-            <CommentStudent subjectData={subjectData} disabled={true} />
+            <SubjectInputStudent id={`subject-input-student-for-${key}`}
+                                 label="Votre Question"
+                                 disabled={subjectData.status === 'submitted' || subjectData.status === 'approved'}
+                                 value={subjectData.subject}
+                                 onChange={(e) => {
+                                     setSubject(e.target.value)
+                                 }}
+                                 status={subjectData.status}/>
+            <CommentStudent key={`comment-student-for-${key}`}
+                            subjectData={subjectData}
+                            disabled={true}/>
             {!(subjectData.status === "submitted" || subjectData.status === "approved")
             && <>
                 <Button className="mb-1! mt-1!" text="Envoyer la question" type="button" onClick={sendSubject} />

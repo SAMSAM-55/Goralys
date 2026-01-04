@@ -89,3 +89,10 @@ export type ConfirmOptions = {
     title: string,
     message: string,
 };
+
+export type DraftModalProps = {
+    visible: boolean,
+    onCancel: () => void,
+    onChooseDraft: (file: File | null) => void,
+    onCloseModal: () => void,
+}

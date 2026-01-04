@@ -7,4 +7,5 @@ enum LoggerInitiator: string
     case APP = "APP";
     case CORE = "CORE";
     case PLATFORM = "PLATFORM";
+    case KERNEL = "KERNEL";
 }

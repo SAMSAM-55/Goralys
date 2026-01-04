@@ -24,6 +24,7 @@ class LoggerConfigLoader
                     "APP" => $_ENV["LOGGER_APP_FILENAME"] ?? "Goralys_App",
                     "CORE" => $_ENV["LOGGER_CORE_FILENAME"] ?? "Goralys_Core",
                     "PLATFORM" => $_ENV["LOGGER_PLATFORM_FILENAME"] ?? "Goralys_Platform",
+                    "KERNEL" => $_ENV["LOGGER_KERNEL_FILENAME"] ?? "Goralys_Kernel",
                     "GLOBAL" => $_ENV["LOGGER_GLOBAL_FILENAME"] ?? "Goralys_Global"
             ];
             self::$goralysEnv = $_ENV['GORALYS_ENVIRONMENT'];
