@@ -49,9 +49,15 @@ echo PHP_SESSION_LIFETIME_MULTIPLIER=1.25
 echo GORALYS_ENVIRONMENT="dev"
 ) > ./backend/.env
 
-echo .env created successfully!
+echo .env created successfully.
 
 :done
+echo Creating Logs directory ...
+mkdir ./backend/Logs
+echo Creating Assets directory ...
+mkdir ./backend/Assets
+echo Directories where created successfully.
+
 echo ==================================================
 echo =====             Setup Complete             =====
 echo ==================================================
