@@ -108,6 +108,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['topic'],
                 $this->formatter->formatUsername($teacherUsername),
                 $this->usernameManager->store($teacherUsername),
+                (bool)$row['draftPath']
             );
 
             $subjects->addSubject($subject);

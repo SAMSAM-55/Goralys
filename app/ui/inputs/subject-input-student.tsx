@@ -1,19 +1,12 @@
 import {clsx} from "clsx";
-import {useState} from "react";
 import {SubjectInputProps} from "@/app/lib/types";
 
-export function SubjectInputStudent({ id, label, helper, autocomplete, password = false, disabled = false, required = false, value = "", onChange, status, animate = true }: SubjectInputProps) {
-    const [show, setShow] = useState<boolean>(!password);
-
-    function onEyeClicked() {
-        setShow(!show);
-    }
-
-    helper = status === "submitted"
+export function SubjectInputStudent({ id, label, helper, subjectData, onChange, animate = true }: SubjectInputProps) {
+    helper = subjectData.status === "submitted"
         ? "Cette question est en attente de validation, vous ne pouvez plus la modifier."
-        : status === "not_submitted" ? "Cette question n'a pas encore été envoyée."
-        : status === "rejected" ? "Cette question n'a pas été validée par le professeur, vous devez en envoyer une nouvelle."
-        : status === "approved" ? "Cette question a été validée, vous ne pouvez plus la modifier." : ""
+        : subjectData.status === "not_submitted" ? "Cette question n'a pas encore été envoyée."
+        : subjectData.status === "rejected" ? "Cette question n'a pas été validée par le professeur, vous devez en envoyer une nouvelle."
+        : subjectData.status === "approved" ? "Cette question a été validée, vous ne pouvez plus la modifier." : ""
 
     return (
         <div className={clsx(
@@ -24,69 +17,46 @@ export function SubjectInputStudent({ id, label, helper, autocomplete, password 
             },
         )}
         >
-            <input type={show ? "text" : "password"}
+            <input type="text"
                    id={id}
                    name={id}
                    placeholder=" "
                    spellCheck="true"
-                   autoComplete={autocomplete}
-                   disabled={disabled}
-                   required={required}
-                   defaultValue={value}
+                   disabled={false}
+                   defaultValue={subjectData.subject}
                    onChange={onChange}
                    className={clsx(
                        "peer block w-full py-0 px-0 cursor-text text-base text-heading " +
                        "bg-transparent border-0 border-b-2 border-sky-300 " +
                        "appearance-none focus:outline-none focus:ring-0 ",
                        {
-                           "cursor-not-allowed!": disabled,
-                           "border-green-600!": status === "approved",
-                           "border-amber-600!": status === "submitted",
-                           "border-red-600!": status === "rejected",
+                           "border-green-600!": subjectData.status === "approved",
+                           "border-amber-600!": subjectData.status === "submitted",
+                           "border-red-600!": subjectData.status === "rejected",
                        },
                    )}
             />
 
             {/* Animated underline */}
             {animate &&
-            <span className={clsx(
-                "pointer-events-none " +
-                "absolute bg-sky-500 left-0 bottom-0 h-0.5 w-full " +
-                "origin-left scale-x-0 " +
-                "transition-transform duration-250 " +
-                "group-focus-within:scale-x-100 ",
-
-                )}
+            <span className="pointer-events-none
+                absolute bg-sky-500 left-0 bottom-0 h-0.5 w-full
+                origin-left scale-x-0
+                transition-transform duration-250
+                group-focus-within:scale-x-100 "
             />
             }
 
             <label htmlFor={id}
-                   className={clsx(
-                       "absolute text-base text-body cursor-text duration-300 transform " +
-                       "-translate-y-4.5 scale-75 top-0 origin-left " +
-                       "peer-placeholder-shown:scale-100 " +
-                       "peer-placeholder-shown:translate-y-0 " +
-                       "peer-focus:scale-75 " +
-                       "peer-focus:-translate-y-4.5 ",
-                       {
-                           "cursor-not-allowed!": disabled
-                       },
-                   )}
+                   className="absolute text-base text-body cursor-text duration-300 transform
+                       -translate-y-4.5 scale-75 top-0 origin-left
+                       peer-placeholder-shown:scale-100
+                       peer-placeholder-shown:translate-y-0
+                       peer-focus:scale-75
+                       peer-focus:-translate-y-4.5 "
             >
                 {label}
             </label>
-
-            {password && (<button type="button" onClick={onEyeClicked} className="absolute top-px right-0 text-gray-900">
-                    <i className={clsx(
-                        "fas",
-                        {
-                            "fa-eye": !show,
-                            "fa-eye-slash": show
-                        }
-                    )}
-                    />
-                </button>
-            )}
 
             {helper.length !== 0 && <p className="mt-0 absolute text-[13px] italic text-gray-600">
                 *{helper}

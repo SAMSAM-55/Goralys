@@ -109,15 +109,15 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             </div>
             <SubjectInputStudent id={`subject-input-student-for-${key}`}
                                  label="Votre Question"
-                                 disabled={subjectData.status === 'submitted' || subjectData.status === 'approved'}
-                                 value={subjectData.subject}
+                                 subjectData={subjectData}
                                  onChange={(e) => {
                                      setSubject(e.target.value)
                                  }}
-                                 status={subjectData.status}/>
+            />
             <CommentStudent key={`comment-student-for-${key}`}
                             subjectData={subjectData}
-                            disabled={true}/>
+                            disabled={true}
+            />
             {!(subjectData.status === "submitted" || subjectData.status === "approved")
             && <>
                 <Button className="mb-1! mt-1!" text="Envoyer la question" type="button" onClick={sendSubject} />

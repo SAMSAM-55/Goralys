@@ -55,7 +55,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     {
         return $this->db->fetch(
             "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS comment, 
-            st.last_rejected, t.name AS topic
+            st.last_rejected, t.name AS topic, st.draft_path AS draftPath
             FROM saje5795_goralys.topics t
             JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
             WHERE t.teacher_id = ?",

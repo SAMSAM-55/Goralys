@@ -31,11 +31,13 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
             "Veuillez remplir tous les champs.",
             "/user/login"
         );
+        exit;
     }
 
     $username = $request->get("username");
     $password = $request->get("password");
 
+    // Double check inputs
     if (empty($username) || empty($password)) {
         $kernel->flashToast(
             ToastType::WARNING,
