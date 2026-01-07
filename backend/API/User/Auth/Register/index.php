@@ -25,7 +25,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     // --------------- Inputs --------------- //
 
     if (!$request->validate("username", "password", "first-name", "last-name")) {
-        $kernel->flashtoast(
+        $kernel->flashToast(
             ToastType::WARNING,
             "Formulaire",
             "Veuillez remplir tous les champs.",
