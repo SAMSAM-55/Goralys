@@ -36,7 +36,7 @@ export default function LoginPageClient() {
         emitUserEvent("logout");
 
         router.replace('/user/login');
-    }, [searchParams, router]); // The toast dependency is ignored to avoid render loop.
+    }, [searchParams, router, toast]); // The toast dependency is ignored to avoid render loop.
 
     return (
         <div className="flex grow content-center justify-center items-center">

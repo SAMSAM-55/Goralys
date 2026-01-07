@@ -8,10 +8,14 @@ export default function Home() {
 
     useEffect(() => {
         const cookies = new Cookies();
-        const text = `${cookies.get("full-name")}(${cookies.get("username")}) your role is : ${cookies.get("user-role")}`;
-        if (text) {
-            setText(text);
-        }
+        const run = () => {
+            const text = `${cookies.get("full-name")}(${cookies.get("username")}) your role is : ${cookies.get("user-role")}`;
+            if (text) {
+                setText(text);
+            }
+        };
+
+        run();
     }, []);
 
     return (
