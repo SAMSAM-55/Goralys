@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint app",
-    "phpcs": "@php backend/vendor/bin/phpcs --standard=PSR12 --ignore=vendor/* backend",
-    "phpcbf": "@php backend/vendor/bin/phpcbf --standard=PSR12 --ignore=vendor/* backend",
-    "check": "npm-run-all --parallel lint phpcs"
+    "phpcs": "php backend/vendor/bin/phpcs --standard=PSR12 --ignore=vendor/* backend",
+    "phpcbf": "php backend/vendor/bin/phpcbf --standard=PSR12 --ignore=vendor/* backend",
+    "check": "npm-run-all lint phpcs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
