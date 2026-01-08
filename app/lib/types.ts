@@ -92,3 +92,11 @@ export type DraftModalProps = {
     onChooseDraft: (file: File | null) => void,
     onCloseModal: () => void,
 }
+
+export type UserData = {
+    username: string,
+    full_name: string,
+    role: string,
+}
+
+export type CookieValue = string | boolean | number | null | undefined
