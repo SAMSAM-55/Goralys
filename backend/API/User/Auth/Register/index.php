@@ -10,9 +10,9 @@ use Goralys\Kernel\GoralysKernel;
 
 // --------------- Init --------------- //
 
-$kernel = bootKernel();
+$kernel = bootKernel(true);
 $request = $kernel->getRequest();
-$kernel->requireCSRF("register");
+$kernel->requireCSRF("register", "/user/register");
 
 $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     if (!$kernel->connect()) {
@@ -25,7 +25,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     // --------------- Inputs --------------- //
 
     if (!$request->validate("username", "password", "first-name", "last-name")) {
-        $kernel->flashtoast(
+        $kernel->flashToast(
             ToastType::WARNING,
             "Formulaire",
             "Veuillez remplir tous les champs.",

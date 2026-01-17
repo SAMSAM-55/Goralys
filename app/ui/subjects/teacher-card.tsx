@@ -5,7 +5,7 @@ import {Button} from "@/app/ui/button";
 import {useRef, useState} from "react";
 import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import {useToast} from "@/app/ui/toast/toast-provider";
-import {useConfirm} from "@/app/ui/confirm/confirm-provider";
+import {useConfirm} from "@/app/ui/modals/confirm/confirm-provider";
 import Cookies from "universal-cookie";
 import {SubjectInputTeacher} from "@/app/ui/inputs/subject-input-teacher";
 import CommentTeacher from "@/app/ui/subjects/comment-teacher";
@@ -115,11 +115,17 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
                 <strong>{subjectData.topic}</strong>
             </div>
             <SubjectInputTeacher id={subjectData.studentToken + subjectData.teacherToken + "-comment"}
+                                 subjectData={subjectData}
                                  label="Question de l'Elève"
-                                 disabled={true}
-                                 status={subjectData.status}
-                                 value={subjectData.subject}/>
-            <CommentTeacher key={`comment-teacher-for-${subjectData.student}-${subjectData.topic}`} subjectData={subjectData} disabled={subjectData.status !== "submitted"} ref={commentRef} onChange={(e) => {setComment(e.target.value)}} />
+            />
+            <CommentTeacher key={`comment-teacher-for-${subjectData.student}-${subjectData.topic}`}
+                            subjectData={subjectData}
+                            disabled={subjectData.status !== "submitted"}
+                            ref={commentRef}
+                            onChange={(e) => {
+                                setComment(e.target.value)
+                            }}
+            />
             {subjectData.status === "submitted"
             && <>
                 <Button className="-mb-1! mt-1! shadow-none!" text="Ne pas valider la question" type="button" onClick={rejectSubject} />

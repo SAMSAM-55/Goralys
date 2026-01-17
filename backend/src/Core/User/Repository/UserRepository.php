@@ -156,8 +156,6 @@ class UserRepository implements UserRepositoryInterface
             $username
         );
 
-        echo $result->num_rows;
-
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,

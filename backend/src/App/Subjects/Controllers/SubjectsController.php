@@ -2,9 +2,11 @@
 
 namespace Goralys\App\Subjects\Controllers;
 
+use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Subjects\Interfaces\SubjectsControllerInterface;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\Core\Drafts\Services\StudentDraftsManager;
 use Goralys\Core\Subject\Data\Enums\SubjectStatus;
 use Goralys\Core\Subject\Data\SubjectsCollection;
 use Goralys\Core\Subject\Repo\SubjectsRepository;
@@ -28,17 +30,21 @@ class SubjectsController implements SubjectsControllerInterface
     private UpdateSubjectService $updateService;
     private UsernameFormatterService $formatter;
     private SubjectsUsernameManager $usernameManager;
+    public StudentDraftsManager $draftsManager;
+    private GoralysFileManagerInterface $fileManager;
     private GetSubjectsService $getService;
 
     /**
      * Initializes the logger and database container for the controller.
      * Also instantiates all of its sub-services.
-     * @param LoggerInterface $logger
-     * @param DbContainer $db
+     * @param LoggerInterface $logger The injected logger.
+     * @param DbContainer $db The injected db.
+     * @param GoralysFileManagerInterface $fileManager The injected file manager.
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainer $db
+        DbContainer $db,
+        GoralysFileManagerInterface $fileManager
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -46,6 +52,8 @@ class SubjectsController implements SubjectsControllerInterface
         $this->repo = new SubjectsRepository($this->db);
         $this->formatter = new UsernameFormatterService();
         $this->usernameManager = new SubjectsUsernameManager($this->logger);
+        $this->fileManager = $fileManager;
+        $this->draftsManager = new StudentDraftsManager($this->logger, $this->repo, $this->fileManager);
         $this->updateService = new UpdateSubjectService($this->logger, $this->repo);
         $this->getService = new GetSubjectsService(
             $this->logger,

@@ -21,6 +21,7 @@ class SubjectDTO implements JsonSerializable
     private string $teacherUsernameToken;
     private string $topic;
     private string $lastRejected;
+    private bool $hasDraft;
 
     public function __construct(
         string $studentUsername,
@@ -32,6 +33,7 @@ class SubjectDTO implements JsonSerializable
         string $topic,
         string $teacherUsername,
         string $teacherUsernameToken,
+        bool $hasDraft = false
     ) {
         $this->studentUsername = $studentUsername;
         $this->studentUsernameToken = $studentUsernameToken;
@@ -42,6 +44,7 @@ class SubjectDTO implements JsonSerializable
         $this->teacherUsernameToken = $teacherUsernameToken;
         $this->topic = $topic;
         $this->lastRejected = $lastRejected;
+        $this->hasDraft = $hasDraft;
     }
 
     /**
@@ -60,6 +63,7 @@ class SubjectDTO implements JsonSerializable
                 "topic" => $this->topic,
                 "teacher" => $this->teacherUsername,
                 "teacherToken" => $this->teacherUsernameToken,
+                "hasDraft" => $this->hasDraft
         ];
     }
 }

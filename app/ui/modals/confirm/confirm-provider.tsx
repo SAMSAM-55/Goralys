@@ -1,7 +1,7 @@
 'use client';
 
 import {createContext, useContext, useState, ReactNode} from "react";
-import ConfirmElement from "@/app/ui/confirm/confirm-element";
+import ConfirmElement from "@/app/ui/modals/confirm/confirm-element";
 import {ConfirmOptions} from "@/app/lib/types";
 import {createPortal} from "react-dom";
 

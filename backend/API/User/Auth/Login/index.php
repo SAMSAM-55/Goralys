@@ -12,7 +12,7 @@ use Goralys\Kernel\GoralysKernel;
 
 $kernel = bootKernel(true);
 $request = $kernel->getRequest();
-$kernel->requireCSRF("login");
+$kernel->requireCSRF("login", "/user/login");
 
 $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     if (!$kernel->connect()) {
@@ -25,17 +25,19 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     // --------------- Inputs --------------- //
 
     if (!$request->validate("username", "password")) {
-        $kernel->flashtoast(
+        $kernel->flashToast(
             ToastType::WARNING,
             "Formulaire",
             "Veuillez remplir tous les champs.",
             "/user/login"
         );
+        exit;
     }
 
     $username = $request->get("username");
     $password = $request->get("password");
 
+    // Double check inputs
     if (empty($username) || empty($password)) {
         $kernel->flashToast(
             ToastType::WARNING,
@@ -66,7 +68,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         ToastType::SUCCESS,
         "Connexion",
         "Vous avez bien été connecté à votre compte.",
-        "/",
+        "/subject/",
         "login-success"
     );
     exit;

@@ -3,6 +3,11 @@
 namespace Goralys\Kernel;
 
 use ErrorException;
+use Goralys\App\HTTP\Files\GoralysFileManager;
+use Goralys\App\HTTP\Files\Interface\FileMover;
+use Goralys\App\HTTP\Files\Services\HttpFileMover;
+use Goralys\App\HTTP\Files\Services\TestFileMover;
+use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
 use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Security\CSRF\Services\CSRFService;
@@ -20,6 +25,7 @@ use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysConnectException;
 use Goralys\Shared\Exception\GoralysException;
+use Goralys\Shared\Exception\GoralysRuntimeException;
 use JetBrains\PhpStorm\NoReturn;
 use JsonSerializable;
 use Throwable;
@@ -34,6 +40,7 @@ class GoralysKernel
     public DbContainer $db;
     public LoggerInterface $logger;
     public AuthController $auth;
+    public GoralysFileManager $fileManager;
     public SubjectsController $subjects;
     public ToastController $toast;
     private CSRFService $CSRF;
@@ -75,7 +82,7 @@ class GoralysKernel
      * Initializes the kernel and all of its members.
      * @param string $rootPath The path to the .env file and that is considered to be the root path for the kernel.
      */
-    public function __construct(string $rootPath, bool $useFlash = false)
+    public function __construct(string $rootPath, bool $useFlash = false, bool $test = false, array $testFiles = [])
     {
         $this->rootPath = $rootPath;
 
@@ -91,6 +98,7 @@ class GoralysKernel
 
         $this->initDb();
         $this->initAuth();
+        $this->bootFileSubsystem($test, $testFiles);
         $this->initSubjects();
         $this->initCSRF();
         $this->initUsernameManager();
@@ -190,12 +198,50 @@ class GoralysKernel
     }
 
     /**
+     * Initializes the files-related subservices for the kernel.
+     * @param bool $test If the kernel is running in "test mode" or not.
+     * @param array $testFiles The files array, used only in "test mode".
+     * @return void
+     */
+    private function bootFileSubsystem(bool $test, array $testFiles): void
+    {
+        if ($test) {
+            $files = $testFiles;
+            $mover = new TestFileMover();
+        } else {
+            $files = FilesNormalizer::fromGlobals($_FILES);
+            $mover = new HttpFileMover();
+        }
+
+        try {
+            $this->initFileManager($mover, $files);
+        } catch (GoralysRuntimeException $e) {
+            $this->logger->fatal(
+                LoggerInitiator::KERNEL,
+                "A GoralysRuntimeException occurred while initializing the kernel: " . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Initializes the file manager of the kernel.
+     * @param FileMover $mover The mover for the file manager.
+     * @param array $files The files array, used only in "test mode".
+     * @return void
+     * @throws GoralysRuntimeException If an invalid file is found.
+     */
+    private function initFileManager(FileMover $mover, array $files): void
+    {
+        $this->fileManager = new GoralysFileManager($files, $mover, $this->logger);
+    }
+
+    /**
      * Initializes the subjects controller of the kernel.
      * @return void
      */
     private function initSubjects(): void
     {
-        $this->subjects = new SubjectsController($this->logger, $this->db);
+        $this->subjects = new SubjectsController($this->logger, $this->db, $this->fileManager);
     }
 
     /**
@@ -332,8 +378,8 @@ class GoralysKernel
      */
     public function requireAuth(string $context): void
     {
-        $this->logger->debug(LoggerInitiator::PLATFORM, "Session lifetime : " . $this->sessionLifetime);
-        $this->logger->debug(LoggerInitiator::PLATFORM, "Since last activity : " . $this->sinceLastActivity);
+        $this->logger->debug(LoggerInitiator::KERNEL, "Session lifetime : " . $this->sessionLifetime);
+        $this->logger->debug(LoggerInitiator::KERNEL, "Since last activity : " . $this->sinceLastActivity);
 
         switch ($this->auth->getAuthStatus($this->sinceLastActivity)) {
             case UserAuthStatus::SESSION_EXPIRED:
@@ -361,13 +407,23 @@ class GoralysKernel
      * Helper to use CSRF in an API endpoint.
      * It should always be called after you already called getRequest on the kernel.
      * @param string $formId The id of the current form.
+     * @param string|null $redirect The page to redirect the user to.
      * @return void
      */
-    public function requireCSRF(string $formId): void
+    public function requireCSRF(string $formId, string | null $redirect = null): void
     {
 
         if (!$this->CSRF->validate($formId, $this->request)) {
             http_response_code(403);
+            if ($this->useFlash) {
+                $this->flashToast(
+                    ToastType::WARNING,
+                    "Lien externe",
+                    "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
+                    $redirect ?? ""
+                );
+                exit;
+            }
             $this->toast->showToast(
                 ToastType::WARNING,
                 "Lien externe",

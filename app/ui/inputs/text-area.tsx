@@ -1,7 +1,7 @@
 'use client';
 
 import {clsx} from "clsx";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
 import {TextAreaProps} from "@/app/lib/types";
 
 const MAX_HEIGHT = 111;
@@ -37,7 +37,7 @@ export function TextArea({
                              defaultValue,
                              onChangeAction,
                          }: TextAreaProps) {
-    const resize = () => {
+    const resize = useCallback(() => {
         if (!ref?.current) return;
 
         const hasNewline = ref.current.value.includes("\n");
@@ -51,11 +51,11 @@ export function TextArea({
 
         ref.current.style.overflowY =
             ref.current.scrollHeight > MAX_HEIGHT ? "auto" : "hidden";
-    };
+    }, [ref]);
 
     useEffect(() => {
         resize();
-    }, [defaultValue]);
+    }, [defaultValue, resize]);
 
     return (
         <div

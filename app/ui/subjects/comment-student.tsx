@@ -11,7 +11,9 @@ export default function CommentStudent({subjectData, disabled, onChange} : {subj
 
     return (
         <>
-            <details key={`comment-teacher-details-for-${subjectData.teacher}`} className="group" open={subjectData.status === "rejected"}>
+            <details key={`comment-student-details-for-${subjectData.teacher}-${subjectData.topic}`}
+                     className="group"
+                     open={subjectData.status === "rejected"}>
                 <summary className="flex flex-row cursor-pointer">
                     <svg className="w-5 h-5 text-gray-900 transition group-open:rotate-90"
                          xmlns="http://www.w3.org/2000/svg"
@@ -22,14 +24,18 @@ export default function CommentStudent({subjectData, disabled, onChange} : {subj
                     </svg>
                     <span>Commentaire du professeur</span>
                 </summary>
-                {showLastRejected && <SubjectInputStudent id={subjectData.studentToken + subjectData.teacherToken + "-last-rejected"}
-                                                          label="Votre question non validée" helper=""
-                                                          value={subjectData.lastRejected} animate={false} disabled />}
+                {showLastRejected &&
+                    <SubjectInputStudent id={subjectData.studentToken + subjectData.teacherToken + "-last-rejected"}
+                                         label="Votre question non validée"
+                                         helper=""
+                                         animate={false}
+                                         subjectData={subjectData}
+                    />}
                 <TextArea id={subjectData.studentToken + subjectData.teacherToken + "-subject-comment"}
                           label="Commentaire"
                           defaultValue={subjectData.comment}
                           onChangeAction={onChange}
-                          disabled={disabled} />
+                          disabled={disabled}/>
             </details>
         </>
     );

@@ -11,10 +11,15 @@ export function UserNav() {
 
     useEffect(() => {
         const cookies = new Cookies();
-        const isLoggedIn = !!cookies.get("username");
 
-        setLoggedIn(isLoggedIn);
-        setText(isLoggedIn ? cookies.get("full-name") : "Se connecter");
+        const run = () => {
+            const isLoggedIn = !!cookies.get("username");
+
+            setLoggedIn(isLoggedIn);
+            setText(isLoggedIn ? cookies.get("full-name") : "Se connecter");
+        };
+
+        run();
     }, []);
 
     useEffect(() => {
