@@ -5,12 +5,7 @@ set -euo pipefail
 # Custom script to delete anything non-essential to the backend and set it up
 # This script is used when deploying the backend and the frontend on different servers
 
-rm -rf ./app
-rm -rf ./public
-rm -f .gitattributes
-rm -f .gitignore
-rm -f eslint.config.mjs
-#...
+find . -maxdepth 1 ! -name '.' ! -name 'LICENSE' ! -name 'README.md' ! -name 'CONTRIBUTING.md' ! -name 'backend' ! -name 'on-deploy-backend.sh' -exec rm -rf {} +
 
 # Setup the backend
 
