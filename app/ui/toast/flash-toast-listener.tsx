@@ -14,7 +14,7 @@ export default function FlashToastListener() {
 
         const run = async () => {
             try {
-                const res = await goralysFetchClient('/api/Toast/Get-Flash/', {
+                const res = await goralysFetchClient('Toast/Get-Flash/', {
                     credentials: 'include',
                     cache: 'no-store',
                 });
