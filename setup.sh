@@ -57,6 +57,10 @@ PHP_SESSION_LIFETIME_MULTIPLIER=1.25
 GORALYS_ENVIRONMENT="dev"
 EOF
 
+cat > ./.env.local << 'EOF'
+NEXT_PUBLIC_API_DOMAIN="your api domain"
+EOF
+
     echo ".env ready."
     echo
 fi

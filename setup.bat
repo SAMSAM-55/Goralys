@@ -63,6 +63,10 @@ echo PHP_SESSION_LIFETIME_MULTIPLIER=1.25
 echo GORALYS_ENVIRONMENT="dev"
 ) > ./backend/.env
 
+(
+echo NEXT_PUBLIC_API_DOMAIN="your api domain"
+) > ./.env.local
+
 echo .env ready.
 echo.
 
