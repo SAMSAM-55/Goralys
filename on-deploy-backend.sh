@@ -2,16 +2,21 @@
 
 set -euo pipefail
 
-echo "=================================================="
-echo "=====             Goralys setup              ====="
-echo "=================================================="
+# Custom script to delete anything non-essential to the backend and set it up
+# This script is used when deploying the backend and the frontend on different servers
 
-echo "Checking for pnpm..."
-if ! command -v pnpm >/dev/null 2>&1; then
-    echo "Fatal: pnpm not found in PATH."
-    echo "Please install pnpm or add it to your system PATH."
-    exit 1
-fi
+rm -rf ./app
+rm -rf ./public
+rm -f .gitattributes
+rm -f .gitignore
+rm -f eslint.config.mjs
+#...
+
+# Setup the backend
+
+echo "=================================================="
+echo "=====         Goralys backend setup          ====="
+echo "=================================================="
 
 echo "Checking for Composer..."
 if ! command -v composer >/dev/null 2>&1; then
@@ -23,11 +28,6 @@ fi
 echo "Installing dependencies ..."
 composer install --working-dir=backend || {
     echo "[ERROR] Composer install failed."
-    exit 1
-}
-
-pnpm install || {
-    echo "[ERROR] pnpm install failed."
     exit 1
 }
 
@@ -68,34 +68,28 @@ mkdir -p ./backend/Assets
 echo "Directories are ready."
 echo
 
-read -r -p "Would you like the setup to run checks (eslint + phpcs)? (Y/n) : " RUN_CHECKS
+read -r -p "Would you like the setup to run checks (phpcs)? (Y/n) : " RUN_CHECKS
 if [[ "${RUN_CHECKS:-Y}" != "Y" ]]; then
     goto_done=true
 fi
 
 if [ "${goto_done:-false}" != "true" ]; then
     echo
-    echo "Running eslint + phpcs checks..."
+    echo "Running phpcs checks..."
 
-    pnpm run lint || {
-        echo "[ERROR] ESLint failed."
-        echo "Fix issues and re-run setup or run: pnpm run lint"
-        exit 1
-    }
-
-    if ! pnpm run phpcs; then
+    if ! php backend/vendor/bin/phpcs --standard=PSR12 --ignore=vendor/* backend; then
         echo
         echo "PHPCS found coding standard violations."
         read -r -p "Run phpcbf to auto-fix what it can ? (Y/n) : " RUN_FIX
 
         if [[ "${RUN_FIX:-Y}" == "Y" ]]; then
-            pnpm run phpcbf || {
+            php backend/vendor/bin/phpcbf --standard=PSR12 --ignore=vendor/* backend || {
                 echo "[ERROR] PHPCBF failed."
                 exit 1
             }
 
             echo "Re-running phpcs to verify..."
-            pnpm run phpcs || {
+            php backend/vendor/bin/phpcs --standard=PSR12 --ignore=vendor/* backend || {
                 echo "[ERROR] Some PHPCS issues remain after PHPCBF."
                 echo "You will need to fix the remaining violations manually."
                 exit 1
@@ -103,7 +97,7 @@ if [ "${goto_done:-false}" != "true" ]; then
 
             echo "PHPCS clean after PHPCBF."
         else
-            echo "Skipped PHPCBF. You can run it later with: pnpm run phpcbf"
+            echo "Skipped PHPCBF. You can run it later."
             exit 1
         fi
     else
@@ -115,4 +109,3 @@ echo
 echo "=================================================="
 echo "=====             Setup Complete             ====="
 echo "=================================================="
-echo "You can now edit your .env file and start coding."
