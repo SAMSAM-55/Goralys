@@ -2,7 +2,7 @@ import {clsx} from "clsx";
 import {SubjectInputProps} from "@/app/lib/types";
 
 export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, animate = true }: SubjectInputProps) {
-    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/bakcend/API/Subjects/Draft/Get/`
+    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
     helper = subjectData.status === "submitted"
         ? "Cette question est en attente de validation."
         : subjectData.status === "not_submitted" ? "Cette question n'a pas encore été envoyée."

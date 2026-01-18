@@ -14,7 +14,7 @@ import {emitAuthEvent} from "@/app/lib/auth/auth-event";
  * @return Promise<Response> The result of the request.
  */
 export async function goralysFetchClient(input: string | URL | Request, requestOptions? : RequestInit): Promise <Response> {
-    const res = await fetch(input, {
+    const res = await fetch(`${apiUrl}/${input}`, {
         credentials: "include",
         ...requestOptions
     });
