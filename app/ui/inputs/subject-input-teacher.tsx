@@ -2,7 +2,7 @@ import {clsx} from "clsx";
 import {SubjectInputProps} from "@/app/lib/types";
 
 export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, animate = true }: SubjectInputProps) {
-
+    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/bakcend/API/Subjects/Draft/Get/`
     helper = subjectData.status === "submitted"
         ? "Cette question est en attente de validation."
         : subjectData.status === "not_submitted" ? "Cette question n'a pas encore été envoyée."
@@ -39,7 +39,7 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, 
                    )}
                 />
                 {subjectData.hasDraft &&
-                    <form action="/api/Subjects/Draft/Get/" method="POST">
+                    <form action={requestUrl} method="POST">
                         <input type="hidden" name="teacher-token" value={subjectData.teacherToken} />
                         <input type="hidden" name="student-token" value={subjectData.studentToken} />
                         <input type="hidden" name="topic" value={subjectData.topic} />

@@ -22,14 +22,10 @@ export async function cacheUserDataClient() {
 export function emptyUserCacheClient() {
     const cookies = new Cookies();
 
-    console.log("Cookies: ", cookies.getAll())
-
     Object.keys(cookies.getAll())
         .forEach((name) => {
             cookies.remove(name, { path: "/" });
         });
 
     cookies.update();
-
-    console.log("Cookies after cleanup : ", cookies.getAll())
 }

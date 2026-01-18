@@ -42,8 +42,6 @@ async function fetchTeacherSubjectsClient(): Promise<Response | null> {
 }
 
 export async function fetchSubjectsForRoleClient(role: UserRole): Promise<Response | null> {
-    console.log("Attempting to get subjects for role : ", role.role);
-
     switch (role.role) {
         case "student":
             return await fetchStudentSubjectsClient();

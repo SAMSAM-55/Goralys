@@ -6,6 +6,7 @@ import {fetchCsrfClient} from "@/app/lib/fetch/fetch.client";
 
 export default function LoginForm() {
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
+    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/bakcend/API/User/Auth/Login/`
 
     useEffect(() => {
         const run = async () => setCsrfToken(await fetchCsrfClient("login"));
@@ -18,7 +19,7 @@ export default function LoginForm() {
 
             <h1 className="text-xl">Connectez vous à votre compte Goralys</h1>
 
-            <form className="relative flex flex-col h-full" action="/api/User/Auth/Login/" method="POST" autoComplete="on">
+            <form className="relative flex flex-col h-full" action={requestUrl} method="POST" autoComplete="on">
                 <FloatingInput id="username" label="Identifiant" helper="Identifiant au format p.nomX" autocomplete="username" required />
 
                 <FloatingInput id="password" label="Mot de passe" autocomplete="current-password" password required />

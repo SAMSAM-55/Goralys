@@ -14,16 +14,10 @@ import {emitAuthEvent} from "@/app/lib/auth/auth-event";
  * @return Promise<Response> The result of the request.
  */
 export async function goralysFetchClient(input: string | URL | Request, requestOptions? : RequestInit): Promise <Response> {
-    console.log("API domain : ", apiUrl)
-    console.log("Env : ", process.env)
-
     const res = await fetch(`${apiUrl}/${input}`, {
         credentials: "include",
         ...requestOptions
     });
-
-    console.log(res);
-    console.log("Data: ", await res.clone().json());
 
     if (res.status === 401) {
         try {

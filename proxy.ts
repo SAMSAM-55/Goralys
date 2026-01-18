@@ -5,16 +5,13 @@ export async function proxy(request: NextRequest) {
 
     const { pathname } = request.nextUrl;
 
-    console.log("Proxy hit at : ", pathname);
-
     if (!pathname.startsWith("/subject")) {
         return NextResponse.next();
     }
 
-    console.log(`Proxy fetching: ${request.nextUrl.origin}/api/User/Profile/GetRole/`);
-
+    const apiUrl = process.env.NEXT_PUBLIC_API_DOMAIN
     const res = await fetch(
-        `${request.nextUrl.origin}/api/User/Profile/GetRole/`,
+        `${apiUrl}/backend/API/User/Profile/GetRole/`,
         {
             method: "POST",
             headers: {
