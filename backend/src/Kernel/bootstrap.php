@@ -1,15 +1,16 @@
 <?php
 
 use Goralys\Kernel\GoralysKernel;
+use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
 // ----------- API bootstrap method ---------- //
-function bootstrapAPI(): void
+function bootstrapAPI(GoralysKernel $kernel): void
 {
-
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $allowed = $kernel->env->getByKey("ORIGIN_DOMAIN");
 
-    if ($origin === 'https://goralys.fr') {
-        header('Access-Control-Allow-Origin: https://goralys.fr');
+    if ($origin === $allowed) {
+        header("Access-Control-Allow-Origin: $allowed");
         header('Access-Control-Allow-Credentials: true');
         header('Vary: Origin');
     }
@@ -28,9 +29,8 @@ function bootstrapAPI(): void
 // --------------- Kernel Init --------------- //
 function bootKernel(bool $useFlash = false, bool $test = false, array $files = []): GoralysKernel
 {
-    bootStrapAPI();
-
     $kernel = new GoralysKernel(__DIR__ . "/../../", $useFlash, $test, $files);
     $kernel->setHandlers();
+    bootstrapAPI($kernel);
     return $kernel;
 }

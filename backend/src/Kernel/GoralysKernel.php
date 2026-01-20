@@ -36,7 +36,7 @@ use Throwable;
 class GoralysKernel
 {
     private string $rootPath;
-    private EnvService $env;
+    public EnvService $env;
     public DbContainer $db;
     public LoggerInterface $logger;
     public AuthController $auth;
@@ -498,15 +498,16 @@ class GoralysKernel
         string $action = ""
     ): void {
         http_response_code(302); // Temporary redirect
+        $destination = $this->env->getByKey("ORIGIN_DOMAIN") . $redirect;
         $this->toast->showToast(
             $type,
             $title,
             $message,
-            $redirect,
+            $destination,
             true,
             $action
         );
-        header("Location: $redirect");
+        header("Location: $destination");
     }
 
     /**

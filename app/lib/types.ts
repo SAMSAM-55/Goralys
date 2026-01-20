@@ -42,6 +42,7 @@ export type TextAreaProps = {
 
 export type SubjectInputProps = {
     animate?: boolean,
+    rejected?: boolean,
     helper?: string,
     id: string,
     label: string,

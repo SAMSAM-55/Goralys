@@ -52,9 +52,10 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
             "Ce fichier depasse la taille maximale de 50 KO, veuilez ressayez avec un fichier plus petit.",
             ""
         );
+        exit();
     }
 
-    // Double check subject.
+    // Double-check subject.
 
     if (empty($subject) || trim($subject) === "") {
         $kernel->toast->fatalError(

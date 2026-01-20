@@ -37,8 +37,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         return $this->db->fetch(
             "SELECT st.subject, st.subject_status, st.teacher_comment AS comment, st.last_rejected,
             t.name AS topic, t.teacher_id AS teacher
-            FROM saje5795_goralys.student_topics st
-            JOIN saje5795_goralys.topics t on t.id = st.topic_id
+            FROM u599334177_goralys.student_topics st
+            JOIN u599334177_goralys.topics t on t.id = st.topic_id
             WHERE st.student_id = ?",
             "s",
             $studentUsername
@@ -56,8 +56,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         return $this->db->fetch(
             "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS comment, 
             st.last_rejected, t.name AS topic, st.draft_path AS draftPath
-            FROM saje5795_goralys.topics t
-            JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
+            FROM u599334177_goralys.topics t
+            JOIN u599334177_goralys.student_topics st on t.id = st.topic_id
             WHERE t.teacher_id = ?",
             "s",
             $teacherUsername
@@ -75,8 +75,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         return $this->db->fetchNoArgs(
             "SELECT st.student_id AS student, st.subject, st.subject_status, st.teacher_comment AS comment, 
             st.last_rejected, t.name AS topic, t.teacher_id AS teacher
-            FROM saje5795_goralys.topics t
-            JOIN saje5795_goralys.student_topics st on t.id = st.topic_id"
+            FROM u599334177_goralys.topics t
+            JOIN u599334177_goralys.student_topics st on t.id = st.topic_id"
         );
     }
 
@@ -92,8 +92,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     {
         return $this->db->fetch(
             "SELECT st.subject_status AS status
-            FROM saje5795_goralys.topics t
-            JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
+            FROM u599334177_goralys.topics t
+            JOIN u599334177_goralys.student_topics st on t.id = st.topic_id
             WHERE t.teacher_id = ?
             AND st.student_id = ?
             AND t.name = ?",
@@ -116,8 +116,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     {
         return $this->db->fetch(
             "SELECT st.draft_path AS path
-            FROM saje5795_goralys.topics t
-            JOIN saje5795_goralys.student_topics st on t.id = st.topic_id
+            FROM u599334177_goralys.topics t
+            JOIN u599334177_goralys.student_topics st on t.id = st.topic_id
             WHERE t.teacher_id = ?
             AND st.student_id = ?
             AND t.name = ?",
@@ -145,8 +145,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $newSubject
     ): bool {
         return $this->db->run(
-            "UPDATE saje5795_goralys.student_topics st
-            JOIN saje5795_goralys.topics t on t.id = st.topic_id
+            "UPDATE u599334177_goralys.student_topics st
+            JOIN u599334177_goralys.topics t on t.id = st.topic_id
             SET st.subject = ?, st.subject_status = 0
             WHERE t.teacher_id = ?
             AND st.student_id = ?
@@ -177,8 +177,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         SubjectStatus $newStatus
     ): bool {
         return $this->db->run(
-            "UPDATE saje5795_goralys.student_topics st
-            JOIN saje5795_goralys.topics t on t.id = st.topic_id
+            "UPDATE u599334177_goralys.student_topics st
+            JOIN u599334177_goralys.topics t on t.id = st.topic_id
             SET st.subject_status = ?,
                 st.last_rejected = IF(? = 2, st.subject, st.last_rejected)
             WHERE t.teacher_id = ?
@@ -211,8 +211,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $newComment
     ): bool {
         return $this->db->run(
-            "UPDATE saje5795_goralys.student_topics st
-            JOIN saje5795_goralys.topics t on t.id = st.topic_id
+            "UPDATE u599334177_goralys.student_topics st
+            JOIN u599334177_goralys.topics t on t.id = st.topic_id
             SET st.teacher_comment = ?
             WHERE t.teacher_id = ?
             AND st.student_id = ?
@@ -243,8 +243,8 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $newPath
     ): bool {
         return $this->db->run(
-            "UPDATE saje5795_goralys.student_topics st
-            JOIN saje5795_goralys.topics t on t.id = st.topic_id
+            "UPDATE u599334177_goralys.student_topics st
+            JOIN u599334177_goralys.topics t on t.id = st.topic_id
             SET st.draft_path = ?
             WHERE t.teacher_id = ?
             AND st.student_id = ?

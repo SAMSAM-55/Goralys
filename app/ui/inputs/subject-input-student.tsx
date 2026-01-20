@@ -1,7 +1,7 @@
 import {clsx} from "clsx";
 import {SubjectInputProps} from "@/app/lib/types";
 
-export function SubjectInputStudent({ id, label, helper, subjectData, onChange, animate = true }: SubjectInputProps) {
+export function SubjectInputStudent({ id, label, helper, subjectData, onChange, animate = true, rejected = false }: SubjectInputProps) {
     helper = subjectData.status === "submitted"
         ? "Cette question est en attente de validation, vous ne pouvez plus la modifier."
         : subjectData.status === "not_submitted" ? "Cette question n'a pas encore été envoyée."
@@ -22,8 +22,8 @@ export function SubjectInputStudent({ id, label, helper, subjectData, onChange, 
                    name={id}
                    placeholder=" "
                    spellCheck="true"
-                   disabled={false}
-                   defaultValue={subjectData.subject}
+                   disabled={rejected}
+                   defaultValue={rejected ? subjectData.lastRejected : subjectData.subject}
                    onChange={onChange}
                    className={clsx(
                        "peer block w-full py-0 px-0 cursor-text text-base text-heading " +
@@ -58,7 +58,7 @@ export function SubjectInputStudent({ id, label, helper, subjectData, onChange, 
                 {label}
             </label>
 
-            {helper.length !== 0 && <p className="mt-0 absolute text-[13px] italic text-gray-600">
+            {helper.length !== 0 && !rejected && <p className="mt-0 absolute text-[13px] italic text-gray-600">
                 *{helper}
             </p>}
         </div>

@@ -16,7 +16,7 @@ export async function proxy(request: NextRequest) {
 
     let res: Response;
     try {
-        res = await fetch(`${apiUrl}/backend/API/User/Profile/GetRole/`, {
+        res = await fetch(`${apiUrl}/User/Profile/GetRole/`, {
             method: "POST",
             headers: {
                 cookie: request.headers.get("cookie") ?? "",
