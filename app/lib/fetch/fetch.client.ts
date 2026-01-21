@@ -2,9 +2,12 @@
 
 'use client';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_DOMAIN
-
 import {emitAuthEvent} from "@/app/lib/auth/auth-event";
+import {GoralysActionHandler} from "@/app/lib/fetch/goralys-action-handler"
+
+const apiUrl = process.env.NEXT_PUBLIC_API_DOMAIN;
+const actionHandler = new GoralysActionHandler();
+
 /**
  * Custom function to detect session expiration when fetching data.
  * If a 401-response code is detected, the user is redirected to the login page with a toast.
@@ -19,15 +22,17 @@ export async function goralysFetchClient(input: string | URL | Request, requestO
         ...requestOptions
     });
 
+    const data = await res.clone().json();
+    // Auth check
     if (res.status === 401) {
         try {
-            const data = await res.clone().json();
             emitAuthEvent(data?.authEvent ?? "unauthenticated");
         } catch {
             emitAuthEvent("unauthenticated");
         }
     }
 
+    await actionHandler.handle(res);
     return res;
 }
 
