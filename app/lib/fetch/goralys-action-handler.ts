@@ -1,8 +1,10 @@
 import {cacheUserDataClient} from "@/app/lib/user/user.client";
+import {emitUserEvent} from "@/app/lib/auth/user-event";
 
 export class GoralysActionHandler {
     private onLogin = async () => {
         await cacheUserDataClient();
+        emitUserEvent("login");
         return;
 }
     public handle = async (r: Response) => {
