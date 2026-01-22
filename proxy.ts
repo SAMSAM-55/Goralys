@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
     let res: Response;
     try {
         res = await fetch(`${apiUrl}/User/Profile/GetRole/`, {
-            method: "POST",
+            method: "GET",
             headers: {
                 cookie: request.headers.get("cookie") ?? "",
                 "X-Forwarded-Origin": clientOrigin,
