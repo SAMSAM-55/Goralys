@@ -16,6 +16,9 @@ export async function proxy(request: NextRequest) {
 
     const clientOrigin = request.headers.get("origin") ?? request.nextUrl.origin;
 
+    request.headers.set("x-debug-origin", clientOrigin);
+    request.headers.set("x-debug-cookies", request.headers.get("cookie") ?? "none");
+
     let res: Response;
     try {
         res = await fetch(`${apiUrl}/User/Profile/GetRole/`, {
