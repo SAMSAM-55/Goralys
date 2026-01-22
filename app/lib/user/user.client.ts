@@ -6,7 +6,7 @@ import {goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import {UserData} from "@/app/lib/types";
 
 export async function cacheUserDataClient() {
-    const res = await goralysFetchClient('User/Profile/Get');
+    const res = await goralysFetchClient('User/Profile/Get/');
 
     if (!res.ok) {return;}
 

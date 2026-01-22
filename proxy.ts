@@ -14,12 +14,15 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
+    const clientOrigin = request.headers.get("origin") ?? request.nextUrl.origin;
+
     let res: Response;
     try {
         res = await fetch(`${apiUrl}/User/Profile/GetRole/`, {
             method: "POST",
             headers: {
                 cookie: request.headers.get("cookie") ?? "",
+                origin: clientOrigin,
             },
             cache: "no-store",
         });
