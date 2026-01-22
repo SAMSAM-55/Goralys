@@ -10,10 +10,10 @@ function bootstrapAPI(GoralysKernel $kernel): void
     $forwardedOrigin = $_SERVER['HTTP_X_FORWARDED_ORIGIN'] ?? '';
 
     $effectiveOrigin = $origin !== '' ? $origin : $forwardedOrigin;
-    $allowed = $kernel->env->getByKey("ORIGIN_DOMAIN");
+    $allowed = explode(",", $kernel->env->getByKey("ORIGIN_DOMAIN"));
 
-    if ($effectiveOrigin === $allowed) {
-        header("Access-Control-Allow-Origin: $allowed");
+    if (in_array($effectiveOrigin, $allowed)) {
+        header("Access-Control-Allow-Origin: $effectiveOrigin");
         header('Access-Control-Allow-Credentials: true');
         header('Vary: Origin');
     }
