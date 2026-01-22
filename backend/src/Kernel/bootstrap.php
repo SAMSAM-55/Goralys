@@ -7,9 +7,12 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 function bootstrapAPI(GoralysKernel $kernel): void
 {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $forwardedOrigin = $_SERVER['HTTP_X_FORWARDED_ORIGIN'] ?? '';
+
+    $effectiveOrigin = $origin !== '' ? $origin : $forwardedOrigin;
     $allowed = $kernel->env->getByKey("ORIGIN_DOMAIN");
 
-    if ($origin === $allowed) {
+    if ($effectiveOrigin === $allowed) {
         header("Access-Control-Allow-Origin: $allowed");
         header('Access-Control-Allow-Credentials: true');
         header('Vary: Origin');

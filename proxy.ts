@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
             method: "POST",
             headers: {
                 cookie: request.headers.get("cookie") ?? "",
-                origin: clientOrigin,
+                "X-Forwarded-Origin": clientOrigin,
             },
             cache: "no-store",
         });
