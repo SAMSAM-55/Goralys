@@ -128,7 +128,7 @@ class GoralysKernel
                 // Ensure the session expiration logic works as intended. Refer to variable docs for more info.
                 'lifetime' => $this->sessionLifetime * $this->sessionLifetimeMultiplier,
                 'path' => '/',
-                'domain' => '',
+                'domain' => $this->env->getByKey("COOKIES_DOMAIN"),
                 'secure' => true,
                 'httponly' => true,
                 'samesite' => 'None',
