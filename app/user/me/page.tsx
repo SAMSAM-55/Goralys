@@ -14,7 +14,7 @@ export default function Page() {
     async function logout() {
         const payload = {'csrf-token': await fetchCsrfClient("logout")};
 
-        await goralysFetchClient("User/Auth/Logout", {
+        await goralysFetchClient("User/Auth/Logout/", {
             method: "POST",
             body: JSON.stringify(payload),
         });

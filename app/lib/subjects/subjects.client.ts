@@ -14,7 +14,7 @@ async function fetchStudentSubjectsClient(): Promise<Response | null> {
         'csrf-token': csrfToken,
     }
 
-    return await goralysFetchClient('Subjects/Get/Student', {
+    return await goralysFetchClient('Subjects/Get/Student/', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -32,7 +32,7 @@ async function fetchTeacherSubjectsClient(): Promise<Response | null> {
         'csrf-token': csrfToken,
     }
 
-    return await goralysFetchClient('Subjects/Get/Teacher', {
+    return await goralysFetchClient('Subjects/Get/Teacher/', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
