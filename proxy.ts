@@ -15,9 +15,7 @@ export async function proxy(request: NextRequest) {
     }
 
     const clientOrigin = request.headers.get("origin") ?? request.nextUrl.origin;
-
-    request.headers.set("x-debug-origin", clientOrigin);
-    request.headers.set("x-debug-cookies", request.headers.get("cookie") ?? "none");
+    const cookies = request.headers.get("cookie") ?? "";
 
     let res: Response;
     try {
@@ -59,13 +57,21 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    if (pathname === "/subject") {
-        return NextResponse.redirect(
+    let response: NextResponse;
+
+    if (pathname === "/subject" && role) {
+        response = NextResponse.redirect(
             new URL(`/subject/${role}`, request.url)
         );
+    } else {
+        response = NextResponse.next();
     }
 
-    return NextResponse.next();
+    response.headers.set("x-debug-origin", clientOrigin);
+    response.headers.set("x-debug-cookies", cookies);
+    response.headers.set("x-debug-role", role ?? "none");
+
+    return response;
 }
 
 export const config = {
