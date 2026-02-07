@@ -77,7 +77,7 @@ class UserRepository implements UserRepositoryInterface
     public function getByUsername(string $username): UserFullDTO
     {
         $result = $this->db->fetch(
-            "SELECT * FROM u599334177_goralys.users WHERE user_id = ?",
+            "SELECT * FROM users WHERE user_id = ?",
             "s",
             $username
         );
@@ -94,7 +94,7 @@ class UserRepository implements UserRepositoryInterface
     public function save(UserCreateDTO $userData): bool
     {
         return $this->db->run(
-            "INSERT INTO u599334177_goralys.users (user_id, full_name, password_hash, role) VALUES (?, ?, ?, ?)",
+            "INSERT INTO users (user_id, full_name, password_hash, role) VALUES (?, ?, ?, ?)",
             "ssss",
             $userData->getUsername(),
             $userData->getFullName(),
@@ -112,7 +112,7 @@ class UserRepository implements UserRepositoryInterface
     public function exists(string $username): bool
     {
         return $this->db->fetch(
-            "SELECT * FROM u599334177_goralys.users WHERE user_id = ? LIMIT 1",
+            "SELECT * FROM users WHERE user_id = ? LIMIT 1",
             "s",
             $username
         )->num_rows != 0;
@@ -128,11 +128,11 @@ class UserRepository implements UserRepositoryInterface
     {
         return $this->db->fetch(
             "SELECT user_id FROM
-            (SELECT student_id AS user_id FROM u599334177_goralys.student_topics
+            (SELECT student_id AS user_id FROM student_topics
             UNION ALL
-            SELECT teacher_id AS user_id FROM u599334177_goralys.topics
+            SELECT teacher_id AS user_id FROM topics
             UNION ALL
-            SELECT user_id AS user_i FROM u599334177_goralys.admins_list
+            SELECT user_id AS user_i FROM admins_list
             ) AS all_ids
             WHERE user_id = ?
             LIMIT 1",
@@ -151,7 +151,7 @@ class UserRepository implements UserRepositoryInterface
     public function getLoginDTO(string $username): ?UserLoginDTO
     {
         $result = $this->db->fetch(
-            "SELECT * FROM u599334177_goralys.users WHERE user_id = ?",
+            "SELECT * FROM users WHERE user_id = ?",
             "s",
             $username
         );
@@ -180,13 +180,13 @@ class UserRepository implements UserRepositoryInterface
         $result = $this->db->fetch(
             "SELECT user_id, role FROM (
             SELECT student_id AS user_id, 'student' AS role
-            FROM u599334177_goralys.student_topics
+            FROM student_topics
             UNION ALL
             SELECT teacher_id AS user_id, 'teacher' AS role
-            FROM u599334177_goralys.topics
+            FROM topics
             UNION ALL
             SELECT user_id AS user_id, 'admin' AS role
-            FROM u599334177_goralys.admins_list
+            FROM admins_list
             ) AS all_ids
             WHERE user_id = ?
             LIMIT 1",
