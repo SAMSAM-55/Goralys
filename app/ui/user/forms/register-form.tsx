@@ -6,6 +6,7 @@ import {fetchCsrfClient} from "@/app/lib/fetch/fetch.client";
 
 export default function RegisterForm() {
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
+    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
 
     useEffect(() => {
         const run = async () => setCsrfToken(await fetchCsrfClient("register"));
@@ -18,7 +19,7 @@ export default function RegisterForm() {
 
             <h1 className="text-xl">Créez votre compte chez Goralys</h1>
 
-            <form className="relative flex flex-col h-full" method="POST" action="/api/User/Auth/Register" autoComplete="on">
+            <form className="relative flex flex-col h-full" method="POST" action={requestUrl} autoComplete="on">
                 <FloatingInput id="user-name" label="Identifiant" helper="Identifiant au format p.nomX." autocomplete="username" required />
                 <FloatingInput id="first-name" label="Prénom" autocomplete="given-name" required />
                 <FloatingInput id="last-name" label="Nom de famille" autocomplete="family-name" required />

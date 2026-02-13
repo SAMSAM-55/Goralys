@@ -26,18 +26,18 @@ To simulate a local PHP server with mysql on Windows, you can use [XAMPP](https:
 Steps:
 1. Run setup script:
    ```bash
-   .\setup.bat
+   .\scripts\setup.bat
    ```
    Or if you use Linux:
    ```bash
-   ./setup.sh
+   ./scripts/setup.sh
    ```
 2. Configure environment:
     - For development, modify the values inside .env (created using setup.bat)
 3. Database:
     - Create the database and tables using the schema at [backend/data_structure.sql](backend/data_structure.sql).
 4. Run dev server:
-    - Run Next and PHP's built-in server for the API, by default the next rewrite port for the API is 80:
+    - Run Next and PHP's built-in server for the API. By default, the next rewrite port for the API is 80:
       ```bash
       pnpm run dev
       php -S localhost:80

@@ -31,7 +31,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * @param SubjectsRepositoryInterface $repo The injected subjects repository
      * @param UsernameFormatterService $formatter The injected username formatter
      * This formatter is used to transform the usernames stored inside the database with the format f.lastnameX to
-     * lastname. f with f the first letter of the first name.
+     * LASTNAME. F with f the first letter of the first name.
      * This is useful to avoid displaying private usernames to other users.
      * Therefore, as the username format is very specific to the project, you may need to tweak the username formatter
      * or get rid of it completely depending on your project.
@@ -64,16 +64,24 @@ class GetSubjectsService implements GetSubjectsServiceInterface
         $subjects = new SubjectsCollection();
 
         while ($row = $result->fetch_assoc()) {
+            $teachers = explode(", ", $row['teachers']);
+            $formattedNames = array_map(
+                function ($name) {
+                    return $this->formatter->formatUsername($name);
+                },
+                $teachers
+            );
+
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($studentUsername),
                 $this->usernameManager->store($studentUsername),
-                $row['subject'] ?? "",
+                $row['subject'],
                 SubjectStatus::from($row['subject_status']),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
-                $this->formatter->formatUsername($row['teacher']),
-                $this->usernameManager->store($row['teacher']),
+                implode(", ", $formattedNames),
+                $this->usernameManager->store($teachers[0]),
             );
 
             $subjects->addSubject($subject);
@@ -119,7 +127,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
 
     /**
      * A simple helper to transform a request result from the repository into a usable subjects collection.
-     * This version is specific to admin accounts and thus is made to format all the subjects at so it doesn't
+     * This version is specific to admin accounts and thus is made to format all the subjects at, so it doesn't
      * require a username.
      * There are three declinations of this function for students, teachers and admins (all) as the formatting varies
      * from one role to another as the inputs are different.
@@ -133,6 +141,14 @@ class GetSubjectsService implements GetSubjectsServiceInterface
         $subjects = new SubjectsCollection();
 
         while ($row = $result->fetch_assoc()) {
+            $teachers = explode(", ", $row['teachers']);
+            $formattedNames = array_map(
+                function ($name) {
+                    return $this->formatter->formatUsername($name);
+                },
+                $teachers
+            );
+
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
                 $this->usernameManager->store($row['student']),
@@ -141,8 +157,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
-                $this->formatter->formatUsername($row['teacher']),
-                $this->usernameManager->store($row['teacher']),
+                implode(", ", $formattedNames),
+                $this->usernameManager->store($teachers[0]),
             );
 
             $subjects->addSubject($subject);

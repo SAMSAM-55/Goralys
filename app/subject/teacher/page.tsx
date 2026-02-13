@@ -9,7 +9,7 @@ export default function Page() {
     return (
         <div className="relative flex flex-col grow h-fit items-center top-10">
             <div className="h-auto w-fit p-2">
-                <p className="underline text-2xl self-start mb-3">Vos questions :</p>
+                <p className="underline text-2xl self-start mb-3">Les questions de vos élèves :</p>
                 <div className="flex flex-col gap-2">
                     {subjects?.map((s) => (
                         <TeacherCard

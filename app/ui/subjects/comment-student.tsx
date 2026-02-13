@@ -30,6 +30,7 @@ export default function CommentStudent({subjectData, disabled, onChange} : {subj
                                          helper=""
                                          animate={false}
                                          subjectData={subjectData}
+                                         rejected={!!showLastRejected}
                     />}
                 <TextArea id={subjectData.studentToken + subjectData.teacherToken + "-subject-comment"}
                           label="Commentaire"
