@@ -183,7 +183,7 @@ class UserRepository implements UserRepositoryInterface
             FROM student_topics
             UNION ALL
             SELECT teacher_id AS user_id, 'teacher' AS role
-            FROM topics
+            FROM topic_teachers
             UNION ALL
             SELECT user_id AS user_id, 'admin' AS role
             FROM admins_list
