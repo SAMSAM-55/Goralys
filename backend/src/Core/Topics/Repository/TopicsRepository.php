@@ -6,10 +6,17 @@ use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
 
+/**
+ * Repository class for handling database operations related to Topics.
+ */
 class TopicsRepository implements Interfaces\TopicsRepositoryInterface
 {
+    /** @var DbContainer The database container. */
     private DbContainer $db;
 
+    /**
+     * @param DbContainer $db
+     */
     public function __construct(
         DbContainer $db
     ) {
@@ -17,9 +24,11 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     }
 
     /**
-     * @param int $topicId
-     * @param string $topicCode
-     * @param string $topicName
+     * Inserts a new topic into the 'topics' table.
+     *
+     * @param int $topicId The unique ID of the topic.
+     * @param string $topicCode The unique code for the topic.
+     * @param string $topicName The display name of the topic.
      * @return void
      * @throws GoralysPrepareException|GoralysQueryException
      */
@@ -35,8 +44,10 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     }
 
     /**
-     * @param int $topicId
-     * @param string $teacherUsername
+     * Associates a teacher with a topic in the 'topic_teachers' table.
+     *
+     * @param int $topicId The ID of the topic.
+     * @param string $teacherUsername The username of the teacher.
      * @return void
      * @throws GoralysPrepareException|GoralysQueryException
      */
@@ -51,8 +62,10 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     }
 
     /**
-     * @param int $topicId
-     * @param string $studentUsername
+     * Associates a student with a topic in the 'student_topics' table.
+     *
+     * @param int $topicId The ID of the topic.
+     * @param string $studentUsername The username of the student.
      * @return void
      * @throws GoralysPrepareException|GoralysQueryException
      */

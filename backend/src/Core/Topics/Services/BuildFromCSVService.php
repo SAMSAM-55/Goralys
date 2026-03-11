@@ -7,11 +7,18 @@ use Goralys\Core\Topics\Interfaces\BuildFromCSVServiceInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Utils\UtilitiesManager;
 
+/**
+ * Service responsible for building topic-related data (groups and students) from CSV files.
+ */
 class BuildFromCSVService implements BuildFromCSVServiceInterface
 {
     private UtilitiesManager $utils;
     private TopicsImportConfig $config;
 
+    /**
+     * @param UtilitiesManager $utils
+     * @param TopicsImportConfig $config
+     */
     public function __construct(UtilitiesManager $utils, TopicsImportConfig $config)
     {
         $this->utils = $utils;
@@ -19,7 +26,11 @@ class BuildFromCSVService implements BuildFromCSVServiceInterface
     }
 
     /**
-     * @throws GoralysRuntimeException
+     * Ensures the provided path is a valid CSV file and returns a SplFileObject.
+     *
+     * @param string $path The full path to the CSV file.
+     * @return \SplFileObject
+     * @throws GoralysRuntimeException If the file is not a valid CSV or cannot be opened.
      */
     private function ensureCSV(string $path): \SplFileObject
     {
@@ -50,9 +61,11 @@ class BuildFromCSVService implements BuildFromCSVServiceInterface
     }
 
     /**
-     * @param string $from
-     * @return array<string, list<string>>
-     * @throws GoralysRuntimeException
+     * Parses a CSV file to build a mapping of group codes to teacher usernames.
+     *
+     * @param string $from The full path to the groups CSV file.
+     * @return array<string, list<string>> A mapping of group code => array of teacher usernames.
+     * @throws GoralysRuntimeException If the CSV format is invalid.
      */
     public function buildGroups(string $from): array
     {
@@ -86,9 +99,12 @@ class BuildFromCSVService implements BuildFromCSVServiceInterface
     }
 
     /**
-     * @param string $from
-     * @return array
-     * @throws GoralysRuntimeException
+     * Parses a CSV file to extract student names from a specific column.
+     * It attempts to automatically detect the student column based on common headers.
+     *
+     * @param string $from The full path to the student CSV file.
+     * @return string[] A unique list of student names.
+     * @throws GoralysRuntimeException If the CSV file cannot be opened.
      */
     public function buildStudents(string $from): array
     {

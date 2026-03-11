@@ -21,18 +21,36 @@ use Goralys\Shared\Utils\String\Data\StringCase;
 use Goralys\Shared\Utils\UtilitiesManager;
 use ZipArchive;
 
+/**
+ * Controller for managing topic-related operations, including CSV/ZIP imports and persistence.
+ */
 class TopicsController implements TopicsControllerInterface
 {
+    /** @var UtilitiesManager Utility manager for string operations and more. */
     private UtilitiesManager $utils;
+    /** @var LoggerInterface Logger instance. */
     private LoggerInterface $logger;
+    /** @var DbContainer Database container instance. */
     private DbContainer $db;
+    /** @var TopicsImportConfig Configuration for topic imports. */
     private TopicsImportConfig $config;
+    /** @var TopicsRepository Repository for topic database operations. */
     private TopicsRepository $repository;
+    /** @var BuildFromCSVService Service to build topics from CSV data. */
     private BuildFromCSVService $CSVBuilder;
+    /** @var GoralysFileManager Manager for file operations. */
     private GoralysFileManager $files;
+    /** @var array<string, string> Cache for username mappings (Full Name => username). */
     private array $usernameTable; // Temporary will be moved soon after the testing phase
+    /** @var int Internal ID generator for topics during import. */
     private int $nextId;
 
+    /**
+     * @param LoggerInterface $logger
+     * @param DbContainer $db
+     * @param UtilitiesManager $utils
+     * @param GoralysFileManager $files
+     */
     public function __construct(
         LoggerInterface $logger,
         DbContainer $db,
@@ -52,6 +70,15 @@ class TopicsController implements TopicsControllerInterface
         $this->files = $files;
     }
 
+    /**
+     * Creates a new TopicDTO instance.
+     *
+     * @param string $name The name of the topic.
+     * @param string $code The code (ID) of the topic.
+     * @param string[] $students A list of student names or usernames.
+     * @param string[] $teachers A list of teacher names or usernames.
+     * @return TopicDTO
+     */
     public function makeTopic(string $name, string $code, array $students, array $teachers): TopicDTO
     {
         $this->nextId++;
@@ -64,6 +91,12 @@ class TopicsController implements TopicsControllerInterface
         );
     }
 
+    /**
+     * Generates a unique username based on a person's full name.
+     *
+     * @param string $fullName The full name of the student or teacher.
+     * @return string The generated username (e.g., 'f.lastname9').
+     */
     private function generateUsername(string $fullName): string
     {
         if (in_array($fullName, array_keys($this->usernameTable))) {
@@ -83,6 +116,9 @@ class TopicsController implements TopicsControllerInterface
     }
 
     /**
+     * Inserts a TopicDTO into the database, including its students and teachers.
+     *
+     * @param TopicDTO $topic The topic data transfer object to insert.
      * @throws GoralysQueryException|GoralysPrepareException
      */
     public function insert(TopicDTO $topic): void
@@ -108,6 +144,12 @@ class TopicsController implements TopicsControllerInterface
         }
     }
 
+    /**
+     * Creates a temporary extraction directory for a ZIP file.
+     *
+     * @param UploadedFileDTO $file The uploaded file metadata.
+     * @return string The absolute path to the temporary directory.
+     */
     private function makeExtractionDir(UploadedFileDTO $file): string
     {
         $baseDir = dirname($file->tmpPath);
@@ -115,9 +157,11 @@ class TopicsController implements TopicsControllerInterface
     }
 
     /**
-     * @param string $dir
-     * @return array<string, list<string>>
-     * @throws GoralysRuntimeException
+     * Loads the group-to-teacher mapping from the 'groupes.csv' file in the extraction directory.
+     *
+     * @param string $dir The path to the extraction directory.
+     * @return array<string, list<string>> A mapping of group codes to teacher usernames.
+     * @throws GoralysRuntimeException If the groups mapping file is missing.
      */
     private function loadGroupsMapping(string $dir): array
     {
@@ -129,6 +173,12 @@ class TopicsController implements TopicsControllerInterface
         return $this->CSVBuilder->buildGroups($groupsCsv);
     }
 
+    /**
+     * Finds all CSV files in the extraction directory that are not the groups mapping file.
+     *
+     * @param string $dir The extraction directory path.
+     * @return string[] List of absolute paths to topic CSV files.
+     */
     private function findTopicsCsv(string $dir): array
     {
         $pattern = $dir . "*.csv";
@@ -143,6 +193,13 @@ class TopicsController implements TopicsControllerInterface
         return $csvFiles;
     }
 
+    /**
+     * Parses a topic CSV filename to extract its code and name.
+     * Expected format: CODE_Name.csv
+     *
+     * @param string $filePath The full path to the CSV file.
+     * @return TopicDescriptorDTO|null The parsed descriptor or null if invalid.
+     */
     private function parseTopicFilename(string $filePath): ?TopicDescriptorDTO
     {
         $base = basename($filePath);
@@ -164,9 +221,11 @@ class TopicsController implements TopicsControllerInterface
     }
 
     /**
-     * @param UploadedFileDTO $file
-     * @return TopicDTO[]
-     * @throws GoralysRuntimeException
+     * Processes an uploaded ZIP file and creates TopicDTO objects from its content.
+     *
+     * @param UploadedFileDTO $file The ZIP file metadata.
+     * @return TopicDTO[] A list of constructed TopicDTO objects.
+     * @throws GoralysRuntimeException If no valid topic files are found.
      */
     public function makeTopicsFromZip(UploadedFileDTO $file): array
     {
