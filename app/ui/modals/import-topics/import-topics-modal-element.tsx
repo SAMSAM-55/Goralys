@@ -1,17 +1,17 @@
 'use client';
 
 import {clsx} from "clsx";
-import {DraftModalProps} from "@/app/lib/types";
+import {ImportTopicsModalProps} from "@/app/lib/types";
 import {Button} from "@/app/ui/button";
-import InputTextFile from "@/app/ui/inputs/input-text-file";
 import {useEffect, useRef, useState} from "react";
+import InputZipFile from "@/app/ui/inputs/input-zip-file";
 
-export default function DraftModalElement({ visible, onChooseDraft, onCancel, onCloseModal }: DraftModalProps) {
-    const [draftFile, setDraftFile] = useState<File | null>(null);
+export default function ImportTopicsModalElement({ visible, onImportTopics, onCancel, onCloseModal }: ImportTopicsModalProps) {
+    const [topicsFile, setTopicsFile] = useState<File | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
 
     const onConfirm = () => {
-        onChooseDraft(draftFile);
+        onImportTopics(topicsFile);
     };
 
     useEffect(() => {
@@ -60,23 +60,23 @@ export default function DraftModalElement({ visible, onChooseDraft, onCancel, on
                 </div>
 
                 <div className="flex flex-col justify-center flex-1">
-                    <strong className="text-md">Choix du brouillon</strong>
-                    <span className="text-sm">Vous pouvez joindre un brouillon a votre question avant de l`&apos`envoyer</span>
+                    <strong className="text-md">Import des données</strong>
+                    <span className="text-sm">Vous pouvez importer les données sous forme d&#39;un fichiez zip</span>
                 </div>
             </div>
 
-            <InputTextFile text="Téverser un brouillon" maxSizeKB={50} onFileSelected={setDraftFile} />
+            <InputZipFile text="Téverser une archive" onFileSelected={setTopicsFile} />
 
             <div className="flex justify-between gap-2 mt-2">
                 <Button
                     className="bg-gray-400! before:bg-gray-500! text-white! border-none! shadow-none! mt-0! mb-0! h-11! w-50!"
-                    text="Envoyer la question seule"
+                    text="Annuler"
                     type="button"
                     onClick={onCancel}
                 />
                 <Button
                     className="bg-blue-600! before:bg-blue-700! text-white! border-none! shadow-none! mt-0! mb-0! h-11! w-50!"
-                    text="Envoyer le brouillon"
+                    text="Envoyer les données"
                     type="button"
                     onClick={onConfirm}
                 />

@@ -1,9 +1,9 @@
 <?php
 
-namespace Goralys\Core\Subject\Data;
+namespace Goralys\Core\Subjects\Data;
 
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use JsonSerializable;
 
 /**

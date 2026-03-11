@@ -1,8 +1,8 @@
 <?php
 
-namespace Goralys\Core\Subject\Interfaces;
+namespace Goralys\Core\Subjects\Interfaces;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 
 interface UpdateSubjectServiceInterface
 {

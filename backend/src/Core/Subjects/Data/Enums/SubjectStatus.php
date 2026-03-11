@@ -1,6 +1,6 @@
 <?php
 
-namespace Goralys\Core\Subject\Data\Enums;
+namespace Goralys\Core\Subjects\Data\Enums;
 
 enum SubjectStatus: int
 {

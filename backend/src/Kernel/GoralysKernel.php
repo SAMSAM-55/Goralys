@@ -4,7 +4,9 @@ namespace Goralys\Kernel;
 
 use ErrorException;
 use Goralys\App\HTTP\Files\GoralysFileManager;
+use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\App\HTTP\Files\Interface\FileMover;
+use Goralys\App\HTTP\Files\Services\HttpFileExtractor;
 use Goralys\App\HTTP\Files\Services\HttpFileMover;
 use Goralys\App\HTTP\Files\Services\TestFileMover;
 use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
@@ -13,6 +15,7 @@ use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\Topics\Controllers\TopicsController;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
@@ -26,6 +29,7 @@ use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysConnectException;
 use Goralys\Shared\Exception\GoralysException;
 use Goralys\Shared\Exception\GoralysRuntimeException;
+use Goralys\Shared\Utils\UtilitiesManager;
 use JetBrains\PhpStorm\NoReturn;
 use JsonSerializable;
 use Throwable;
@@ -37,11 +41,13 @@ class GoralysKernel
 {
     private string $rootPath;
     public EnvService $env;
+    public UtilitiesManager $utils;
     public DbContainer $db;
     public LoggerInterface $logger;
     public AuthController $auth;
     public GoralysFileManager $fileManager;
     public SubjectsController $subjects;
+    public TopicsController $topics;
     public ToastController $toast;
     private CSRFService $CSRF;
     /**
@@ -87,6 +93,7 @@ class GoralysKernel
         $this->rootPath = $rootPath;
 
         $this->initEnv();
+        $this->initUtils();
         $this->initLogger();
         $this->sessionLifetime = $this->env->getByKey("PHP_SESSION_LIFETIME");
         $this->sessionLifetimeMultiplier = $this->env->getByKey("PHP_SESSION_LIFETIME_MULTIPLIER");
@@ -100,6 +107,7 @@ class GoralysKernel
         $this->initAuth();
         $this->bootFileSubsystem($test, $testFiles);
         $this->initSubjects();
+        $this->initTopics();
         $this->initCSRF();
         $this->initUsernameManager();
     }
@@ -164,6 +172,15 @@ class GoralysKernel
     }
 
     /**
+     * Initializes all the utility services
+     * @return void
+     */
+    private function initUtils(): void
+    {
+        $this->utils = new UtilitiesManager();
+    }
+
+    /**
      * Initializes the logger of the kernel.
      * The logger used is a `GoralysLogger`, which is a custom logger made specially for this project.
      * @return void
@@ -212,9 +229,10 @@ class GoralysKernel
             $files = FilesNormalizer::fromGlobals($_FILES);
             $mover = new HttpFileMover();
         }
+        $extractor = new HttpFileExtractor();
 
         try {
-            $this->initFileManager($mover, $files);
+            $this->initFileManager($mover, $extractor, $files);
         } catch (GoralysRuntimeException $e) {
             $this->logger->fatal(
                 LoggerInitiator::KERNEL,
@@ -226,13 +244,14 @@ class GoralysKernel
     /**
      * Initializes the file manager of the kernel.
      * @param FileMover $mover The mover for the file manager.
+     * @param FileExtractor $extractor The file extractor for the file manager.
      * @param array $files The files array, used only in "test mode".
      * @return void
      * @throws GoralysRuntimeException If an invalid file is found.
      */
-    private function initFileManager(FileMover $mover, array $files): void
+    private function initFileManager(FileMover $mover, FileExtractor $extractor, array $files): void
     {
-        $this->fileManager = new GoralysFileManager($files, $mover, $this->logger);
+        $this->fileManager = new GoralysFileManager($files, $mover, $extractor, $this->logger);
     }
 
     /**
@@ -242,6 +261,15 @@ class GoralysKernel
     private function initSubjects(): void
     {
         $this->subjects = new SubjectsController($this->logger, $this->db, $this->fileManager);
+    }
+
+    /**
+     * Initializes the subjects controller of the kernel.
+     * @return void
+     */
+    private function initTopics(): void
+    {
+        $this->topics = new TopicsController($this->logger, $this->db, $this->utils, $this->fileManager);
     }
 
     /**
@@ -291,7 +319,7 @@ class GoralysKernel
     {
         $this->logger->error(
             LoggerInitiator::APP,
-            "Uncaught exception: " . $e->getMessage()
+            "Uncaught exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine()
         );
         $this->logger->debug(
             LoggerInitiator::APP,

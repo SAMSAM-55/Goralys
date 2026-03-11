@@ -3,7 +3,7 @@
 namespace Goralys\Tests\Unit\Core;
 
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
-use Goralys\Core\Subject\Services\GetSubjectsService;
+use Goralys\Core\Subjects\Services\GetSubjectsService;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Tests\Fakes\FakeGoralysLogger;
 use Goralys\Tests\Fakes\FakeSubjectsRepository;

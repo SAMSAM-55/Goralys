@@ -1,9 +1,9 @@
 <?php
 
-namespace Goralys\Core\Subject\Repo\Interfaces;
+namespace Goralys\Core\Subjects\Repository\Interfaces;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Data\SubjectDTO;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\SubjectDTO;
 use mysqli_result;
 
 interface SubjectsRepositoryInterface

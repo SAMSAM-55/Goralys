@@ -1,6 +1,6 @@
 <?php
 
-namespace Goralys\Core\Subject\Data;
+namespace Goralys\Core\Subjects\Data;
 
 use JsonSerializable;
 

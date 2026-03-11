@@ -9,6 +9,7 @@ import {AuthListener} from "@/app/lib/auth/auth-listener";
 import FlashToastListener from "@/app/ui/toast/flash-toast-listener";
 import {UserListener} from "@/app/lib/auth/user-listerner";
 import {DraftModalProvider} from "@/app/ui/modals/drafts/draft-modal-provider";
+import {ImportTopicsModalProvider} from "@/app/ui/modals/import-topics/import-topics-modal-provider";
 
 export const metadata: Metadata = {
   title: "Goralys",
@@ -34,17 +35,20 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     <div id="toast-root"></div>
     <div id="confirm-root"></div>
     <div id="draft-modal-root"></div>
+    <div id="import-topics-modal-root"></div>
 
     <ToastProvider>
         <ConfirmProvider>
             <DraftModalProvider>
-                <AuthListener />
-                <UserListener />
-                <FlashToastListener />
-                <div className="flex flex-row min-h-screen">
-                    <SideNav />
-                    {children}
-                </div>
+                <ImportTopicsModalProvider>
+                    <AuthListener />
+                    <UserListener />
+                    <FlashToastListener />
+                    <div className="flex flex-row min-h-screen">
+                        <SideNav />
+                        {children}
+                    </div>
+                </ImportTopicsModalProvider>
             </DraftModalProvider>
         </ConfirmProvider>
     </ToastProvider>

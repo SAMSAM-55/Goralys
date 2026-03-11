@@ -5,7 +5,7 @@ namespace Goralys\Core\Drafts\Services;
 use DirectoryIterator;
 use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
 use Goralys\Core\Drafts\Interfaces\StudentDraftsManagerInterface;
-use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Goralys\Core\Subject\Repo;
+namespace Goralys\Core\Subjects\Repository;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;

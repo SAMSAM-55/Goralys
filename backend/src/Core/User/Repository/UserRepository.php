@@ -40,6 +40,7 @@ class UserRepository implements UserRepositoryInterface
      * This helper is used to build a user DTO containing all the user's info (full) from a database request's result,
      * it is in charge of the logging process.
      * @param mysqli_result $result The result from the database.
+     * @param string $username The user's username.
      * @return UserFullDTO All the user's info.
      * @throws UserNotFoundException If the user is invalid.
      */
@@ -130,7 +131,7 @@ class UserRepository implements UserRepositoryInterface
             "SELECT user_id FROM
             (SELECT student_id AS user_id FROM student_topics
             UNION ALL
-            SELECT teacher_id AS user_id FROM topics
+            SELECT teacher_id AS user_id FROM topic_teachers
             UNION ALL
             SELECT user_id AS user_i FROM admins_list
             ) AS all_ids
