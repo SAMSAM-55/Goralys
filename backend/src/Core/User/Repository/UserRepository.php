@@ -133,7 +133,7 @@ class UserRepository implements UserRepositoryInterface
             UNION ALL
             SELECT teacher_id AS user_id FROM topic_teachers
             UNION ALL
-            SELECT user_id AS user_i FROM admins_list
+            SELECT user_id AS user_id FROM admins_list
             ) AS all_ids
             WHERE user_id = ?
             LIMIT 1",
