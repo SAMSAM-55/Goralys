@@ -94,6 +94,13 @@ export type DraftModalProps = {
     onCloseModal: () => void,
 }
 
+export type ImportTopicsModalProps = {
+    visible: boolean,
+    onCancel: () => void,
+    onImportTopics: (file: File | null) => void,
+    onCloseModal: () => void,
+}
+
 export type UserData = {
     username: string,
     full_name: string,

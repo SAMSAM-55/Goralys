@@ -2,8 +2,8 @@
 
 namespace Goralys\Tests\Fakes;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use mysqli_result;
 
 class FakeSubjectsRepository implements SubjectsRepositoryInterface

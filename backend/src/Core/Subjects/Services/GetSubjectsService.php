@@ -1,13 +1,13 @@
 <?php
 
-namespace Goralys\Core\Subject\Services;
+namespace Goralys\Core\Subjects\Services;
 
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Data\SubjectDTO;
-use Goralys\Core\Subject\Data\SubjectsCollection;
-use Goralys\Core\Subject\Interfaces\GetSubjectsServiceInterface;
-use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\SubjectDTO;
+use Goralys\Core\Subjects\Data\SubjectsCollection;
+use Goralys\Core\Subjects\Interfaces\GetSubjectsServiceInterface;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
@@ -75,8 +75,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($studentUsername),
                 $this->usernameManager->store($studentUsername),
-                $row['subject'],
-                SubjectStatus::from($row['subject_status']),
+                $row['subject'] ?? "",
+                SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
@@ -109,8 +109,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
                 $this->usernameManager->store($row['student']),
-                $row['subject'],
-                SubjectStatus::from($row['subject_status']),
+                $row['subject'] ?? "",
+                SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
@@ -152,8 +152,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
                 $this->usernameManager->store($row['student']),
-                $row['subject'],
-                SubjectStatus::from($row['subject_status']),
+                $row['subject'] ?? "",
+                SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],

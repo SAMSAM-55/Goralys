@@ -4,6 +4,7 @@ namespace Goralys\App\HTTP\Files;
 
 use Goralys\App\HTTP\Files\Data\FileDTO;
 use Goralys\App\HTTP\Files\Data\UploadedFileDTO;
+use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\App\HTTP\Files\Interface\FileMover;
 use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -18,16 +19,18 @@ final class GoralysFileManager implements GoralysFileManagerInterface
      */
     private array $uploads = [];
     private FileMover $mover;
+    private FileExtractor $extractor;
     private LoggerInterface $logger;
 
     /**
      * Initializes the files array ($uploads) used by the file manager.
      * @param FileDTO[] $files The files to manage.
      * @param FileMover $mover The injected file mover.
+     * @param FileExtractor $extractor The injected file extractor (zip files only)
      * @param LoggerInterface $logger The injected logger.
      * @throws GoralysRuntimeException If an invalid file is found.
      */
-    public function __construct(array $files, FileMover $mover, LoggerInterface $logger)
+    public function __construct(array $files, FileMover $mover, FileExtractor $extractor, LoggerInterface $logger)
     {
         foreach ($files as $inputName => $file) {
             if ($file instanceof FileDTO) {
@@ -43,6 +46,7 @@ final class GoralysFileManager implements GoralysFileManagerInterface
 
         $this->mover = $mover;
         $this->logger = $logger;
+        $this->extractor = $extractor;
     }
 
     /**
@@ -95,5 +99,16 @@ final class GoralysFileManager implements GoralysFileManagerInterface
         }
 
         return $this->mover->move($file->tmpPath, $destination);
+    }
+
+    /**
+     * Extracts a zip file
+     * @param UploadedFileDTO $file The file to extract.
+     * @param string $destination The destination folder where the file will be extracted.
+     * @return void
+     */
+    public function extract(UploadedFileDTO $file, string $destination): void
+    {
+        $this->extractor->extract($file, $destination);
     }
 }

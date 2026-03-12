@@ -1,10 +1,10 @@
 <?php
 
-namespace Goralys\Core\Subject\Services;
+namespace Goralys\Core\Subjects\Services;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Interfaces\UpdateSubjectServiceInterface;
-use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Interfaces\UpdateSubjectServiceInterface;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;

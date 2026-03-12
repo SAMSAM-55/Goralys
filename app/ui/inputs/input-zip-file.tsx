@@ -3,19 +3,19 @@
 import {useState} from "react";
 import {useToast} from "@/app/ui/toast/toast-provider";
 
-export default function InputFile({text, maxSizeKB, onFileSelected}: {text: string, maxSizeKB: number, onFileSelected: CallableFunction}) {
+export default function InputZipFile({text, onFileSelected}: {text: string, onFileSelected: CallableFunction}) {
     const [fileName, setFileName] = useState<string | null>(null);
     const toast = useToast();
 
     return (
-        <label htmlFor="doc" key={`input-file-label-${text}-max-size-${maxSizeKB}-kb`}
+        <label htmlFor="doc" key={`input-file-label-${text}`}
                className="flex items-center gap-0 rounded-xs border border-sky-400 border-dashed bg-sky-300 cursor-pointer">
             <i className="text-3xl ml-1 mr-2 fa-solid fa-upload"></i>
             <div className="">
                 <h4 className="text-base font-semibold text-gray-700">{fileName || text}</h4>
-                <span className="text-sm text-gray-500">Max {maxSizeKB} KO (.txt, .odt, .docx)</span>
+                <span className="text-sm text-gray-500">(.zip)</span>
             </div>
-            <input key={`input-file-input-${text}-max-size-${maxSizeKB}-kb`} type="file" id="doc" name="doc" accept=".txt,.odt,.docx" hidden
+            <input key={`input-file-input-${text}`} type="file" id="doc" name="doc" accept=".zip" hidden
                    onChange={(e) => {
                        const newFile = e.target.files?.[0]
                        if (!newFile) {
@@ -27,16 +27,7 @@ export default function InputFile({text, maxSizeKB, onFileSelected}: {text: stri
                            return;
                        }
 
-                       if (newFile.size > maxSizeKB * 1024) {
-                           toast.showToast({
-                               type: "warning",
-                               title: "Fichier",
-                               message: "Ce fichier est trop volumineux."
-                           });
-                           return;
-                       }
-
-                       if (newFile.name.endsWith(".txt") || newFile.name.endsWith(".odt") || newFile.name.endsWith(".docx")) {
+                       if (newFile.name.endsWith(".zip")) {
                             setFileName(e.target.files?.[0]?.name || null);
                             onFileSelected(newFile);
                             return;
@@ -45,7 +36,7 @@ export default function InputFile({text, maxSizeKB, onFileSelected}: {text: stri
                        toast.showToast({
                            type: "warning",
                            title: "Fichier",
-                           message: "Merci de fournir un fichier texte (.txt, .odt ou .docx)"
+                           message: "Merci de fournir un fichier zip (.zip)"
                        });
                    }}/>
         </label>

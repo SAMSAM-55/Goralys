@@ -10,4 +10,5 @@ interface GoralysFileManagerInterface
     public function require(string $fileName): UploadedFileDTO;
     public function all(): array;
     public function move(string $fileName, string $destination): bool;
+    public function extract(UploadedFileDTO $file, string $destination): void;
 }

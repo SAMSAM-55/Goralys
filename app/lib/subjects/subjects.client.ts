@@ -41,12 +41,32 @@ async function fetchTeacherSubjectsClient(): Promise<Response | null> {
     });
 }
 
+async function fetchAdminSubjectsClient(): Promise<Response | null> {
+    const csrfToken = await fetchCsrfClient("get-all-subjects");
+
+    if (!csrfToken) return null;
+
+    const data = {
+        'csrf-token': csrfToken,
+    }
+
+    return await goralysFetchClient('Subjects/Get/All/', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+}
+
 export async function fetchSubjectsForRoleClient(role: UserRole): Promise<Response | null> {
     switch (role.role) {
         case "student":
             return await fetchStudentSubjectsClient();
         case "teacher":
             return await fetchTeacherSubjectsClient();
+        case "admin":
+            return await fetchAdminSubjectsClient();
         default:
             return null;
     }

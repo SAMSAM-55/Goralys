@@ -8,7 +8,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 
 
 // --------------- Init --------------- //
@@ -75,7 +75,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         );
     }
 
-    // Subject update
+    // Subjects update
 
     $subjectResult = $kernel->subjects->updateField(
         $teacherUsername,
