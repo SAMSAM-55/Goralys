@@ -74,7 +74,7 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
         $this->db->run(
             "INSERT INTO student_topics 
                    (student_id, topic_id, subject, last_rejected, teacher_comment, draft_path, subject_status)
-                   VALUES (?, ?, NULL, NULL, NULL, NULL, NULL)",
+                   VALUES (?, ?, NULL, NULL, NULL, NULL, 0)",
             "si",
             $studentUsername,
             $topicId

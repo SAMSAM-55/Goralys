@@ -75,8 +75,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($studentUsername),
                 $this->usernameManager->store($studentUsername),
-                $row['subject'],
-                SubjectStatus::from($row['subject_status']),
+                $row['subject'] ?? "",
+                SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
@@ -109,8 +109,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
                 $this->usernameManager->store($row['student']),
-                $row['subject'],
-                SubjectStatus::from($row['subject_status']),
+                $row['subject'] ?? "",
+                SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
@@ -152,8 +152,8 @@ class GetSubjectsService implements GetSubjectsServiceInterface
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
                 $this->usernameManager->store($row['student']),
-                $row['subject'],
-                SubjectStatus::from($row['subject_status']),
+                $row['subject'] ?? "",
+                SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],

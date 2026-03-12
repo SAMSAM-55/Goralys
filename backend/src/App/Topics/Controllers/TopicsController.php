@@ -254,4 +254,35 @@ class TopicsController implements TopicsControllerInterface
 
         return $topics;
     }
+
+    /**
+     * Writes all usernames associated with the full name of the user into a file.
+     * @param TopicDTO[] $topics The topics to export the usernames for.
+     * @return string The path to the file where the topics where exported.
+     */
+    public function exportUsernames(array $topics): string
+    {
+        $out = "";
+        foreach ($topics as $topic) {
+            $head = "--------------- " . $topic->getCode() . ": " . $topic->getName() . " ---------------";
+            $out .= $head . PHP_EOL;
+
+            $out .= "Professeurs:" . PHP_EOL;
+            foreach ($topic->getTeachers() as $teacher) {
+                $out .= "    - " . $teacher . ": " . $this->usernameTable[$teacher] . PHP_EOL;
+            }
+
+            $out .= "Elèves:" . PHP_EOL;
+            foreach ($topic->getStudents() as $student) {
+                $out .= "    - " . $student . ": " . $this->usernameTable[$student] . PHP_EOL;
+            }
+
+            $out .= str_repeat("-", strlen($head)) . PHP_EOL;
+        }
+
+        $path = tempnam(sys_get_temp_dir(), "goralys_");
+        file_put_contents($path, $out);
+
+        return $path;
+    }
 }

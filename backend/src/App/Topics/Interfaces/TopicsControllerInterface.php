@@ -12,4 +12,5 @@ interface TopicsControllerInterface
     public function makeTopic(string $name, string $code, array $students, array $teachers): TopicDTO;
 
     public function insert(TopicDTO $topic): void;
+    public function exportUsernames(array $topics): string;
 }

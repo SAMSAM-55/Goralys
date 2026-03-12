@@ -22,7 +22,13 @@ export async function goralysFetchClient(input: string | URL | Request, requestO
         ...requestOptions
     });
 
-    const data = await res.clone().json();
+    // Ensure JSON before parsing:
+    const clone = res.clone()
+    const contentType = clone.headers.get("Content-Type");
+    console.log("type: " + contentType)
+    if (!(contentType && contentType.includes("application/json"))) return res;
+
+    const data = await clone.json();
     // Auth check
     if (res.status === 401) {
         try {

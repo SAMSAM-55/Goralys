@@ -4,6 +4,7 @@ use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
+use Goralys\Shared\Exception\GoralysRuntimeException;
 
 require __DIR__ . "/../../../src/Kernel/bootstrap.php";
 require __DIR__ . "/../../../vendor/autoload.php";
@@ -33,10 +34,24 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         $kernel->topics->insert($topic);
     }
 
-    $kernel->toast->showToast(
-        ToastType::SUCCESS,
-        "Import des données",
-        "Les données ont été importées avec succès.",
-        "/subject/"
-    );
+    $usernamesFilePath = $kernel->topics->exportUsernames($topics);
+    $kernel->logger->debug(\Goralys\Platform\Logger\Data\Enums\LoggerInitiator::APP, "File: " . $usernamesFilePath);
+
+    if (headers_sent($file, $line)) {
+        throw new GoralysRuntimeException("Headers already sent in $file on line $line");
+    }
+
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="utilisateurs.txt"');
+    header('Content-Length: ' . filesize($usernamesFilePath));
+    header('X-Content-Type-Options: nosniff');
+
+    readfile($usernamesFilePath);
+
+    // $kernel->toast->showToast(
+    //     ToastType::SUCCESS,
+    //     "Import des données",
+    //     "Les données ont été importées avec succès.",
+    //     "/subject/"
+    // );
 });
