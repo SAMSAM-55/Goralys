@@ -15,6 +15,9 @@ export function UserNav() {
         const run = () => {
             const isLoggedIn = !!cookies.get("username");
 
+            console.log(cookies)
+            console.log(cookies.get("username"))
+
             setLoggedIn(isLoggedIn);
             setText(isLoggedIn ? cookies.get("full-name") : "Se connecter");
         };
