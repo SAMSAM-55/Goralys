@@ -3,9 +3,11 @@
 import { useEffect } from "react";
 import { useToast } from "@/app/ui/toast/toast-provider";
 import {goralysFetchClient} from "@/app/lib/fetch/fetch.client";
+import {GoralysActionHandler} from "@/app/lib/fetch/goralys-action-handler";
 
 export default function FlashToastListener() {
     const toast = useToast();
+    const handler = new GoralysActionHandler();
 
     useEffect(() => {
         let cancelled = false;
@@ -20,6 +22,8 @@ export default function FlashToastListener() {
                 const data = await res.json();
 
                 if (cancelled || !data) return;
+
+                await handler.handle(res);
 
                 if (data.toast) {
                     toast.showToast({
