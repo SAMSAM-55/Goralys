@@ -25,7 +25,6 @@ export async function goralysFetchClient(input: string | URL | Request, requestO
     // Ensure JSON before parsing:
     const clone = res.clone()
     const contentType = clone.headers.get("Content-Type");
-    console.log("type: " + contentType)
     if (!(contentType && contentType.toLowerCase().trim().includes("application/json"))) {
         await actionHandler.handle(res);
         return res;
