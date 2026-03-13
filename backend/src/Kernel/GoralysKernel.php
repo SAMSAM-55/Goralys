@@ -139,8 +139,10 @@ class GoralysKernel
                 'domain' => $this->env->getByKey("COOKIES_DOMAIN"),
                 'secure' => true,
                 'httponly' => true,
-                'samesite' => 'None',
+                'samesite' => 'Lax',
             ]);
+
+            session_name("GORALYSSESSID");
 
             session_start();
 
