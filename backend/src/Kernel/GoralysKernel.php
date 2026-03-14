@@ -424,6 +424,10 @@ class GoralysKernel
                 exit;
             case UserAuthStatus::NOT_AUTHENTICATED:
                 $this->destroySession();
+                $this->logger->warning(
+                    LoggerInitiator::CORE,
+                    "Tried to perform action: $context without authentification"
+                );
 
                 http_response_code(401); // Unauthorized
                 echo json_encode(["authEvent" => "unauthenticated"]);

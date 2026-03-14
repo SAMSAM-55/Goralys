@@ -15,7 +15,7 @@ export function UserListener() {
             if (event === "logout") {
                 emptyUserCacheClient();
                 setTimeout(() => {
-                    router.replace('/user/login');
+                    window.location.href = '/user/login';
                 }, 0);
             }
         });

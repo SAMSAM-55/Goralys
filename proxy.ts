@@ -39,9 +39,12 @@ export async function proxy(request: NextRequest) {
     }
 
     if (res.status === 401) {
-        return NextResponse.redirect(
+        const response = NextResponse.redirect(
             new URL("/user/login?reason=unauthenticated", request.url)
         );
+
+        response.headers.set('Cache-Control', 'no-store, max-age=0');
+        return response;
     }
 
     if (!res.ok) {
