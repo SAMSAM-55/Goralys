@@ -16,3 +16,7 @@ select:-webkit-autofill {
     background-position: right 0 bottom 8px;
     background-size: 10px 6px;
 }
+
+.subjects-search-select:focus ~ .subjects-search-underline {
+    width: 100%;
+}

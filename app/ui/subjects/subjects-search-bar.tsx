@@ -1,6 +1,7 @@
 import {FloatingInput} from "@/app/ui/inputs/floating-input";
 import {FormEvent, useEffect, useState} from "react";
 import {searchFields, Subject, SubjectsSearchBarProps, SubjectsSearchField} from "@/app/lib/types";
+import {getLongFromShort} from "@/app/lib/subjects/subjects-utils";
 
 export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearchBarProps) {
     const [currentField, setCurrentField] = useState<SubjectsSearchField>("all");
@@ -21,17 +22,19 @@ export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearch
         }
 
         setCurrentSubjects(subjects.filter((s: Subject) => {
+            const searchTeachers = s.teacher.split(",").map(t => t.trim().toLowerCase());
+
             switch (currentField) {
                 case "student":
                     return s.student.trim().toLowerCase().startsWith(search);
                 case "teacher":
-                    return s.teacher.trim().toLowerCase().startsWith(search);
+                    return searchTeachers.some(t => t.startsWith(search));
                 case "topic":
-                    return s.topic.trim().toLowerCase().startsWith(search);
+                    return s.topic.trim().toLowerCase().includes(getLongFromShort(search));
                 case "all":
                     return s.student.trim().toLowerCase().startsWith(search) ||
-                        s.teacher.trim().toLowerCase().startsWith(search) ||
-                        s.topic.trim().toLowerCase().startsWith(search);
+                        searchTeachers.some(t => t.startsWith(search)) ||
+                        s.topic.trim().toLowerCase().includes(getLongFromShort(search));
             }
         }));
     }, [searchText, currentField, subjects, setCurrentSubjects]);
@@ -40,17 +43,23 @@ export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearch
         <div className="flex flex-row gap-2 items-end mb-4">
             <FloatingInput id="admins-subjects-search" label="Rechercher" onInput={handleSearch} />
 
-            <select
-                className="border-0 border-b-2 border-sky-300 appearance-none
-               cursor-pointer outline-none focus:ring-0 text-base leading-5
-               text-heading pb-0 pr-5 mb-1 subjects-search-select"
-                value={currentField}
-                onChange={(e) => setCurrentField(e.target.value as SubjectsSearchField)}
-            >
-                {Object.entries(searchFields).map(([key, label]) => (
-                    <option value={key} key={key}>{label}</option>
-                ))}
-            </select>
+            <div className="relative pb-0 mb-1">
+                <select
+                    className="border-0 border-b-2 border-sky-300 appearance-none
+                    cursor-pointer outline-none focus:ring-0 text-base leading-5
+                    text-heading pb-0 pr-5 subjects-search-select"
+                    value={currentField}
+                    onChange={(e) => setCurrentField(e.target.value as SubjectsSearchField)}
+                >
+                    {Object.entries(searchFields).map(([key, label]) => (
+                        <option value={key} key={key}>{label}</option>
+                    ))}
+                </select>
+
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500
+                     transition-all duration-300 ease-in-out
+                     peer-focus:w-full subjects-search-underline" />
+            </div>
         </div>
     );
 }
