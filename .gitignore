@@ -41,6 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 /backend/Logs
+/backend/Assets
 /backend/.phpunit.result.cache
 /backend/vendor
 /.idea
+
+deploy-local.bat
+flush-logs.bat

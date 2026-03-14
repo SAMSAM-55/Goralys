@@ -33,7 +33,6 @@ export function AuthListener() {
                     router.replace('/user/login');
                 }, 0);
             }
-            console.log("Logout event emitted");
             emitUserEvent("logout");
         })
     }, [toast, router])

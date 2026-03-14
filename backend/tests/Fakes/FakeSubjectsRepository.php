@@ -2,8 +2,8 @@
 
 namespace Goralys\Tests\Fakes;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Repo\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use mysqli_result;
 
 class FakeSubjectsRepository implements SubjectsRepositoryInterface
@@ -49,6 +49,11 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         return $this->getResult;
     }
 
+    public function getDraftPath(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
+    {
+        return $this->getResult;
+    }
+
     public function updateSubject(
         string $teacherUsername,
         string $studentUsername,
@@ -72,6 +77,22 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         string $studentUsername,
         string $topic,
         string $newComment
+    ): bool {
+        return $this->updateResult;
+    }
+
+    /**
+     * @param string $teacherUsername
+     * @param string $studentUsername
+     * @param string $topic
+     * @param string $newPath
+     * @return bool
+     */
+    public function updateDraftPath(
+        string $teacherUsername,
+        string $studentUsername,
+        string $topic,
+        string $newPath
     ): bool {
         return $this->updateResult;
     }

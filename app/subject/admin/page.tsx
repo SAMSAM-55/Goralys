@@ -1,9 +1,88 @@
 'use client';
 
+import {useImportTopicsModal} from "@/app/ui/modals/import-topics/import-topics-modal-provider";
+import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
+import {useToast} from "@/app/ui/toast/toast-provider";
+import {Button} from "@/app/ui/button";
+import {useSubjects} from "@/app/hooks/useSubjects";
+import AdminCard from "@/app/ui/subjects/admin-card";
+
 export default function Page() {
+    const modal = useImportTopicsModal();
+    const toast = useToast()
+    const {subjects} = useSubjects("admin");
+
+    async function sendTopics() {
+        const csrfToken = await fetchCsrfClient("import-topics");
+        const file = await modal.showImportTopicsModal();
+
+        if (file === "modalClosed") return;
+
+        if (!file) {
+            toast.showToast({
+                type: 'warning',
+                title: "Import des données",
+                message: "Veuillez importer un fichier."
+            })
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('csrf-token', csrfToken ?? '');
+        formData.append('topics-file', file);
+
+        const res = await goralysFetchClient(
+            "Topics/Import/",
+            {
+                method: "POST",
+                credentials: "include",
+                body: formData,
+            }
+        );
+
+        if (res.ok) {
+            const blob = await res.blob();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "utilisateurs.txt";
+            a.click();
+
+            URL.revokeObjectURL(url);
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data?.toast) {
+            toast.showToast({
+                type: data.toastType,
+                title: data.toastTitle,
+                message: data.toastMessage,
+            });
+        }
+    }
+
     return (
-        <div className="flex flex-col grow justify-center items-center gap-1">
-            <p>This is the admin page</p>
+        <div className="relative flex flex-col grow h-fit items-center top-10">
+            <div className="h-auto w-fit p-2 bg-sky-200 rounded-md">
+                <p className="underline text-xl self-start mb-2.5">Gestion des sujets:</p>
+                <div className="w-150">
+                    <Button text="Importer les sujets" type="button" onClick={sendTopics}></Button>
+                    <Button text="Exporter les sujets en PDF" type="button" onClick={() => {}}></Button>
+                    <Button text="Supprimer les sujets" type="button" onClick={() => {}}></Button>
+                </div>
+            </div>
+            <div className="h-auto w-fit p-2">
+                <p className="underline text-2xl self-start mb-3">Les questions de l&apos;établissement :</p>
+                <div className="flex flex-col gap-2">
+                    {subjects?.map((s) => (
+                        <AdminCard key={s.studentToken + s.teacherToken} subjectData={s} />
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

@@ -1,11 +1,8 @@
 -- GORALYS DATABASE SCHEMA
--- version 1.4
+-- version 2.3
 
 -- Makes sure all previous tables are deleted
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS users_temp;
-DROP TABLE IF EXISTS topics;
-DROP TABLE IF EXISTS student_topics;
+DROP TABLE IF EXISTS student_topics, topic_teachers, topics, admins_list, users;
 
 -- -----------------------------------------------------
 -- USERS TABLE (main active accounts)
@@ -46,9 +43,22 @@ CREATE TABLE student_topics (
                                 subject VARCHAR(255),
                                 last_rejected VARCHAR(255),
                                 teacher_comment VARCHAR(255),
+                                draft_path VARCHAR(255),
                                 subject_status TINYINT(1) DEFAULT 0, -- 0=not submitted, 1=submitted, 2=rejected, 3=approved
                                 PRIMARY KEY (student_id, topic_id),
                                 FOREIGN KEY (topic_id) REFERENCES topics(id)
                                     ON DELETE CASCADE
                                     ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- TOPIC_TEACHERS TABLE
+-- -----------------------------------------------------
+CREATE TABLE topic_teachers (
+    topic_id INT, -- FK → topics.id
+    teacher_id VARCHAR(32) NOT NULL,
+    PRIMARY KEY (topic_id, teacher_id),
+    FOREIGN KEY (topic_id) REFERENCES topics(id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
 ) ENGINE=InnoDB;

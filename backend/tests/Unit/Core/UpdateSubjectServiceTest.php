@@ -2,8 +2,8 @@
 
 namespace Goralys\Tests\Unit\Core;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Services\UpdateSubjectService;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Services\UpdateSubjectService;
 use Goralys\Tests\Fakes\FakeGoralysLogger;
 use Goralys\Tests\Fakes\FakeSubjectsRepository;
 use PHPUnit\Framework\TestCase;

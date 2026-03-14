@@ -8,7 +8,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 
 
 // --------------- Init --------------- //
@@ -33,7 +33,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
 
     if (!$request->validate("subject", "topic", "teacher-token", "student-token")) {
         $kernel->toast->fatalError(
-            404,
+            400, // Bad request
             "Une erreur interne est survenue lors de l'enregistrement de votre question, 
             veuillez réessayer ultérieurement."
         );
@@ -43,10 +43,23 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     $studentUsername = $kernel->usernameManager->get($request->get('student-token'));
     $topic = $request->get('topic');
     $subject = $request->get('subject');
+    $draftFile = $kernel->fileManager->get("draft-file");
+
+    if ($draftFile && $draftFile->size > 50 * 1024) {
+        $kernel->toast->showToast(
+            ToastType::WARNING,
+            "Fichier",
+            "Ce fichier depasse la taille maximale de 50 KO, veuilez ressayez avec un fichier plus petit.",
+            ""
+        );
+        exit();
+    }
+
+    // Double-check subject.
 
     if (empty($subject) || trim($subject) === "") {
         $kernel->toast->fatalError(
-            404, // Bad request
+            400, // Bad request
             "Une erreur interne est survenue lors de l'enregistrement de votre question, 
             veuillez réessayer ultérieurement."
         );
@@ -62,7 +75,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         );
     }
 
-    // Subject update
+    // Subjects update
 
     $subjectResult = $kernel->subjects->updateField(
         $teacherUsername,
@@ -93,8 +106,20 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     if (!$statusResult) {
         $kernel->toast->fatalError(
             409, // Conflict
-            "Votre sujet a bien été enregistré mais il n'a pas pu être envoyé."
+            "Votre question a bien été enregistrée mais elle n'a pas pu être envoyée."
         );
+    }
+
+    if ($draftFile) {
+        $updateResult = $kernel->subjects->draftsManager->update($studentUsername, $teacherUsername, $topic);
+
+        if (!$updateResult) {
+            $kernel->toast->fatalError(
+                500, // Internal server error
+                "Votre question a bien été envoyée, mais votre brouillon n'a pas pu être enregistré. 
+                Veuillez réessayer ultérieurement."
+            );
+        }
     }
 
     $kernel->toast->showToast(

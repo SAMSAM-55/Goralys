@@ -8,6 +8,7 @@ export type SubjectStatus = "not_submitted" | "submitted" | "rejected" | "approv
 
 export type Subject = {
     comment: string,
+    hasDraft: boolean,
     lastRejected?: string,
     status: SubjectStatus,
     student: string,
@@ -15,7 +16,7 @@ export type Subject = {
     subject: string,
     teacher: string,
     teacherToken: string,
-    topic: string
+    topic: string,
 };
 
 export type InputProps = {
@@ -40,17 +41,13 @@ export type TextAreaProps = {
 };
 
 export type SubjectInputProps = {
-    autocomplete?: string,
     animate?: boolean,
-    disabled?: boolean,
+    rejected?: boolean,
     helper?: string,
     id: string,
     label: string,
-    password?: boolean,
-    required?: boolean,
-    value?: string,
     onChange?: ChangeEventHandler<HTMLInputElement>,
-    status?: SubjectStatus,
+    subjectData: Subject,
 };
 
 export type ButtonProps = {
@@ -89,3 +86,25 @@ export type ConfirmOptions = {
     title: string,
     message: string,
 };
+
+export type DraftModalProps = {
+    visible: boolean,
+    onCancel: () => void,
+    onChooseDraft: (file: File | null) => void,
+    onCloseModal: () => void,
+}
+
+export type ImportTopicsModalProps = {
+    visible: boolean,
+    onCancel: () => void,
+    onImportTopics: (file: File | null) => void,
+    onCloseModal: () => void,
+}
+
+export type UserData = {
+    username: string,
+    full_name: string,
+    role: string,
+}
+
+export type CookieValue = string | boolean | number | null | undefined

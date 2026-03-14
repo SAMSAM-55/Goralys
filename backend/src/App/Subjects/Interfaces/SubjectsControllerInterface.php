@@ -2,8 +2,8 @@
 
 namespace Goralys\App\Subjects\Interfaces;
 
-use Goralys\Core\Subject\Data\Enums\SubjectStatus;
-use Goralys\Core\Subject\Data\SubjectsCollection;
+use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\SubjectsCollection;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
 

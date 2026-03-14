@@ -51,7 +51,7 @@ export function useSubjects(role: UserRole['role']) {
         })();
 
         return inFlightRef.current;
-    }, [role, syncKey, cacheKey, toast]);
+    }, [cookies, syncKey, role, cacheKey, toast]);
 
 
     useEffect(() => {

@@ -14,7 +14,7 @@ async function fetchStudentSubjectsClient(): Promise<Response | null> {
         'csrf-token': csrfToken,
     }
 
-    return await goralysFetchClient('/api/Subjects/Get/Student', {
+    return await goralysFetchClient('Subjects/Get/Student/', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -32,7 +32,25 @@ async function fetchTeacherSubjectsClient(): Promise<Response | null> {
         'csrf-token': csrfToken,
     }
 
-    return await goralysFetchClient('/api/Subjects/Get/Teacher', {
+    return await goralysFetchClient('Subjects/Get/Teacher/', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+}
+
+async function fetchAdminSubjectsClient(): Promise<Response | null> {
+    const csrfToken = await fetchCsrfClient("get-all-subjects");
+
+    if (!csrfToken) return null;
+
+    const data = {
+        'csrf-token': csrfToken,
+    }
+
+    return await goralysFetchClient('Subjects/Get/All/', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -42,13 +60,13 @@ async function fetchTeacherSubjectsClient(): Promise<Response | null> {
 }
 
 export async function fetchSubjectsForRoleClient(role: UserRole): Promise<Response | null> {
-    console.log("Attempting to get subjects for role : ", role.role);
-
     switch (role.role) {
         case "student":
             return await fetchStudentSubjectsClient();
         case "teacher":
             return await fetchTeacherSubjectsClient();
+        case "admin":
+            return await fetchAdminSubjectsClient();
         default:
             return null;
     }
