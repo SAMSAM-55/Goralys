@@ -10,12 +10,13 @@ export async function proxy(request: NextRequest) {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_DOMAIN;
     if (!apiUrl) {
-        console.error("NEXT_PUBLIC_API_DOMAIN is not set");
-        return NextResponse.next();
+        console.error("NEXT_PUBLIC_API_DOMAIN is not set in proxy");
+        return NextResponse.redirect(
+            new URL("/user/login?reason=server_error", request.url)
+        );
     }
 
     const clientOrigin = request.headers.get("origin") ?? request.nextUrl.origin;
-    const cookies = request.headers.get("cookie") ?? "";
 
     let res: Response;
     try {
@@ -24,12 +25,17 @@ export async function proxy(request: NextRequest) {
             headers: {
                 cookie: request.headers.get("cookie") ?? "",
                 "X-Forwarded-Origin": clientOrigin,
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
             },
             cache: "no-store",
         });
     } catch (err) {
-        console.error("Error calling role API in middleware:", err);
-        return NextResponse.next();
+        console.error("Error calling role API in proxy:", err);
+        return NextResponse.redirect(
+            new URL("/user/login?reason=server_error", request.url)
+        );
     }
 
     if (res.status === 401) {
@@ -40,7 +46,9 @@ export async function proxy(request: NextRequest) {
 
     if (!res.ok) {
         console.error("Role API returned non-ok status:", res.status);
-        return NextResponse.next();
+        return NextResponse.redirect(
+            new URL("/user/login?reason=unauthenticated", request.url)
+        );
     }
 
     let data;
@@ -48,13 +56,17 @@ export async function proxy(request: NextRequest) {
         data = await res.json();
     } catch (err) {
         console.error("Failed to parse JSON from role API:", err);
-        return NextResponse.next();
+        return NextResponse.redirect(
+            new URL("/user/login?reason=unauthenticated", request.url)
+        );
     }
 
     const role = data?.role;
     if (!role) {
         console.error("Role API returned no role field:", data);
-        return NextResponse.next();
+        return NextResponse.redirect(
+            new URL("/user/login?reason=unauthenticated", request.url)
+        );
     }
 
     let response: NextResponse;
@@ -66,10 +78,6 @@ export async function proxy(request: NextRequest) {
     } else {
         response = NextResponse.next();
     }
-
-    response.headers.set("x-debug-origin", clientOrigin);
-    response.headers.set("x-debug-cookies", cookies);
-    response.headers.set("x-debug-role", role ?? "none");
 
     return response;
 }
