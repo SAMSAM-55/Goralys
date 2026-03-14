@@ -21,6 +21,7 @@ export default function FlashToastListener() {
 
                 if (cancelled || !data) return;
 
+
                 if (data.toast) {
                     toast.showToast({
                         type: data.toast.toastType,
