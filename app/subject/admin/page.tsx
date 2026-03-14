@@ -1,16 +1,20 @@
 'use client';
 
-import {useImportTopicsModal} from "@/app/ui/modals/import-topics/import-topics-modal-provider";
-import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
-import {useToast} from "@/app/ui/toast/toast-provider";
-import {Button} from "@/app/ui/button";
-import {useSubjects} from "@/app/hooks/useSubjects";
+import { useImportTopicsModal } from "@/app/ui/modals/import-topics/import-topics-modal-provider";
+import { fetchCsrfClient, goralysFetchClient } from "@/app/lib/fetch/fetch.client";
+import { useToast } from "@/app/ui/toast/toast-provider";
+import { Button } from "@/app/ui/button";
+import { useSubjects } from "@/app/hooks/useSubjects";
 import AdminCard from "@/app/ui/subjects/admin-card";
+import { Subject } from "@/app/lib/types";
+import {SubjectsSearchBar} from "@/app/ui/subjects/subjects-search-bar";
+import {useState} from "react";
 
 export default function Page() {
     const modal = useImportTopicsModal();
-    const toast = useToast()
-    const {subjects} = useSubjects("admin");
+    const toast = useToast();
+    const { subjects } = useSubjects("admin");
+    const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects || null);
 
     async function sendTopics() {
         const csrfToken = await fetchCsrfClient("import-topics");
@@ -23,7 +27,7 @@ export default function Page() {
                 type: 'warning',
                 title: "Import des données",
                 message: "Veuillez importer un fichier."
-            })
+            });
             return;
         }
 
@@ -42,14 +46,11 @@ export default function Page() {
 
         if (res.ok) {
             const blob = await res.blob();
-
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
-
             a.href = url;
             a.download = "utilisateurs.txt";
             a.click();
-
             URL.revokeObjectURL(url);
             return;
         }
@@ -70,15 +71,16 @@ export default function Page() {
             <div className="h-auto w-fit p-2 bg-sky-200 rounded-md">
                 <p className="underline text-xl self-start mb-2.5">Gestion des sujets:</p>
                 <div className="w-150">
-                    <Button text="Importer les sujets" type="button" onClick={sendTopics}></Button>
-                    <Button text="Exporter les sujets en PDF" type="button" onClick={() => {}}></Button>
-                    <Button text="Supprimer les sujets" type="button" onClick={() => {}}></Button>
+                    <Button text="Importer les sujets" type="button" onClick={sendTopics} />
+                    <Button text="Exporter les sujets en PDF" type="button" onClick={() => {}} />
+                    <Button text="Supprimer les sujets" type="button" onClick={() => {}} />
                 </div>
             </div>
-            <div className="h-auto w-fit p-2">
+            <div className="h-auto w-fit p-2 mt-4">
                 <p className="underline text-2xl self-start mb-3">Les questions de l&apos;établissement :</p>
+                <SubjectsSearchBar subjects={subjects} setCurrentSubjects={setCurrentSubjects} />
                 <div className="flex flex-col gap-2">
-                    {subjects?.map((s) => (
+                    {currentSubjects?.map((s) => (
                         <AdminCard key={s.studentToken + s.teacherToken} subjectData={s} />
                     ))}
                 </div>

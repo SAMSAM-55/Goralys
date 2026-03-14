@@ -2,7 +2,7 @@ import {clsx} from "clsx";
 import {useState} from "react";
 import {InputProps} from "@/app/lib/types";
 
-export function FloatingInput({ id, label, helper, autocomplete, password = false, disabled = false, required = false, defaultValue}: InputProps) {
+export function FloatingInput({ id, label, helper, autocomplete, password = false, disabled = false, required = false, defaultValue, onInput}: InputProps) {
     const [show, setShow] = useState<boolean>(!password);
 
     function onEyeClicked() {
@@ -11,7 +11,7 @@ export function FloatingInput({ id, label, helper, autocomplete, password = fals
 
     return (
         <div className={clsx(
-            "relative mt-3 group min-w-50",
+            "relative mt-3 group min-w-50 w-full",
             {
                 "mb-5": helper !== undefined,
                 "mb-1": helper === undefined
@@ -26,6 +26,7 @@ export function FloatingInput({ id, label, helper, autocomplete, password = fals
                    disabled={disabled}
                    required={required}
                    defaultValue={defaultValue}
+                   onInput={onInput}
                    className={clsx(
                        "peer block w-full leading-none py-0 px-0 cursor-text text-base text-heading " +
                        "bg-transparent border-0 border-b-2 border-sky-300 " +
