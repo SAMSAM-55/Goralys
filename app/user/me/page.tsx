@@ -33,9 +33,9 @@ export default function Page() {
 
     return (<Card className="flex-col absolute top-25 bg-sky-200 left-1/2 -translate-x-1/2 w-100!">
         <p className="underline-offset-1 underline text-2xl">Vos informations:</p>
-        <FloatingInput id="username" label="Identifiant" defaultValue={username} />
-        <FloatingInput id="username" label="Prénom" defaultValue={fullName.split(" ")[0]} />
-        <FloatingInput id="username" label="Nom" defaultValue={fullName.split(" ")[1]} />
+        <FloatingInput id="username" label="Identifiant" disabled defaultValue={username} />
+        <FloatingInput id="username" label="Prénom" disabled defaultValue={fullName.split(" ")[0]} />
+        <FloatingInput id="username" label="Nom" disabled defaultValue={fullName.split(" ")[1]} />
         <Button key="logout-button" text="Se déconnecter" type="button" onClick={logout} />
     </Card>);
 }
