@@ -78,7 +78,7 @@ class UserRepository implements UserRepositoryInterface
     public function getByUsername(string $username): UserFullDTO
     {
         $result = $this->db->fetch(
-            "SELECT * FROM users WHERE user_id = ?",
+            "select * from users where user_id = ?",
             "s",
             $username
         );
@@ -95,7 +95,7 @@ class UserRepository implements UserRepositoryInterface
     public function save(UserCreateDTO $userData): bool
     {
         return $this->db->run(
-            "INSERT INTO users (user_id, full_name, password_hash, role) VALUES (?, ?, ?, ?)",
+            "insert into users (user_id, full_name, password_hash, role) values (?, ?, ?, ?)",
             "ssss",
             $userData->getUsername(),
             $userData->getFullName(),
@@ -113,7 +113,7 @@ class UserRepository implements UserRepositoryInterface
     public function exists(string $username): bool
     {
         return $this->db->fetch(
-            "SELECT * FROM users WHERE user_id = ? LIMIT 1",
+            "select * from users where user_id = ? limit 1",
             "s",
             $username
         )->num_rows != 0;
@@ -128,15 +128,15 @@ class UserRepository implements UserRepositoryInterface
     public function isUsernameValid(string $username): bool
     {
         return $this->db->fetch(
-            "SELECT user_id FROM
-            (SELECT student_id AS user_id FROM student_topics
-            UNION ALL
-            SELECT teacher_id AS user_id FROM topic_teachers
-            UNION ALL
-            SELECT user_id AS user_id FROM admins_list
-            ) AS all_ids
-            WHERE user_id = ?
-            LIMIT 1",
+            "select user_id from
+            (select student_id as user_id from student_topics
+            union all
+            select teacher_id as user_id from topic_teachers
+            union all
+            select user_id as user_id from admins_list
+            ) as all_ids
+            where user_id = ?
+            limit 1",
             "s",
             $username
         )->num_rows != 0;
@@ -152,7 +152,7 @@ class UserRepository implements UserRepositoryInterface
     public function getLoginDTO(string $username): ?UserLoginDTO
     {
         $result = $this->db->fetch(
-            "SELECT * FROM users WHERE user_id = ?",
+            "select * from users where user_id = ?",
             "s",
             $username
         );
@@ -179,18 +179,18 @@ class UserRepository implements UserRepositoryInterface
     public function getRoleForUsername(string $username): ?UserRole
     {
         $result = $this->db->fetch(
-            "SELECT user_id, role FROM (
-            SELECT student_id AS user_id, 'student' AS role
-            FROM student_topics
-            UNION ALL
-            SELECT teacher_id AS user_id, 'teacher' AS role
-            FROM topic_teachers
-            UNION ALL
-            SELECT user_id AS user_id, 'admin' AS role
-            FROM admins_list
-            ) AS all_ids
-            WHERE user_id = ?
-            LIMIT 1",
+            "select user_id, role from (
+            select student_id as user_id, 'student' as role
+            from student_topics
+            union all
+            select teacher_id as user_id, 'teacher' as role
+            from topic_teachers
+            union all
+            select user_id as user_id, 'admin' as role
+            from admins_list
+            ) as all_ids
+            where user_id = ?
+            limit 1",
             "s",
             $username
         );
@@ -215,8 +215,8 @@ class UserRepository implements UserRepositoryInterface
     public function clearAll(): bool
     {
         return $this->db->runNoArgs("
-            DELETE FROM users
-            WHERE role <> 'admin'
+            delete from users
+            where role <> 'admin'
         ");
     }
 }

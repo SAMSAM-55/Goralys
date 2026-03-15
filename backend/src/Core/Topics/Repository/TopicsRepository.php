@@ -35,7 +35,7 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function insertTopic(int $topicId, string $topicCode, string $topicName): void
     {
         $this->db->run(
-            "INSERT INTO topics (id, topic_code, name) VALUES (?, ?, ?)",
+            "insert into topics (id, topic_code, name) values (?, ?, ?)",
             "iss",
             $topicId,
             $topicCode,
@@ -54,7 +54,7 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function insertTeacher(int $topicId, string $teacherUsername): void
     {
         $this->db->run(
-            "INSERT INTO topic_teachers (topic_id, teacher_id) VALUES (?, ?)",
+            "insert into topic_teachers (topic_id, teacher_id) values (?, ?)",
             "is",
             $topicId,
             $teacherUsername
@@ -72,9 +72,9 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function insertStudent(int $topicId, string $studentUsername): void
     {
         $this->db->run(
-            "INSERT INTO student_topics 
+            "insert into student_topics 
                    (student_id, topic_id, subject, last_rejected, teacher_comment, draft_path, subject_status)
-                   VALUES (?, ?, NULL, NULL, NULL, NULL, 0)",
+                   values (?, ?, null, null, null, null, 0)",
             "si",
             $studentUsername,
             $topicId
@@ -88,11 +88,11 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
      */
     public function clearAll(): bool
     {
-        $this->db->runNoArgs("SET FOREIGN_KEY_CHECKS = 0");
-        $this->db->runNoArgs("DELETE FROM student_topics");
-        $this->db->runNoArgs("DELETE FROM topic_teachers");
-        $this->db->runNoArgs("DELETE FROM topics");
-        $this->db->runNoArgs("SET FOREIGN_KEY_CHECKS = 1");
+        $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
+        $this->db->runNoArgs("delete from student_topics");
+        $this->db->runNoArgs("delete from topic_teachers");
+        $this->db->runNoArgs("delete from topics");
+        $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
 
         return true;
     }
