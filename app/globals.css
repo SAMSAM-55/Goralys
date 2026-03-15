@@ -9,3 +9,35 @@ select:-webkit-autofill {
     -webkit-text-fill-color: inherit;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+.subjects-search-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237dd3fc'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 bottom 8px;
+    background-size: 10px 6px;
+}
+
+.subjects-search-select:focus ~ .subjects-search-underline {
+    width: 100%;
+}
+
+/* Fake anim to avoid css optimization gets rid of it */
+@keyframes onAutoFillStart {
+    from { opacity: 0.99; }
+    to   { opacity: 1; }
+}
+
+@keyframes onAutoFillCancel {
+    from { opacity: 0.99; }
+    to   { opacity: 1; }
+}
+
+input:-webkit-autofill {
+    animation-name: onAutoFillStart;
+    animation-duration: 1ms;
+}
+
+input:not(:-webkit-autofill) {
+    animation-name: onAutoFillCancel;
+    animation-duration: 1ms;
+}

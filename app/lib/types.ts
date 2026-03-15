@@ -1,4 +1,4 @@
-import {ChangeEventHandler, MouseEventHandler, RefObject} from "react";
+import {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
 
 export type UserRole = {
     role: "admin" | "teacher" | "student",
@@ -28,6 +28,7 @@ export type InputProps = {
     password?: boolean,
     required?: boolean,
     defaultValue?: string,
+    onInput?: FormEventHandler<HTMLInputElement>,
 };
 
 export type TextAreaProps = {
@@ -101,6 +102,11 @@ export type ImportTopicsModalProps = {
     onCloseModal: () => void,
 }
 
+export type SubjectsSearchBarProps = {
+    subjects: Subject[] | null,
+    setCurrentSubjects: (v: Subject[]) => void
+}
+
 export type UserData = {
     username: string,
     full_name: string,
@@ -108,3 +114,12 @@ export type UserData = {
 }
 
 export type CookieValue = string | boolean | number | null | undefined
+
+export const searchFields = {
+    all: "Tout",
+    student: "Elèves",
+    teacher: "Professeur",
+    topic: "Matière",
+} as const;
+
+export type SubjectsSearchField = keyof typeof searchFields

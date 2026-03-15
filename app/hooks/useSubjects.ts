@@ -19,6 +19,8 @@ export function useSubjects(role: UserRole['role']) {
     const inFlightRef = useRef<Promise<void> | null>(null);
 
     const fetchSubjects = useCallback(async () => {
+        if (!cookies.get("username")) return;
+
         if (inFlightRef.current) {
             return inFlightRef.current;
         }

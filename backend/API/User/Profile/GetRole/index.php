@@ -10,7 +10,13 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
 $kernel = bootKernel();
 
-$kernel->requireAuth("get user role");
+if (!$kernel->checkAuth("get user role")) {
+    unset($_SESSION["current_username"]);
+    unset($_SESSION["current_role"]);
+    unset($_SESSION["current_id"]);
+    unset($_SESSION["current_full_name"]);
+    exit;
+}
 
 // --------------- Build User Data --------------- //
 $kernel->logger->info(

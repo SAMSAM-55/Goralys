@@ -424,6 +424,10 @@ class GoralysKernel
                 exit;
             case UserAuthStatus::NOT_AUTHENTICATED:
                 $this->destroySession();
+                $this->logger->warning(
+                    LoggerInitiator::CORE,
+                    "Tried to perform action: $context without authentification"
+                );
 
                 http_response_code(401); // Unauthorized
                 echo json_encode(["authEvent" => "unauthenticated"]);
@@ -431,6 +435,19 @@ class GoralysKernel
             case UserAuthStatus::AUTHENTICATED:
                 break;
         }
+    }
+
+    /**
+     * Helper to check if the user is authenticated
+     * @param string $context The context the authentification is checked in.
+     * @return bool If the user is authenticated
+     */
+    public function checkAuth(string $context): bool
+    {
+        $this->logger->debug(LoggerInitiator::KERNEL, "Session lifetime : " . $this->sessionLifetime);
+        $this->logger->debug(LoggerInitiator::KERNEL, "Since last activity : " . $this->sinceLastActivity);
+
+        return $this->auth->getAuthStatus($this->sinceLastActivity) == UserAuthStatus::AUTHENTICATED;
     }
 
     /**

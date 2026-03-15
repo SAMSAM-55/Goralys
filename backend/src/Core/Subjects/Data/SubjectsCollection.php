@@ -10,7 +10,7 @@ use JsonSerializable;
 class SubjectsCollection implements JsonSerializable
 {
     /* @var SubjectDTO[] */
-    private array $subjects;
+    private array $subjects = [];
 
     /**
      * Adds a new subject to the collection.
