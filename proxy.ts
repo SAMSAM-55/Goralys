@@ -8,6 +8,11 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
+    const hasSession = request.cookies.has("GORALYSSESSID");
+    if (!hasSession) {
+        return NextResponse.redirect(new URL("/user/login?reason=unauthenticated", request.url));
+    }
+
     const apiUrl = process.env.NEXT_PUBLIC_API_DOMAIN;
     if (!apiUrl) {
         console.error("NEXT_PUBLIC_API_DOMAIN is not set in proxy");

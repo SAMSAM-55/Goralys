@@ -438,6 +438,19 @@ class GoralysKernel
     }
 
     /**
+     * Helper to check if the user is authenticated
+     * @param string $context The context the authentification is checked in.
+     * @return bool If the user is authenticated
+     */
+    public function checkAuth(string $context): bool
+    {
+        $this->logger->debug(LoggerInitiator::KERNEL, "Session lifetime : " . $this->sessionLifetime);
+        $this->logger->debug(LoggerInitiator::KERNEL, "Since last activity : " . $this->sinceLastActivity);
+
+        return $this->auth->getAuthStatus($this->sinceLastActivity) == UserAuthStatus::AUTHENTICATED;
+    }
+
+    /**
      * Helper to use CSRF in an API endpoint.
      * It should always be called after you already called getRequest on the kernel.
      * @param string $formId The id of the current form.
