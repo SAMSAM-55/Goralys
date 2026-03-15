@@ -89,6 +89,7 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function clearAll(): bool
     {
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
+        // Nuke the entire db, but this is what we want.
         $this->db->runNoArgs("delete from student_topics");
         $this->db->runNoArgs("delete from topic_teachers");
         $this->db->runNoArgs("delete from topics");

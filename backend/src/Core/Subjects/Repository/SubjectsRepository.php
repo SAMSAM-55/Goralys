@@ -45,8 +45,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             join topics t on t.id = st.topic_id
             join topic_teachers tt on t.id = tt.topic_id
             where st.student_id = ?
-            group by
-                st.subject, st.subject_status, st.teacher_comment, st.last_rejected, t.name",
+            group by st.student_id, st.topic_id",
             "s",
             $studentUsername
         );
@@ -74,8 +73,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             join student_topics st on t.id = st.topic_id
             join topic_teachers tt on t.id = tt.topic_id
             where tt.teacher_id = ?
-            group by
-            st.student_id, st.subject, st.subject_status, st.teacher_comment, st.last_rejected, t.name, st.draft_path",
+            group by st.student_id, st.topic_id",
             "s",
             $teacherUsername
         );
@@ -99,10 +97,9 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 t.name as topic,
                 GROUP_CONCAT(distinct tt.teacher_id order by tt.teacher_id separator ', ') as teachers
             from topics t
-            join u599334177_goralys.topic_teachers tt on t.id = tt.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
             join student_topics st on t.id = st.topic_id
-            group by
-                st.student_id, st.subject, st.subject_status, st.teacher_comment, st.last_rejected, t.name"
+            group by st.student_id, st.topic_id"
         );
     }
 
@@ -230,7 +227,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
      * @param string $topic The name of the topic.
-     * @param string$newComment The new comment for the subject.
+     * @param string $newComment The new comment for the subject.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */

@@ -78,7 +78,7 @@ class UserRepository implements UserRepositoryInterface
     public function getByUsername(string $username): UserFullDTO
     {
         $result = $this->db->fetch(
-            "select * from users where user_id = ?",
+            "select id, user_id, role, full_name from users where user_id = ?",
             "s",
             $username
         );
@@ -113,7 +113,7 @@ class UserRepository implements UserRepositoryInterface
     public function exists(string $username): bool
     {
         return $this->db->fetch(
-            "select * from users where user_id = ? limit 1",
+            "select 1 from users where user_id = ? limit 1",
             "s",
             $username
         )->num_rows != 0;
@@ -128,16 +128,14 @@ class UserRepository implements UserRepositoryInterface
     public function isUsernameValid(string $username): bool
     {
         return $this->db->fetch(
-            "select user_id from
-            (select student_id as user_id from student_topics
-            union all
-            select teacher_id as user_id from topic_teachers
-            union all
-            select user_id as user_id from admins_list
-            ) as all_ids
-            where user_id = ?
+            "select 1
+            where exists(select 1 from student_topics where student_id = ?)
+            or exists(select 1 from topic_teachers where teacher_id = ?)
+            or exists(select 1 from admins_list where user_id = ?)
             limit 1",
-            "s",
+            "sss",
+            $username,
+            $username,
             $username
         )->num_rows != 0;
     }
@@ -152,13 +150,13 @@ class UserRepository implements UserRepositoryInterface
     public function getLoginDTO(string $username): ?UserLoginDTO
     {
         $result = $this->db->fetch(
-            "select * from users where user_id = ?",
+            "select password_hash from users where user_id = ?",
             "s",
             $username
         );
 
         if ($result->num_rows === 0) {
-            $this->logger->error(
+            $this->logger->warning(
                 LoggerInitiator::CORE,
                 "Failed to connect user, invalid username : " . $username
             );
