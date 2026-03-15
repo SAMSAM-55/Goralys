@@ -1,16 +1,32 @@
+'use client';
+
 import { NavLink } from "@/app/ui/nav/nav-link";
 import {UserNav} from "@/app/ui/nav/user-nav";
+import Cookies from "universal-cookie";
+import {useEffect, useState} from "react";
 
 export function SideNav() {
+    const [isAdmin, setIsAdmin] = useState(false); // false par défaut = même valeur que SSR
+
+    useEffect(() => {
+        const cookies = new Cookies();
+
+        const run = () => {
+            setIsAdmin(cookies.get("user-role") === "admin");
+        }
+
+        const onChange = () => {
+            setIsAdmin(cookies.get("user-role") === "admin");
+        };
+
+        run();
+        cookies.addChangeListener(onChange);
+        return () => cookies.removeChangeListener(onChange);
+    }, []);
+
     const links: { name: string; url: string }[] = [
-        {
-            name: "Accueil",
-            url: "/",
-        },
-        {
-            name: "Mes Questions",
-            url: "/subject",
-        },
+        { name: "Accueil", url: "/" },
+        { name: isAdmin ? "Administration" : "Mes Questions", url: "/subject" },
     ];
 
     return (
