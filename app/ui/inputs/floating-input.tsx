@@ -4,9 +4,15 @@ import {InputProps} from "@/app/lib/types";
 
 export function FloatingInput({ id, label, helper, autocomplete, password = false, disabled = false, required = false, defaultValue, onInput}: InputProps) {
     const [show, setShow] = useState<boolean>(!password);
+    const [isAutofilled, setIsAutofilled] = useState(false);
 
     function onEyeClicked() {
         setShow(!show);
+    }
+
+    function handleAnimationStart(e: React.AnimationEvent<HTMLInputElement>) {
+        if (e.animationName === "onAutoFillStart")  setIsAutofilled(true);
+        if (e.animationName === "onAutoFillCancel") setIsAutofilled(false);
     }
 
     return (
@@ -16,8 +22,7 @@ export function FloatingInput({ id, label, helper, autocomplete, password = fals
                 "mb-5": helper !== undefined,
                 "mb-1": helper === undefined
             },
-        )}
-        >
+        )}>
             <input type={show ? "text" : "password"}
                    id={id}
                    name={id}
@@ -27,6 +32,7 @@ export function FloatingInput({ id, label, helper, autocomplete, password = fals
                    required={required}
                    defaultValue={defaultValue}
                    onInput={onInput}
+                   onAnimationStart={handleAnimationStart}
                    className={clsx(
                        "peer block w-full leading-none py-0 px-0 cursor-text text-base text-heading " +
                        "bg-transparent border-0 border-b-2 border-sky-300 " +
@@ -57,30 +63,23 @@ export function FloatingInput({ id, label, helper, autocomplete, password = fals
                        "peer-focus:scale-75 " +
                        "peer-focus:-translate-y-4.5 ",
                        {
-                           "cursor-not-allowed!": disabled
+                           "cursor-not-allowed!": disabled,
+                           "scale-75! -translate-y-4.5!": isAutofilled,  // force active state
                        },
-                       )}
+                   )}
             >
                 {label}
             </label>
 
-            {password && (<button type="button" onClick={onEyeClicked} className="absolute top-px right-0 text-gray-900">
-                <i className={clsx(
-                    "fas",
-                    {
-                        "fa-eye": !show,
-                        "fa-eye-slash": show
-                    }
-                )}
-                />
-            </button>
+            {password && (
+                <button type="button" onClick={onEyeClicked} className="absolute top-px right-0 text-gray-900">
+                    <i className={clsx("fas", { "fa-eye": !show, "fa-eye-slash": show })} />
+                </button>
             )}
 
             <p className={clsx(
                 'mt-0 absolute text-[13px] italic text-gray-600',
-                {
-                "hidden": helper === undefined
-                },
+                { "hidden": helper === undefined },
             )}>
                 *{helper}
             </p>

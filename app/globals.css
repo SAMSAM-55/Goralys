@@ -20,3 +20,13 @@ select:-webkit-autofill {
 .subjects-search-select:focus ~ .subjects-search-underline {
     width: 100%;
 }
+
+@keyframes onAutoFillStart { from {} to {} }
+@keyframes onAutoFillCancel { from {} to {} }
+
+input:-webkit-autofill {
+    animation-name: onAutoFillStart;
+}
+input:not(:-webkit-autofill) {
+    animation-name: onAutoFillCancel;
+}
