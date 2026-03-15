@@ -27,7 +27,7 @@ class AuthController implements AuthControllerInterface
     private DbContainer $db;
     private UserRepository $repo;
     /**
-     * The lifetime of the PHP session, this variable is passes by the kernel when the controller is constructed.
+     * The lifetime of the PHP session, this variable is passed by the kernel when the controller is constructed.
      * @var int
      */
     private readonly int $sessionLifetime;

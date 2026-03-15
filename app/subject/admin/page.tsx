@@ -9,11 +9,13 @@ import AdminCard from "@/app/ui/subjects/admin-card";
 import { Subject } from "@/app/lib/types";
 import {SubjectsSearchBar} from "@/app/ui/subjects/subjects-search-bar";
 import {useState} from "react";
+import {useConfirm} from "@/app/ui/modals/confirm/confirm-provider";
 
 export default function Page() {
     const modal = useImportTopicsModal();
+    const confirm = useConfirm();
     const toast = useToast();
-    const { subjects } = useSubjects("admin");
+    const { subjects, refetch } = useSubjects("admin");
     const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects || null);
 
     async function sendTopics() {
@@ -52,6 +54,8 @@ export default function Page() {
             a.download = "utilisateurs.txt";
             a.click();
             URL.revokeObjectURL(url);
+            await refetch();
+            setCurrentSubjects(subjects);
             return;
         }
 
@@ -66,6 +70,40 @@ export default function Page() {
         }
     }
 
+    async function deleteTopics() {
+        const confirmResult = await confirm.showConfirm({
+            title: "Suppression des sujets",
+            message: "Ête-vous sûr de vouloir supprimer les sujets et les utilisateurs (sauf administrateurs) ?",
+        });
+
+        if (!confirmResult) return;
+
+        const csrfToken = await fetchCsrfClient("delete-topics");
+        const payload = {
+            'csrf-token': csrfToken
+        };
+
+        const res = await goralysFetchClient("Topics/Delete", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (data?.toast) {
+            toast.showToast({
+                type: data.toastType,
+                title: data.toastTitle,
+                message: data.toastMessage,
+            });
+        }
+
+        if (res.ok) {
+            await refetch();
+            setCurrentSubjects(subjects || []);
+        }
+    }
+
     return (
         <div className="relative flex flex-col grow h-fit items-center top-10">
             <div className="h-auto w-fit p-2 bg-sky-200 rounded-md">
@@ -73,7 +111,7 @@ export default function Page() {
                 <div className="w-150">
                     <Button text="Importer les sujets" type="button" onClick={sendTopics} />
                     <Button text="Exporter les sujets en PDF" type="button" onClick={() => {}} />
-                    <Button text="Supprimer les sujets" type="button" onClick={() => {}} />
+                    <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} />
                 </div>
             </div>
             <div className="h-auto w-fit p-2 mt-4">

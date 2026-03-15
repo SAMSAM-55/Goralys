@@ -15,4 +15,5 @@ interface UserRepositoryInterface
     public function save(UserCreateDTO $userData): bool;
     public function getLoginDTO(string $username): ?UserLoginDTO;
     public function getRoleForUsername(string $username): ?UserRole;
+    public function clearAll(): bool;
 }

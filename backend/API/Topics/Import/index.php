@@ -47,11 +47,4 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     header('X-Content-Type-Options: nosniff');
 
     readfile($usernamesFilePath);
-
-    // $kernel->toast->showToast(
-    //     ToastType::SUCCESS,
-    //     "Import des données",
-    //     "Les données ont été importées avec succès.",
-    //     "/subject/"
-    // );
 });

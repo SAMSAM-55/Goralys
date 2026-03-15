@@ -72,7 +72,7 @@ class UserRepository implements UserRepositoryInterface
      * Get a user's info with its username.
      * @param string $username The user's username.
      * @return UserFullDTO The user's info.
-     * @throws GoralysQueryException|GoralysPrepareException Only thrown if the request goes wrong.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws UserNotFoundException If the user is invalid.
      */
     public function getByUsername(string $username): UserFullDTO
@@ -205,5 +205,18 @@ class UserRepository implements UserRepositoryInterface
 
         $role = $result->fetch_assoc()['role'];
         return UserRole::fromString($role);
+    }
+
+    /**
+     * Deletes all users (except admins) from the database.
+     * @return bool If the deletion was successful
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function clearAll(): bool
+    {
+        return $this->db->runNoArgs("
+            DELETE FROM users
+            WHERE role <> 'admin'
+        ");
     }
 }

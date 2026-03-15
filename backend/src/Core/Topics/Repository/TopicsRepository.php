@@ -80,4 +80,20 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
             $topicId
         );
     }
+
+    /**
+     * Removes all topics and associated subjects from the database.
+     * @return bool If the deletion was successful
+     * @throws GoralysPrepareException|GoralysQueryException
+     */
+    public function clearAll(): bool
+    {
+        $this->db->runNoArgs("SET FOREIGN_KEY_CHECKS = 0");
+        $this->db->runNoArgs("DELETE FROM student_topics");
+        $this->db->runNoArgs("DELETE FROM topic_teachers");
+        $this->db->runNoArgs("DELETE FROM topics");
+        $this->db->runNoArgs("SET FOREIGN_KEY_CHECKS = 1");
+
+        return true;
+    }
 }
