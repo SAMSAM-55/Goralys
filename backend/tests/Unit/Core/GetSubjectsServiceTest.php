@@ -50,7 +50,7 @@ class GetSubjectsServiceTest extends TestCase
     {
         $subjects = [
                 [
-                        'teacher'        => 'j.doe1',
+                        'teachers'       => 'j.doe1',
                         'student'        => 'e.doe3',
                         'topic'          => 'Maths',
                         'subject'        => 'Étude des fonctions',
@@ -59,7 +59,7 @@ class GetSubjectsServiceTest extends TestCase
                         'draftPath'      => "/path/to/draft"
                 ],
                 [
-                        'teacher'        => 'm.smith2',
+                        'teachers'       => 'm.smith2',
                         'student'        => 'e.doe3',
                         'topic'          => 'Physique',
                         'subject'        => 'Ondes et interférences',
@@ -67,7 +67,7 @@ class GetSubjectsServiceTest extends TestCase
                         'subject_status' => 1,
                 ],
                 [
-                        'teacher'        => 'j.doe1',
+                        'teachers'       => 'j.doe1',
                         'student'        => 'l.dupont4',
                         'topic'          => 'Informatique',
                         'comment'        => "foo",
@@ -76,7 +76,7 @@ class GetSubjectsServiceTest extends TestCase
                         'subject_status'         => 2,
                 ],
                 [
-                        'teacher'        => 'm.smith2',
+                        'teachers'       => 'm.smith2',
                         'student'        => 'l.dupont4',
                         'topic'          => 'Sciences',
                         'subject'        => 'Intelligence artificielle',
@@ -149,7 +149,7 @@ class GetSubjectsServiceTest extends TestCase
     {
         $subjects = [
                 [
-                        'teacher'        => 'j.doe1',
+                        'teachers'       => 'j.doe1',
                         'student'        => 'e.doe3',
                         'topic'          => 'Maths',
                         'subject'        => 'Étude des fonctions',
@@ -158,7 +158,7 @@ class GetSubjectsServiceTest extends TestCase
                         'draftPath'      => "/path/to/draft"
                 ],
                 [
-                        'teacher'        => 'm.smith2',
+                        'teachers'       => 'm.smith2',
                         'student'        => 'e.doe3',
                         'topic'          => 'Physique',
                         'subject'        => 'Ondes et interférences',
@@ -211,7 +211,7 @@ class GetSubjectsServiceTest extends TestCase
     {
         $subjects = [
                 [
-                        'teacher'        => 'j.doe1',
+                        'teachers'       => 'j.doe1',
                         'student'        => 'e.doe3',
                         'topic'          => 'Maths',
                         'subject'        => 'Étude des fonctions',
@@ -220,7 +220,7 @@ class GetSubjectsServiceTest extends TestCase
                         'draftPath'      => "/path/to/draft"
                 ],
                 [
-                        'teacher'        => 'j.doe1',
+                        'teachers'       => 'j.doe1',
                         'student'        => 'l.dupont4',
                         'topic'          => 'Informatique',
                         'comment'        => "foo",
