@@ -37,6 +37,12 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     <div id="draft-modal-root"></div>
     <div id="import-topics-modal-root"></div>
 
+    <div className="z-50 absolute h-screen w-screen lg:hidden bg-gray-200 flex items-center justify-center p-6">
+        <h1 className="font-bold text-center text-2xl">
+            Goralys n&#39;est malheureusement pas disponible sur téléphone et tablette pour l&#39;instant.
+        </h1>
+    </div>
+
     <ToastProvider>
         <ConfirmProvider>
             <DraftModalProvider>
