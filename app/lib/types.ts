@@ -1,8 +1,10 @@
 import {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
 
 export type UserRole = {
-    role: "admin" | "teacher" | "student",
+    role: "admin" | "teacher" | "student" | "none",
 };
+
+export const USER_ROLES = ["admin", "teacher", "student", "none"] as const satisfies ReadonlyArray<UserRole['role']>;
 
 export type SubjectStatus = "not_submitted" | "submitted" | "rejected" | "approved";
 

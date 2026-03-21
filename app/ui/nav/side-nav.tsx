@@ -4,19 +4,26 @@ import { NavLink } from "@/app/ui/nav/nav-link";
 import {UserNav} from "@/app/ui/nav/user-nav";
 import Cookies from "universal-cookie";
 import {useEffect, useState} from "react";
+import {UserRole, USER_ROLES} from "@/app/lib/types";
 
 export function SideNav() {
-    const [isAdmin, setIsAdmin] = useState(false); // false par défaut = même valeur que SSR
+    const [role, setRole] = useState<UserRole['role']>("none");
 
     useEffect(() => {
         const cookies = new Cookies();
 
         const run = () => {
-            setIsAdmin(cookies.get("user-role") === "admin");
+            const current: string = cookies.get("user-role") ?? "none";
+            setRole(USER_ROLES.includes(current as UserRole['role'])
+                ? current as UserRole['role']
+                : "none");
         }
 
         const onChange = () => {
-            setIsAdmin(cookies.get("user-role") === "admin");
+            const role: string = cookies.get("user-role") ?? "none";
+            setRole(USER_ROLES.includes(role as UserRole['role'])
+                ? role as UserRole['role']
+                : "none");
         };
 
         run();
@@ -24,9 +31,19 @@ export function SideNav() {
         return () => cookies.removeChangeListener(onChange);
     }, []);
 
+    function getSubjectLinkText() {
+        switch (role) {
+            case "student":
+            case "none":
+                return "Mes Questions";
+            case "teacher": return "Mes Elèves";
+            case "admin": return "Administration";
+        }
+    }
+
     const links: { name: string; url: string }[] = [
         { name: "Accueil", url: "/" },
-        { name: isAdmin ? "Administration" : "Mes Questions", url: "/subject" },
+        { name: getSubjectLinkText(), url: "/subject" },
     ];
 
     return (
