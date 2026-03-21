@@ -41,3 +41,10 @@ input:not(:-webkit-autofill) {
     animation-name: onAutoFillCancel;
     animation-duration: 1ms;
 }
+
+@media (max-width: 1023px) {
+    html, body {
+        overflow: hidden;
+        height: 100%;
+    }
+}
