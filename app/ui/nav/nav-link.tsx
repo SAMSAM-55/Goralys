@@ -12,22 +12,6 @@ export function NavLink({name, url, exact = false}: { name: string, url: string,
             ? current === url
             : current === url || current.startsWith(`${url}/`);
 
-    if (process.env.NODE_ENV === "development") {
-        console.groupCollapsed(
-            `%c NavLink %c "${name}" %c ${isActive ? "● ACTIVE" : "○ inactive"}`,
-            "background:#6366f1;color:white;padding:2px 6px;border-radius:3px 0 0 3px;font-weight:bold",
-            "background:#e0e7ff;color:#3730a3;padding:2px 6px;font-weight:bold",
-            isActive
-                ? "background:#0ea5e9;color:white;padding:2px 6px;border-radius:0 3px 3px 0;font-weight:bold"
-                : "background:#e5e7eb;color:#6b7280;padding:2px 6px;border-radius:0 3px 3px 0"
-        );
-        console.log("  href      →", url);
-        console.log("  pathname  →", current);
-        console.log("  match     →", `"${current}" startsWith "${url}/" ?`, isActive);
-        console.log("  exact     →", current === url);
-        console.groupEnd();
-    }
-
     return (
         <Link
             className={clsx(

@@ -1,7 +1,6 @@
 <?php
 
 use Goralys\Kernel\GoralysKernel;
-use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
 // ----------- API bootstrap method ---------- //
 function bootstrapAPI(GoralysKernel $kernel): void

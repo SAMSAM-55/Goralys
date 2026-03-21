@@ -26,9 +26,6 @@ export async function goralysFetchClient(input: string | URL | Request, requestO
     const clone = res.clone()
     const contentType = clone.headers.get("Content-Type");
 
-    console.log("Content type: " + contentType + ", is valid JSON: ")
-    console.log(contentType && contentType?.toLowerCase().trim().includes("application/json"))
-
     if (!(contentType && contentType.toLowerCase().trim().includes("application/json"))) return res;
 
     const data = await clone.json();

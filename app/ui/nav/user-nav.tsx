@@ -45,23 +45,6 @@ export function UserNav() {
         return () => { unsubscribe?.(); };
     }, []);
 
-    if (process.env.NODE_ENV === "development") {
-        console.groupCollapsed(
-            `%c UserNav %c ${loggedIn ? "logged in" : "logged out"} %c ${isActive ? "● ACTIVE" : "○ inactive"}`,
-            "background:#6366f1;color:white;padding:2px 6px;border-radius:3px 0 0 3px;font-weight:bold",
-            loggedIn
-                ? "background:#dcfce7;color:#166534;padding:2px 6px;font-weight:bold"
-                : "background:#fee2e2;color:#991b1b;padding:2px 6px;font-weight:bold",
-            isActive
-                ? "background:#0ea5e9;color:white;padding:2px 6px;border-radius:0 3px 3px 0;font-weight:bold"
-                : "background:#e5e7eb;color:#6b7280;padding:2px 6px;border-radius:0 3px 3px 0"
-        );
-        console.log("  href     →", targetUrl);
-        console.log("  pathname →", current);
-        console.log("  active   →", isActive);
-        console.groupEnd();
-    }
-
     return (
         <Link
             className={clsx(

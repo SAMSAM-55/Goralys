@@ -7,9 +7,9 @@ import { Button } from "@/app/ui/button";
 import { useSubjects } from "@/app/hooks/useSubjects";
 import AdminCard from "@/app/ui/subjects/admin-card";
 import { Subject } from "@/app/lib/types";
-import {SubjectsSearchBar} from "@/app/ui/subjects/subjects-search-bar";
-import {useState} from "react";
-import {useConfirm} from "@/app/ui/modals/confirm/confirm-provider";
+import { SubjectsSearchBar, sortSubjects } from "@/app/ui/subjects/subjects-search-bar";
+import { useState } from "react";
+import { useConfirm } from "@/app/ui/modals/confirm/confirm-provider";
 
 export default function Page() {
     const modal = useImportTopicsModal();
@@ -55,7 +55,7 @@ export default function Page() {
             a.click();
             URL.revokeObjectURL(url);
             await refetch();
-            setCurrentSubjects(subjects);
+            setCurrentSubjects(sortSubjects(subjects || []));
             return;
         }
 
@@ -100,7 +100,7 @@ export default function Page() {
 
         if (res.ok) {
             await refetch();
-            setCurrentSubjects(subjects || []);
+            setCurrentSubjects(sortSubjects(subjects || []));
         }
     }
 

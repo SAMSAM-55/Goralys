@@ -71,6 +71,7 @@ export type Toast = {
     type: "error" | "warning" | "info" | "success",
     title: string,
     message: string,
+    expires?: number,
 };
 
 export type AuthEvent = "unauthenticated" | "expired";
