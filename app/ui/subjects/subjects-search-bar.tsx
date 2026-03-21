@@ -3,27 +3,27 @@ import {FormEvent, useEffect, useState} from "react";
 import {searchFields, Subject, SubjectsSearchBarProps, SubjectsSearchField} from "@/app/lib/types";
 import {getLongFromShort} from "@/app/lib/subjects/subjects-utils";
 
-export const sortSubjects = (list: Subject[]) => {
-    return [...list].sort((a, b) => {
-        const topicA = a.topic.trim().toLowerCase();
-        const topicB = b.topic.trim().toLowerCase();
-        const nameA = a.student.trim().toLowerCase();
-        const nameB = b.student.trim().toLowerCase();
-
-        const topicDiff = topicA.localeCompare(topicB, 'fr');
-        if (topicDiff !== 0) return topicDiff;
-        return nameA.localeCompare(nameB, 'fr');
-    });
-};
-
 export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearchBarProps) {
     const [currentField, setCurrentField] = useState<SubjectsSearchField>("all");
     const [searchText, setSearchText] = useState("");
     
-    function handleSearch(e: FormEvent<HTMLInputElement>) {
+    const handleSearch = (e: FormEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
         setSearchText(value);
     }
+
+    const sortSubjects = (list: Subject[]) => {
+        return [...list].sort((a, b) => {
+            const topicA = a.topic.trim().toLowerCase();
+            const topicB = b.topic.trim().toLowerCase();
+            const nameA = a.student.trim().toLowerCase();
+            const nameB = b.student.trim().toLowerCase();
+
+            const topicDiff = topicA.localeCompare(topicB, 'fr');
+            if (topicDiff !== 0) return topicDiff;
+            return nameA.localeCompare(nameB, 'fr');
+        });
+    };
 
     useEffect(() => {
         if (!subjects) return;
