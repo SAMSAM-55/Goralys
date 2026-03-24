@@ -13,4 +13,5 @@ interface TopicsControllerInterface
 
     public function insert(TopicDTO $topic): void;
     public function exportUsernames(array $topics): string;
+    public function clear(): bool;
 }

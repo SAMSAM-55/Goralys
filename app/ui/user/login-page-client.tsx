@@ -11,22 +11,22 @@ import {emitUserEvent} from "@/app/lib/auth/user-event";
 
 export default function LoginPageClient() {
     const searchParams = useSearchParams();
-    const toast = useToast();
+    const { showToast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
         const reason = searchParams.get('reason');
-
+        console.log(reason);
         if (!reason) return;
 
         if (reason === 'expired') {
-            toast.showToast({
+            showToast({
                 type: "warning",
                 title: "Session",
                 message: "Votre session a expirée, vous avez été déconnecté."
             })
         } else if (reason === 'unauthenticated') {
-            toast.showToast({
+            showToast({
                 type: "info",
                 title: "Connexion",
                 message: "Veuillez vous connecter pour accéder à vos question"
@@ -36,7 +36,7 @@ export default function LoginPageClient() {
         emitUserEvent("logout");
 
         router.replace('/user/login');
-    }, [searchParams, router]); // The toast dependency is ignored to avoid render loop.
+    }, [searchParams, router, showToast]); // The toast dependency is ignored to avoid render loop.
 
     return (
         <div className="flex grow content-center justify-center items-center">

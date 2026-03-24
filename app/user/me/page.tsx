@@ -9,8 +9,7 @@ import {FloatingInput} from "@/app/ui/inputs/floating-input";
 import Cookies from "universal-cookie";
 
 export default function Page() {
-    const toast = useToast();
-
+    const { showToast } = useToast();
     async function logout() {
         const payload = {'csrf-token': await fetchCsrfClient("logout")};
 
@@ -20,7 +19,7 @@ export default function Page() {
         });
         emitUserEvent("logout");
 
-        toast.showToast({
+        showToast({
             type: "success",
             title: "Déconnexion",
             message: "Vous avez bien été déconnecté"

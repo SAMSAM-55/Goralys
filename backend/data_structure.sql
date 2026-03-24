@@ -27,11 +27,11 @@ CREATE TABLE admins_list (
 -- -----------------------------------------------------
 -- TOPICS TABLE
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS topics;
 CREATE TABLE topics (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         topic_code VARCHAR(32) NOT NULL,      -- e.g. "maths_2025_jd"
-                        name VARCHAR(100) NOT NULL,
-                        teacher_id VARCHAR(32) NOT NULL
+                        name VARCHAR(100) NOT NULL
 ) ENGINE=InnoDB;
 
 -- -----------------------------------------------------

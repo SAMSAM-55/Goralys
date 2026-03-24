@@ -17,6 +17,7 @@ use Goralys\App\Subjects\Controllers\SubjectsController;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\App\Topics\Controllers\TopicsController;
 use Goralys\App\User\Controllers\AuthController;
+use Goralys\App\User\Controllers\UserController;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
@@ -45,6 +46,7 @@ class GoralysKernel
     public DbContainer $db;
     public LoggerInterface $logger;
     public AuthController $auth;
+    public UserController $users;
     public GoralysFileManager $fileManager;
     public SubjectsController $subjects;
     public TopicsController $topics;
@@ -105,6 +107,7 @@ class GoralysKernel
 
         $this->initDb();
         $this->initAuth();
+        $this->initUser();
         $this->bootFileSubsystem($test, $testFiles);
         $this->initSubjects();
         $this->initTopics();
@@ -213,6 +216,18 @@ class GoralysKernel
             $this->db,
             $this->sessionLifetime,
             $this->sessionLifetimeMultiplier
+        );
+    }
+
+    /**
+     * Initializes the user controller of the kernel.
+     * @return void
+     */
+    private function initUser(): void
+    {
+        $this->users = new UserController(
+            $this->logger,
+            $this->db
         );
     }
 

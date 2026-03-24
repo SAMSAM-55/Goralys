@@ -7,21 +7,33 @@ export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearch
     const [currentField, setCurrentField] = useState<SubjectsSearchField>("all");
     const [searchText, setSearchText] = useState("");
     
-    function handleSearch(e: FormEvent<HTMLInputElement>) {
+    const handleSearch = (e: FormEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
         setSearchText(value);
     }
+
+    const sortSubjects = (list: Subject[]) => {
+        return [...list].sort((a, b) => {
+            const topicA = a.topic.trim().toLowerCase();
+            const topicB = b.topic.trim().toLowerCase();
+            const nameA = a.student.trim().toLowerCase();
+            const nameB = b.student.trim().toLowerCase();
+
+            const topicDiff = topicA.localeCompare(topicB, 'fr');
+            if (topicDiff !== 0) return topicDiff;
+            return nameA.localeCompare(nameB, 'fr');
+        });
+    };
 
     useEffect(() => {
         if (!subjects) return;
 
         const search = searchText.trim().toLowerCase();
         if (!search) {
-            setCurrentSubjects(subjects);
+            setCurrentSubjects(sortSubjects(subjects));
             return;
         }
-
-        setCurrentSubjects(subjects.filter((s: Subject) => {
+        setCurrentSubjects(sortSubjects(subjects.filter((s: Subject) => {
             const searchTeachers = s.teacher.split(",").map(t => t.trim().toLowerCase());
 
             switch (currentField) {
@@ -36,7 +48,7 @@ export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearch
                         searchTeachers.some(t => t.startsWith(search)) ||
                         s.topic.trim().toLowerCase().includes(getLongFromShort(search));
             }
-        }));
+        })));
     }, [searchText, currentField, subjects, setCurrentSubjects]);
 
     return (

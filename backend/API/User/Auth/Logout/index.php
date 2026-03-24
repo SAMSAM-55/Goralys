@@ -17,13 +17,5 @@ $kernel->run(function (GoralysKernel $kernel) {
     // --------------- Logout --------------- //
 
     $kernel->auth->logout();
-
-    http_response_code(200); // OK
-    $kernel->toast->showToast(
-        ToastType::SUCCESS,
-        "Connexion",
-        "Vous avez bien été déconnecté.",
-        "index.html"
-    );
     exit;
 });

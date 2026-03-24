@@ -72,13 +72,13 @@ class UserRepository implements UserRepositoryInterface
      * Get a user's info with its username.
      * @param string $username The user's username.
      * @return UserFullDTO The user's info.
-     * @throws GoralysQueryException|GoralysPrepareException Only thrown if the request goes wrong.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws UserNotFoundException If the user is invalid.
      */
     public function getByUsername(string $username): UserFullDTO
     {
         $result = $this->db->fetch(
-            "SELECT * FROM users WHERE user_id = ?",
+            "select id, user_id, role, full_name from users where user_id = ?",
             "s",
             $username
         );
@@ -95,7 +95,7 @@ class UserRepository implements UserRepositoryInterface
     public function save(UserCreateDTO $userData): bool
     {
         return $this->db->run(
-            "INSERT INTO users (user_id, full_name, password_hash, role) VALUES (?, ?, ?, ?)",
+            "insert into users (user_id, full_name, password_hash, role) values (?, ?, ?, ?)",
             "ssss",
             $userData->getUsername(),
             $userData->getFullName(),
@@ -113,7 +113,7 @@ class UserRepository implements UserRepositoryInterface
     public function exists(string $username): bool
     {
         return $this->db->fetch(
-            "SELECT * FROM users WHERE user_id = ? LIMIT 1",
+            "select 1 from users where user_id = ? limit 1",
             "s",
             $username
         )->num_rows != 0;
@@ -128,16 +128,14 @@ class UserRepository implements UserRepositoryInterface
     public function isUsernameValid(string $username): bool
     {
         return $this->db->fetch(
-            "SELECT user_id FROM
-            (SELECT student_id AS user_id FROM student_topics
-            UNION ALL
-            SELECT teacher_id AS user_id FROM topic_teachers
-            UNION ALL
-            SELECT user_id AS user_id FROM admins_list
-            ) AS all_ids
-            WHERE user_id = ?
-            LIMIT 1",
-            "s",
+            "select 1
+            where exists(select 1 from student_topics where student_id = ?)
+            or exists(select 1 from topic_teachers where teacher_id = ?)
+            or exists(select 1 from admins_list where user_id = ?)
+            limit 1",
+            "sss",
+            $username,
+            $username,
             $username
         )->num_rows != 0;
     }
@@ -152,13 +150,13 @@ class UserRepository implements UserRepositoryInterface
     public function getLoginDTO(string $username): ?UserLoginDTO
     {
         $result = $this->db->fetch(
-            "SELECT * FROM users WHERE user_id = ?",
+            "select password_hash from users where user_id = ?",
             "s",
             $username
         );
 
         if ($result->num_rows === 0) {
-            $this->logger->error(
+            $this->logger->warning(
                 LoggerInitiator::CORE,
                 "Failed to connect user, invalid username : " . $username
             );
@@ -179,18 +177,18 @@ class UserRepository implements UserRepositoryInterface
     public function getRoleForUsername(string $username): ?UserRole
     {
         $result = $this->db->fetch(
-            "SELECT user_id, role FROM (
-            SELECT student_id AS user_id, 'student' AS role
-            FROM student_topics
-            UNION ALL
-            SELECT teacher_id AS user_id, 'teacher' AS role
-            FROM topic_teachers
-            UNION ALL
-            SELECT user_id AS user_id, 'admin' AS role
-            FROM admins_list
-            ) AS all_ids
-            WHERE user_id = ?
-            LIMIT 1",
+            "select user_id, role from (
+            select student_id as user_id, 'student' as role
+            from student_topics
+            union all
+            select teacher_id as user_id, 'teacher' as role
+            from topic_teachers
+            union all
+            select user_id as user_id, 'admin' as role
+            from admins_list
+            ) as all_ids
+            where user_id = ?
+            limit 1",
             "s",
             $username
         );
@@ -205,5 +203,18 @@ class UserRepository implements UserRepositoryInterface
 
         $role = $result->fetch_assoc()['role'];
         return UserRole::fromString($role);
+    }
+
+    /**
+     * Deletes all users (except admins) from the database.
+     * @return bool If the deletion was successful
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function clearAll(): bool
+    {
+        return $this->db->runNoArgs("
+            delete from users
+            where role <> 'admin'
+        ");
     }
 }

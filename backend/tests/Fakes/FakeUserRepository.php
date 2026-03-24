@@ -72,4 +72,9 @@ class FakeUserRepository implements UserRepositoryInterface
     {
         $this->existsResult = $existsResult;
     }
+
+    public function clearAll(): bool
+    {
+        return true;
+    }
 }
