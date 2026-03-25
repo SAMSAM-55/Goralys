@@ -206,6 +206,32 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * Gets the full name of a user.
+     * @param string $username The user's username.
+     * @return ?string The user's full name.
+     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     */
+    public function getFullNameForUsername(string $username): ?string
+    {
+        $result = $this->db->fetch(
+            "select full_name from users where user_id = ?
+            limit 1",
+            "s",
+            $username
+        );
+
+        if ($result->num_rows === 0) {
+            $this->logger->error(
+                LoggerInitiator::CORE,
+                "No such user : " . $username
+            );
+            return null;
+        }
+
+        return $result->fetch_assoc()['full_name'];
+    }
+
+    /**
      * Deletes all users (except admins) from the database.
      * @return bool If the deletion was successful
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.

@@ -7,14 +7,21 @@ use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Subjects\Interfaces\SubjectsControllerInterface;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Drafts\Services\StudentDraftsManager;
+use Goralys\Core\Subjects\Config\SubjectsExportConfig;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
+use Goralys\Core\Subjects\Data\SpecialityDTO;
+use Goralys\Core\Subjects\Data\StudentSubjectsDTO;
 use Goralys\Core\Subjects\Data\SubjectsCollection;
+use Goralys\Core\Subjects\Data\SubjectDTO;
 use Goralys\Core\Subjects\Repository\SubjectsRepository;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
+use Goralys\Core\Subjects\Services\SubjectsTemplateRenderer;
 use Goralys\Core\Subjects\Services\UpdateSubjectService;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
@@ -33,6 +40,10 @@ class SubjectsController implements SubjectsControllerInterface
     public StudentDraftsManager $draftsManager;
     private GoralysFileManagerInterface $fileManager;
     private GetSubjectsService $getService;
+    private UserRepository $userRepo;
+    private SubjectsTemplateRenderer $renderer;
+    private SubjectsExportConfig $exportConfig;
+    private PdfExporterInterface $exporter;
 
     /**
      * Initializes the logger and database container for the controller.
@@ -40,16 +51,19 @@ class SubjectsController implements SubjectsControllerInterface
      * @param LoggerInterface $logger The injected logger.
      * @param DbContainer $db The injected db.
      * @param GoralysFileManagerInterface $fileManager The injected file manager.
+     * @param PdfExporterInterface $exporter The injected PDF exporter.
      */
     public function __construct(
         LoggerInterface $logger,
         DbContainer $db,
-        GoralysFileManagerInterface $fileManager
+        GoralysFileManagerInterface $fileManager,
+        PdfExporterInterface $exporter
     ) {
         $this->logger = $logger;
         $this->db = $db;
 
         $this->repo = new SubjectsRepository($this->db);
+        $this->userRepo = new UserRepository($this->logger, $this->db);
         $this->formatter = new UsernameFormatterService();
         $this->usernameManager = new SubjectsUsernameManager($this->logger);
         $this->fileManager = $fileManager;
@@ -61,6 +75,9 @@ class SubjectsController implements SubjectsControllerInterface
             $this->formatter,
             $this->usernameManager
         );
+        $this->exportConfig = new SubjectsExportConfig();
+        $this->exporter = $exporter;
+        $this->renderer = new SubjectsTemplateRenderer($exporter, $this->exportConfig);
     }
 
     /**
@@ -107,10 +124,10 @@ class SubjectsController implements SubjectsControllerInterface
      * @param UserRole $role The role of the user to get the subjects of.
      * @param string $username The username of the student or teacher to get the subjects for.
      * Let the defaults value ("") for admins as they have access to all subjects.
-     * @return false|SubjectsCollection The list of the retrieved subjects.
+     * @return SubjectsCollection The list of the retrieved subjects.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the database request goes wrong.
      */
-    public function getForRole(UserRole $role, string $username = ""): SubjectsCollection|false
+    public function getForRole(UserRole $role, string $username = ""): SubjectsCollection
     {
         unset($_SESSION['username-table']);
 
@@ -118,7 +135,7 @@ class SubjectsController implements SubjectsControllerInterface
             UserRole::STUDENT => $this->getService->getStudentSubjects($username),
             UserRole::TEACHER => $this->getService->getTeacherSubjects($username),
             UserRole::ADMIN => $this->getService->getAllSubjects(),
-            UserRole::UNKNOWN => false
+            UserRole::UNKNOWN => new SubjectsCollection()
         };
     }
 
@@ -137,5 +154,67 @@ class SubjectsController implements SubjectsControllerInterface
         $status = $result->fetch_assoc()['status'];
 
         return SubjectStatus::from($status);
+    }
+
+    /**
+     * @param SubjectsCollection $subjects
+     * @return StudentSubjectsDTO[]
+     * @throws GoralysPrepareException|GoralysQueryException
+     */
+    private function groupByStudents(SubjectsCollection $subjects): array
+    {
+        /** @var SubjectDTO[][] $grouped */
+        $grouped = [];
+        foreach ($subjects->getSubjects() as $subject) {
+            $grouped[$this->usernameManager->get($subject->studentUsernameToken)][] = $subject;
+        }
+
+        return array_values(array_map(
+        /**
+         * @param string $username
+         * @param SubjectDTO[] $subjects
+         * @return StudentSubjectsDTO
+         * @throws GoralysPrepareException
+         * @throws GoralysQueryException
+         */
+            function (string $username, array $subjects) {
+                $dto = new StudentSubjectsDTO(
+                    $this->userRepo->getFullNameForUsername($username)
+                );
+
+                foreach ($subjects as $subject) {
+                    $dto->addSubject(new SpecialityDTO(
+                        $subject->teacherUsernameToken,
+                        $subject->topic,
+                        $subject->topicCode,
+                        $subject->subject
+                    ));
+                }
+
+                return $dto;
+            },
+            array_keys($grouped),
+            $grouped
+        ));
+    }
+
+    /**
+     * @param SubjectsCollection $subjects
+     * @return void
+     * @throws GoralysPrepareException|GoralysQueryException
+     */
+    public function exportAll(SubjectsCollection $subjects): void
+    {
+        $grouped = $this->groupByStudents($subjects);
+
+        foreach ($grouped as $s) {
+            $filename = $this->exportConfig::EXPORT_BASE_NAME . date("Y") . " - " . $s->studentName . ".pdf";
+            $pdf = $this->renderer->render($s);
+            $this->exporter->export(
+                $pdf,
+                $this->exportConfig::ASSETS_PATH . "Exports/" . $filename,
+                $this->exportConfig::ASSETS_PATH
+            );
+        }
     }
 }
