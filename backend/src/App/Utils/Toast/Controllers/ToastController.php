@@ -62,7 +62,7 @@ class ToastController implements ToastControllerInterface
      * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
      * @param string $redirect The page to redirect the user to (default = "index.html").
      * @param bool $flash If the toast is flash or not.
-     * @return void
+     * @return never
      */
     #[NoReturn]
     public function fatalError(
@@ -70,7 +70,7 @@ class ToastController implements ToastControllerInterface
         string $msg = "Une erreur interne est survenue.",
         string $redirect = "index.html",
         bool $flash = false
-    ): void {
+    ): never {
         http_response_code($responseCode);
         $this->showToast(
             ToastType::ERROR,

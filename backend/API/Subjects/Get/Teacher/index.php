@@ -33,14 +33,6 @@ $kernel->run(function (GoralysKernel $kernel) {
         $teacherUsername
     );
 
-    if (!$result) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la récupération de vos questions, 
-            veuillez réessayer ultérieurement."
-        );
-    }
-
     $kernel->sendJSON($result);
     exit;
 });

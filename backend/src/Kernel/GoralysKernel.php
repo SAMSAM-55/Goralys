@@ -23,6 +23,7 @@ use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\Doc\PDF\DomPdfExporter;
 use Goralys\Platform\Loader\Services\EnvService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\GoralysLogger;
@@ -59,6 +60,7 @@ class GoralysKernel
     private bool $useFlash;
     public SubjectsUsernameManager $usernameManager;
     private RequestInterface $request;
+    private DomPdfExporter $exporter;
     private int $sessionLifetime;
     /**
      * Multiplier applied to the base session lifetime to determine the upper bound
@@ -109,6 +111,7 @@ class GoralysKernel
         $this->initAuth();
         $this->initUser();
         $this->bootFileSubsystem($test, $testFiles);
+        $this->initExporter();
         $this->initSubjects();
         $this->initTopics();
         $this->initCSRF();
@@ -193,6 +196,7 @@ class GoralysKernel
     private function initLogger(): void
     {
         $this->logger = new GoralysLogger();
+        $this->logger->rotate();
     }
 
     /**
@@ -272,12 +276,21 @@ class GoralysKernel
     }
 
     /**
+     * Initializes the PDF exporter of the kernel.
+     * @return void
+     */
+    private function initExporter(): void
+    {
+        $this->exporter = new DomPdfExporter();
+    }
+
+    /**
      * Initializes the subjects controller of the kernel.
      * @return void
      */
     private function initSubjects(): void
     {
-        $this->subjects = new SubjectsController($this->logger, $this->db, $this->fileManager);
+        $this->subjects = new SubjectsController($this->logger, $this->db, $this->fileManager, $this->exporter);
     }
 
     /**
@@ -454,14 +467,10 @@ class GoralysKernel
 
     /**
      * Helper to check if the user is authenticated
-     * @param string $context The context the authentification is checked in.
      * @return bool If the user is authenticated
      */
-    public function checkAuth(string $context): bool
+    public function checkAuth(): bool
     {
-        $this->logger->debug(LoggerInitiator::KERNEL, "Session lifetime : " . $this->sessionLifetime);
-        $this->logger->debug(LoggerInitiator::KERNEL, "Since last activity : " . $this->sinceLastActivity);
-
         return $this->auth->getAuthStatus($this->sinceLastActivity) == UserAuthStatus::AUTHENTICATED;
     }
 

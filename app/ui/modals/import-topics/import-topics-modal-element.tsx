@@ -5,6 +5,7 @@ import {ImportTopicsModalProps} from "@/app/lib/types";
 import {Button} from "@/app/ui/button";
 import {useEffect, useRef, useState} from "react";
 import InputZipFile from "@/app/ui/inputs/input-zip-file";
+import {QuestionMarkCircleIcon} from "@heroicons/react/24/outline";
 
 export default function ImportTopicsModalElement({ visible, onImportTopics, onCancel, onCloseModal }: ImportTopicsModalProps) {
     const [topicsFile, setTopicsFile] = useState<File | null>(null);
@@ -56,7 +57,7 @@ export default function ImportTopicsModalElement({ visible, onImportTopics, onCa
         >
             <div className="flex gap-3">
                 <div className="w-11 h-11 flex self-center items-center justify-center">
-                    <i className="text-4xl fas fa-circle-question text-blue-600" />
+                    <QuestionMarkCircleIcon className="size-15 text-blue-600" />
                 </div>
 
                 <div className="flex flex-col justify-center flex-1">

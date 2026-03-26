@@ -23,6 +23,15 @@ class SubjectsCollection implements JsonSerializable
     }
 
     /**
+     * Gets the list of subjects held by the collection
+     * @return SubjectDTO[]
+     */
+    public function getSubjects(): array
+    {
+        return $this->subjects;
+    }
+
+    /**
      * Transforms the subjects collection into a JSON array
      * @return SubjectDTO[]
      */

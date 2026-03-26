@@ -69,6 +69,8 @@ echo "Creating Logs directory ..."
 mkdir -p ./backend/Logs
 echo "Creating Assets directory ..."
 mkdir -p ./backend/Assets
+mkdir -p ./backend/Assets/Template
+mkdir -p ./backend/Assets/Template/Exports
 echo "Directories are ready."
 echo
 

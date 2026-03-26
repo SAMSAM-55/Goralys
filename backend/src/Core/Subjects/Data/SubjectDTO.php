@@ -3,6 +3,7 @@
 namespace Goralys\Core\Subjects\Data;
 
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use DateTime;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use JsonSerializable;
 
@@ -10,18 +11,20 @@ use JsonSerializable;
  * The DTO used to transport the data of a subject.
  * It is used inside the App and Core layers to get the subjects from the database.
  */
-class SubjectDTO implements JsonSerializable
+readonly class SubjectDTO implements JsonSerializable
 {
-    private string $studentUsername;
-    private string $studentUsernameToken;
-    private string $subject;
-    private SubjectStatus $status;
-    private string $comment;
-    private string $teacherUsername;
-    private string $teacherUsernameToken;
-    private string $topic;
-    private string $lastRejected;
-    private bool $hasDraft;
+    public string $studentUsername;
+    public string $studentUsernameToken;
+    public string $subject;
+    public SubjectStatus $status;
+    public string $comment;
+    public string $teacherUsername;
+    public string $teacherUsernameToken;
+    public string $topic;
+    public string $topicCode;
+    public string $lastRejected;
+    public ?DateTime $lastUpdatedAt;
+    public bool $hasDraft;
 
     public function __construct(
         string $studentUsername,
@@ -30,7 +33,9 @@ class SubjectDTO implements JsonSerializable
         SubjectStatus $status,
         string $comment,
         string $lastRejected,
+        ?DateTime $lastUpdatedAt,
         string $topic,
+        string $topicCode,
         string $teacherUsername,
         string $teacherUsernameToken,
         bool $hasDraft = false
@@ -43,7 +48,9 @@ class SubjectDTO implements JsonSerializable
         $this->teacherUsername = $teacherUsername;
         $this->teacherUsernameToken = $teacherUsernameToken;
         $this->topic = $topic;
+        $this->topicCode = $topicCode;
         $this->lastRejected = $lastRejected;
+        $this->lastUpdatedAt = $lastUpdatedAt;
         $this->hasDraft = $hasDraft;
     }
 

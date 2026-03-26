@@ -5,6 +5,7 @@ import Cookies from "universal-cookie";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { onUserEvent } from "@/app/lib/auth/user-event";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 export function UserNav() {
@@ -21,7 +22,10 @@ export function UserNav() {
         const run = () => {
             const isLoggedIn = !!cookies.get("username");
             setLoggedIn(isLoggedIn);
-            setText(isLoggedIn ? cookies.get("full-name") : "Se connecter");
+
+            let name = isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter";
+            if (name.length > 20) name = name.substring(0, 17) + "...";
+            setText(name);
         };
 
         run();
@@ -39,7 +43,10 @@ export function UserNav() {
             }
 
             setLoggedIn(isLoggedIn);
-            setText(isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter");
+
+            let name = isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter";
+            if (name.length > 25) name = name.substring(0, 22) + "...";
+            setText(name);
         });
 
         return () => { unsubscribe?.(); };
@@ -57,7 +64,7 @@ export function UserNav() {
             )}
             href={targetUrl}
         >
-            {loggedIn && <i className="fas fa-user h-3 w-3" />}
+            {loggedIn && <UserCircleIcon width={27.5} className="-mr-1.25"/>}
             {text}
         </Link>
     );

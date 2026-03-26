@@ -104,13 +104,48 @@ export default function Page() {
         }
     }
 
+    async function exportTopics() {
+        const csrfToken = await fetchCsrfClient("export-subjects");
+        const payload = {
+            'csrf-token': csrfToken
+        };
+
+        const res = await goralysFetchClient("Subjects/Export", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+            const blob = await res.blob();
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sujets-go.zip';
+            a.click();
+
+            URL.revokeObjectURL(url);
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data?.toast) {
+            toast.showToast({
+                type: data.toastType,
+                title: data.toastTitle,
+                message: data.toastMessage,
+            });
+        }
+    }
+
     return (
         <div className="relative flex flex-col grow h-fit items-center top-10">
             <div className="h-auto w-fit p-2 bg-sky-200 rounded-md">
                 <p className="underline text-xl self-start mb-2.5">Gestion des sujets:</p>
                 <div className="w-150">
                     <Button text="Importer les sujets" type="button" onClick={sendTopics} />
-                    <Button text="Exporter les sujets en PDF" type="button" onClick={() => {}} />
+                    <Button text="Exporter les sujets en PDF" type="button" onClick={exportTopics} />
                     <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} />
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import {clsx} from "clsx";
 import {SubjectInputProps} from "@/app/lib/types";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 
 export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, animate = true }: SubjectInputProps) {
     const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
@@ -47,7 +48,7 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, 
                         <button className="h-6 w-6 cursor-pointer bg-sky-300 rounded-xs"
                                 type="submit"
                                 title="Télécharger le brouillon de l'élève">
-                            <i className="fas fa-download"/>
+                            <ArrowDownTrayIcon className="size-5" />
                         </button>
                     </form>
                 }

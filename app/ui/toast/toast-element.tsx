@@ -2,6 +2,19 @@
 
 import {clsx} from "clsx";
 import {ToastProps} from "@/app/lib/types";
+import {
+    CheckCircleIcon,
+    ExclamationCircleIcon,
+    XCircleIcon,
+    InformationCircleIcon
+} from "@heroicons/react/24/outline";
+
+const icons = {
+    info:    <InformationCircleIcon className="size-14 p-0 -ml-1.5 -mr-1.5 text-blue-600" />,
+    success: <CheckCircleIcon       className="size-14 p-0 -ml-1.5 -mr-1.5 text-green-600" />,
+    warning: <ExclamationCircleIcon className="size-14 p-0 -ml-1.5 -mr-1.5 text-amber-600" />,
+    error:   <XCircleIcon           className="size-14 p-0 -ml-1.5 -mr-1.5 text-red-600" />,
+};
 
 export default function ToastElement({ type, title, message, visible }: ToastProps) {
     return (
@@ -24,24 +37,8 @@ export default function ToastElement({ type, title, message, visible }: ToastPro
             role="alert"
         >
             <div className="flex gap-3">
-                <div className="w-11 h-11 flex self-center items-center justify-center">
-                    <i
-                        className={clsx(
-                            "text-4xl fas",
-                            {
-                                "fa-circle-info": type === "info",
-                                "fa-circle-check": type === "success",
-                                "fa-circle-exclamation": type === "warning",
-                                "fa-circle-xmark": type === "error",
-                            },
-                            {
-                                "text-blue-600": type === "info",
-                                "text-green-600": type === "success",
-                                "text-amber-600": type === "warning",
-                                "text-red-600": type === "error",
-                            }
-                        )}
-                    />
+                <div className="flex self-center">
+                    {icons[type]}
                 </div>
 
                 <div className="flex flex-col justify-center">

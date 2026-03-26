@@ -77,4 +77,9 @@ class FakeUserRepository implements UserRepositoryInterface
     {
         return true;
     }
+
+    public function getFullNameForUsername(string $username): ?string
+    {
+        return null;
+    }
 }
