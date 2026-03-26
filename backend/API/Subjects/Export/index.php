@@ -6,6 +6,7 @@ require __DIR__ . "/../../../src/Kernel/bootstrap.php";
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Shared\Exception\GoralysRuntimeException;
 
 // --------------- Init --------------- //
 
@@ -27,16 +28,28 @@ $kernel->run(function (GoralysKernel $kernel) {
 
     // ------- Export the subjects ------- //
 
-    $subjects = $kernel->subjects->getForRole(UserRole::ADMIN);
-    $kernel->subjects->exportAll($subjects);
+    $kernel->subjects->cleanExports(); // Cleans all previous exports
 
-    http_response_code(200); // OK
-    $kernel->toast->showToast(
-        ToastType::SUCCESS,
-        "Export des sujets",
-        "Les sujets ont bien été exporté en PDF.",
-        "/subject"
-    );
+    $subjects = $kernel->subjects->getForRole(UserRole::ADMIN);
+    $path = $kernel->subjects->exportAll($subjects);
+
+    if (headers_sent($file, $line)) {
+        throw new GoralysRuntimeException("Headers already sent in $file on line $line");
+    }
+
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="sujets-go.zip"');
+    header('Content-Length: ' . filesize($path));
+    header('Cache-Control: no-cache, must-revalidate');
+    header('X-Content-Type-Options: nosniff');
+
+    readfile($path);
+
+    $kernel->subjects->cleanExports();
 
     exit;
 });

@@ -115,6 +115,19 @@ export default function Page() {
             body: JSON.stringify(payload),
         });
 
+        if (res.ok) {
+            const blob = await res.blob();
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sujets-go.zip';
+            a.click();
+
+            URL.revokeObjectURL(url);
+            return;
+        }
+
         const data = await res.json();
 
         if (data?.toast) {

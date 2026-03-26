@@ -1,9 +1,9 @@
 <?php
 
 use Goralys\App\HTTP\Request\GoralysRequest;
-use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
+use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
 require __DIR__ . "/../../../src/Kernel/bootstrap.php";
@@ -28,14 +28,14 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     $archive = $kernel->fileManager->get("topics-file");
     $topics = $kernel->topics->makeTopicsFromZip($archive);
 
-    $kernel->logger->debug(\Goralys\Platform\Logger\Data\Enums\LoggerInitiator::APP, print_r($topics, true));
+    $kernel->logger->debug(LoggerInitiator::APP, print_r($topics, true));
 
     foreach ($topics as $topic) {
         $kernel->topics->insert($topic);
     }
 
     $usernamesFilePath = $kernel->topics->exportUsernames($topics);
-    $kernel->logger->debug(\Goralys\Platform\Logger\Data\Enums\LoggerInitiator::APP, "File: " . $usernamesFilePath);
+    $kernel->logger->debug(LoggerInitiator::APP, "File: " . $usernamesFilePath);
 
     if (headers_sent($file, $line)) {
         throw new GoralysRuntimeException("Headers already sent in $file on line $line");

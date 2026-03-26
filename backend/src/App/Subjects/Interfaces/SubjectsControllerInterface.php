@@ -18,5 +18,6 @@ interface SubjectsControllerInterface
     ): bool;
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): SubjectStatus;
     public function getForRole(UserRole $role, string $username = ""): ?SubjectsCollection;
-    public function exportAll(SubjectsCollection $subjects): void;
+    public function exportAll(SubjectsCollection $subjects): string;
+    public function cleanExports(): void;
 }

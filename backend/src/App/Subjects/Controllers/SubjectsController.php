@@ -25,6 +25,8 @@ use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
 use Goralys\Shared\Exception\DB\GoralysQueryException;
+use Goralys\Shared\Exception\GoralysRuntimeException;
+use ZipArchive;
 
 /**
  * The controller used to update/get subjects from the database via the `SubjectsRepository` (and intermediate services)
@@ -200,21 +202,84 @@ class SubjectsController implements SubjectsControllerInterface
 
     /**
      * @param SubjectsCollection $subjects
-     * @return void
+     * @return string The path to the generated zip file.
      * @throws GoralysPrepareException|GoralysQueryException
+     * @throws GoralysRuntimeException
      */
-    public function exportAll(SubjectsCollection $subjects): void
+    public function exportAll(SubjectsCollection $subjects): string
     {
         $grouped = $this->groupByStudents($subjects);
+        $exportedPaths = [];
 
         foreach ($grouped as $s) {
             $filename = $this->exportConfig::EXPORT_BASE_NAME . date("Y") . " - " . $s->studentName . ".pdf";
+            $filePath = $this->exportConfig::ASSETS_PATH . "Exports/" . $filename;
+
             $pdf = $this->renderer->render($s);
             $this->exporter->export(
                 $pdf,
-                $this->exportConfig::ASSETS_PATH . "Exports/" . $filename,
+                $filePath,
                 $this->exportConfig::ASSETS_PATH
             );
+
+            $exportedPaths[] = $filePath;
         }
+
+        return $this->zipExports($exportedPaths);
+    }
+
+    /**
+     * Deletes all exported files (PDFs and zips) from the exports directory.
+     * @return void
+     * @throws GoralysRuntimeException If the exports directory does not exist or a file cannot be deleted.
+     */
+    public function cleanExports(): void
+    {
+        $exportsDir = $this->exportConfig::ASSETS_PATH . "Exports/";
+
+        if (!is_dir($exportsDir)) {
+            throw new GoralysRuntimeException("Exports directory not found at: $exportsDir");
+        }
+
+        $files = glob($exportsDir . "*.pdf") + glob($exportsDir . "*.zip");
+
+        foreach ($files as $file) {
+            if (!is_file($file)) {
+                continue;
+            }
+
+            if (!unlink($file)) {
+                throw new GoralysRuntimeException("Failed to delete export file: $file");
+            }
+        }
+    }
+
+    /**
+     * Zips a list of exported PDF files into a single archive.
+     * @param string[] $filePaths The list of PDF file paths to zip.
+     * @return string The path to the generated zip file.
+     * @throws GoralysRuntimeException If the zip archive could not be created or a file is missing.
+     */
+    private function zipExports(array $filePaths): string
+    {
+        $zipPath = $this->exportConfig::ASSETS_PATH . "Exports/export_" . date("Y-m-d_His") . ".zip";
+
+        $zip = new ZipArchive();
+
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            throw new GoralysRuntimeException("Could not create zip archive at: $zipPath");
+        }
+
+        foreach ($filePaths as $path) {
+            if (!file_exists($path)) {
+                $zip->close();
+                throw new GoralysRuntimeException("File not found when zipping: $path");
+            }
+            $zip->addFile($path, basename($path));
+        }
+
+        $zip->close();
+
+        return $zipPath;
     }
 }
