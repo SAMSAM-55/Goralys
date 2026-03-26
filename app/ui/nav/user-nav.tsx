@@ -22,7 +22,10 @@ export function UserNav() {
         const run = () => {
             const isLoggedIn = !!cookies.get("username");
             setLoggedIn(isLoggedIn);
-            setText(isLoggedIn ? cookies.get("full-name") : "Se connecter");
+
+            let name = isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter";
+            if (name.length > 20) name = name.substring(0, 17) + "...";
+            setText(name);
         };
 
         run();
@@ -40,7 +43,10 @@ export function UserNav() {
             }
 
             setLoggedIn(isLoggedIn);
-            setText(isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter");
+
+            let name = isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter";
+            if (name.length > 25) name = name.substring(0, 22) + "...";
+            setText(name);
         });
 
         return () => { unsubscribe?.(); };

@@ -5,6 +5,7 @@ import {UserNav} from "@/app/ui/nav/user-nav";
 import Cookies from "universal-cookie";
 import {useEffect, useState} from "react";
 import {UserRole, USER_ROLES} from "@/app/lib/types";
+import Image from "next/image";
 
 export function SideNav() {
     const [role, setRole] = useState<UserRole['role']>("none");
@@ -47,7 +48,10 @@ export function SideNav() {
     ];
 
     return (
-        <div className="min-w-50 w-50 h-auto max-h-screen sticky top-0 flex flex-col m-0 p-2 rounded-xl">
+        <div className="min-w-50 w-55 h-auto max-h-screen sticky top-0 flex flex-col m-0 p-2 rounded-xl">
+            <div className="flex rounded-md min-w-full h-25 bg-sky-500 mb-2">
+                <Image src="/logo/goralys-logo.svg" width={150} height={10} alt="Goralys logo" className="ml-1 self-center" />
+            </div>
             <div className="flex flex-col gap-2">
                 {links.map((link) => (
                     <NavLink key={link.url} name={link.name} url={link.url} />

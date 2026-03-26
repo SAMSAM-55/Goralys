@@ -80,7 +80,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
-                $row['topic_code'],
+                $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
                 $this->usernameManager->store($teachers[0]),
             );
@@ -115,7 +115,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
-                $row['topic_code'],
+                $row['topic_code'] ?? "",
                 $this->formatter->formatUsername($teacherUsername),
                 $this->usernameManager->store($teacherUsername),
                 (bool)$row['draftPath']
@@ -159,7 +159,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
                 $row['topic'],
-                $row['topic_code'],
+                $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
                 $this->usernameManager->store($teachers[0]),
             );
