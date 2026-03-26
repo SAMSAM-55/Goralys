@@ -98,7 +98,7 @@ class LoggerConfigLoader
      */
     public static function getFileLifeTime(LoggerInitiator $type): int
     {
-        return self::$filesLifeTime[$type->value] * 24 * 60 * 60;
+        return self::$filesLifeTime[$type->name] * 24 * 60 * 60;
     }
 
     /**
