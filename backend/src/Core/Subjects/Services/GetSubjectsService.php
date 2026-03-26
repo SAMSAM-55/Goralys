@@ -2,6 +2,8 @@
 
 namespace Goralys\Core\Subjects\Services;
 
+use DateMalformedStringException;
+use DateTime;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Data\SubjectDTO;
@@ -58,6 +60,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * @return SubjectsCollection The array containing all the subjects in a more usable format.
      * The `SubjectsCollection` is also used here as it implements a custom way to transform it into a JSON array and
      * thus make the output process ot the frontend more straightforward.
+     * @throws DateMalformedStringException
      */
     private function formatStudentSubjects(mysqli_result $result, string $studentUsername): SubjectsCollection
     {
@@ -79,6 +82,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
+                $row['last_updated_at'] ? new DateTime($row['last_updated_at']) : null,
                 $row['topic'],
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
@@ -101,6 +105,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * @return SubjectsCollection The array containing all the subjects in a more usable format.
      * The `SubjectsCollection` is also used here as it implements a custom way to transform it into a JSON array and
      * thus make the output process ot the frontend more straightforward.
+     * @throws DateMalformedStringException
      */
     private function formatTeacherSubjects(mysqli_result $result, string $teacherUsername): SubjectsCollection
     {
@@ -114,6 +119,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
+                $row['last_updated_at'] ? new DateTime($row['last_updated_at']) : null,
                 $row['topic'],
                 $row['topic_code'] ?? "",
                 $this->formatter->formatUsername($teacherUsername),
@@ -137,6 +143,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * @return SubjectsCollection The array containing all the subjects in a more usable format.
      * The `SubjectsCollection` is also used here as it implements a custom way to transform it into a JSON array and
      * thus make the output process to the frontend more straightforward.
+     * @throws DateMalformedStringException
      */
     private function formatAllSubjects(mysqli_result $result): SubjectsCollection
     {
@@ -158,6 +165,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
                 $row['last_rejected'] ?? "",
+                $row['last_updated_at'] ? new DateTime($row['last_updated_at']) : null,
                 $row['topic'],
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
@@ -177,6 +185,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * @param string $studentUsername The student's username.
      * @return SubjectsCollection The array of all the student's subjects.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     * @throws DateMalformedStringException
      */
     public function getStudentSubjects(string $studentUsername): SubjectsCollection
     {
@@ -198,6 +207,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * @param string $teacherUsername The teacher's username.
      * @return SubjectsCollection The array of all the teacher's subjects.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     * @throws DateMalformedStringException
      * */
     public function getTeacherSubjects(string $teacherUsername): SubjectsCollection
     {
@@ -217,6 +227,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * The subjects are returned using a subjects collection object.
      * @return SubjectsCollection The array of all the subjects inside the database.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
+     * @throws DateMalformedStringException
      */
     public function getAllSubjects(): SubjectsCollection
     {

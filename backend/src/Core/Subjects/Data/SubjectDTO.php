@@ -3,6 +3,7 @@
 namespace Goralys\Core\Subjects\Data;
 
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use DateTime;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use JsonSerializable;
 
@@ -22,6 +23,7 @@ readonly class SubjectDTO implements JsonSerializable
     public string $topic;
     public string $topicCode;
     public string $lastRejected;
+    public ?DateTime $lastUpdatedAt;
     public bool $hasDraft;
 
     public function __construct(
@@ -31,6 +33,7 @@ readonly class SubjectDTO implements JsonSerializable
         SubjectStatus $status,
         string $comment,
         string $lastRejected,
+        ?DateTime $lastUpdatedAt,
         string $topic,
         string $topicCode,
         string $teacherUsername,
@@ -47,6 +50,7 @@ readonly class SubjectDTO implements JsonSerializable
         $this->topic = $topic;
         $this->topicCode = $topicCode;
         $this->lastRejected = $lastRejected;
+        $this->lastUpdatedAt = $lastUpdatedAt;
         $this->hasDraft = $hasDraft;
     }
 

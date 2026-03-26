@@ -83,9 +83,13 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
             '{{prenom}}' => $firstname,
             '{{serie}}'  => $pathway,
             '{{spe1}}'   => $student->getSubjects()[0]->speciality,
+            '{{prof1}}'  => $student->getSubjects()[0]->teacherName,
             '{{q1}}'     => $student->getSubjects()[0]->subject,
+            '{{dateQ1}}' => $student->getSubjects()[0]->validatedAt->format("d/m/Y"),
             '{{spe2}}'   => $student->getSubjects()[1]->speciality,
+            '{{prof2}}'  => $student->getSubjects()[1]->teacherName,
             '{{q2}}'     => $student->getSubjects()[1]->subject,
+            '{{dateQ2}}' => $student->getSubjects()[1]->validatedAt->format("d/m/Y"),
             '{{year}}'   => date("Y"),
         ];
 

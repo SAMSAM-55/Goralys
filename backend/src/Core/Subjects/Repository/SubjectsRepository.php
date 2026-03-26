@@ -39,6 +39,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 st.subject_status,
                 st.teacher_comment as comment,
                 st.last_rejected,
+                st.last_updated_at,
                 t.name as topic,
                 t.topic_code as topic_code,
                 GROUP_CONCAT(distinct tt.teacher_id order by tt.teacher_id separator ', ') as teachers
@@ -67,6 +68,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 st.subject_status,
                 st.teacher_comment as comment,
                 st.last_rejected,
+                st.last_updated_at,
                 t.name as topic,
                 t.topic_code as topic_code,
                 st.draft_path as draftPath,
@@ -96,6 +98,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 st.subject_status,
                 st.teacher_comment as comment,
                 st.last_rejected,
+                st.last_updated_at,
                 t.name as topic,
                 t.topic_code as topic_code,
                 GROUP_CONCAT(distinct tt.teacher_id order by tt.teacher_id separator ', ') as teachers

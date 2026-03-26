@@ -2,6 +2,7 @@
 
 namespace Goralys\App\Subjects\Controllers;
 
+use DateTime;
 use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
 use Goralys\App\Subjects\Interfaces\SubjectsControllerInterface;
@@ -186,10 +187,13 @@ class SubjectsController implements SubjectsControllerInterface
 
                 foreach ($subjects as $subject) {
                     $dto->addSubject(new SpecialityDTO(
-                        $subject->teacherUsernameToken,
+                        $this->userRepo->getFullNameForUsername(
+                            $this->usernameManager->get($subject->teacherUsernameToken)
+                        ),
                         $subject->topic,
                         $subject->topicCode,
-                        $subject->subject
+                        $subject->subject,
+                        $subject->lastUpdatedAt ?? new DateTime()
                     ));
                 }
 
@@ -241,7 +245,7 @@ class SubjectsController implements SubjectsControllerInterface
             throw new GoralysRuntimeException("Exports directory not found at: $exportsDir");
         }
 
-        $files = glob($exportsDir . "*.pdf") + glob($exportsDir . "*.zip");
+        $files = array_merge(glob($exportsDir . "*.pdf"), glob($exportsDir . "*.zip"));
 
         foreach ($files as $file) {
             if (!is_file($file)) {
