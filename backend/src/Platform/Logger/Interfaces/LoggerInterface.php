@@ -6,6 +6,8 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
 interface LoggerInterface
 {
+    public function rotate(): void;
+
     public function info(
         LoggerInitiator $initiator,
         string $message,

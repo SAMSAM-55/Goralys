@@ -53,4 +53,9 @@ class FakeGoralysLogger implements LoggerInterface
     {
         $this->logs = [];
     }
+
+    public function rotate(): void
+    {
+        return;
+    }
 }

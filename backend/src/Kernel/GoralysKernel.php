@@ -196,6 +196,7 @@ class GoralysKernel
     private function initLogger(): void
     {
         $this->logger = new GoralysLogger();
+        $this->logger->rotate();
     }
 
     /**
