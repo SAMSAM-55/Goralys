@@ -83,7 +83,7 @@ export default function Page() {
             'csrf-token': csrfToken
         };
 
-        const res = await goralysFetchClient("Topics/Delete", {
+        const res = await goralysFetchClient("Topics/Delete/", {
             method: "POST",
             body: JSON.stringify(payload),
         });
@@ -110,7 +110,7 @@ export default function Page() {
             'csrf-token': csrfToken
         };
 
-        const res = await goralysFetchClient("Subjects/Export", {
+        const res = await goralysFetchClient("Subjects/Export/", {
             method: "POST",
             body: JSON.stringify(payload),
         });
