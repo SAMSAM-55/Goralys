@@ -1,6 +1,7 @@
 import {clsx} from "clsx";
 import {useState} from "react";
 import {InputProps} from "@/app/lib/types";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export function FloatingInput({ id, label, helper, autocomplete, password = false, disabled = false, required = false, defaultValue, onInput}: InputProps) {
     const [show, setShow] = useState<boolean>(!password);
@@ -73,7 +74,10 @@ export function FloatingInput({ id, label, helper, autocomplete, password = fals
 
             {password && (
                 <button type="button" onClick={onEyeClicked} className="absolute top-px right-0 text-gray-900">
-                    <i className={clsx("fas", { "fa-eye": !show, "fa-eye-slash": show })} />
+                    {show
+                        ? <EyeSlashIcon className="size-5" />
+                        : <EyeIcon className="size-5" />
+                    }
                 </button>
             )}
 

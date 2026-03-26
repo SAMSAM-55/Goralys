@@ -5,6 +5,7 @@ import Cookies from "universal-cookie";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { onUserEvent } from "@/app/lib/auth/user-event";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
 export function UserNav() {
@@ -57,7 +58,7 @@ export function UserNav() {
             )}
             href={targetUrl}
         >
-            {loggedIn && <i className="fas fa-user h-3 w-3" />}
+            {loggedIn && <UserCircleIcon width={27.5} className="-mr-1.25"/>}
             {text}
         </Link>
     );
