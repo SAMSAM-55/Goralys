@@ -40,16 +40,26 @@ export type TextAreaProps = {
     helper?: string,
     id: string,
     label: string,
-    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>
+    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
 };
 
-export type SubjectInputProps = {
-    animate?: boolean,
-    rejected?: boolean,
+export type SubjectTextAreaProps = {
+    defaultValue?: string,
+    disabled?: boolean,
+    ref?:RefObject<HTMLTextAreaElement | null>
     helper?: string,
     id: string,
     label: string,
-    onChange?: ChangeEventHandler<HTMLInputElement>,
+    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
+    subjectData: Subject,
+    animate: boolean,
+};
+
+export type SubjectInputMultilineProps = {
+    helper?: string,
+    id: string,
+    label: string,
+    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
     subjectData: Subject,
 };
 

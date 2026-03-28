@@ -2,9 +2,9 @@
 
 import { clsx } from "clsx";
 import React, { useCallback } from "react";
-import { TextAreaProps } from "@/app/lib/types";
+import {SubjectTextAreaProps} from "@/app/lib/types";
 
-export function TextArea({
+export function SubjectTextArea({
                              id,
                              label,
                              helper,
@@ -12,7 +12,9 @@ export function TextArea({
                              ref,
                              defaultValue,
                              onChangeAction,
-                         }: TextAreaProps) {
+                             subjectData,
+                             animate,
+                         }: SubjectTextAreaProps) {
 
     const setRef = useCallback((el: HTMLTextAreaElement | null) => {
         if (typeof ref === 'function') {
@@ -36,7 +38,7 @@ export function TextArea({
     return (
         <div
             className={clsx(
-                "relative mt-3 mb-1 group min-w-50",
+                "relative mt-3 mb-1 group min-w-50 w-full",
                 { "mb-5!": !!helper }
             )}
         >
@@ -50,20 +52,29 @@ export function TextArea({
                 defaultValue={defaultValue}
                 readOnly={disabled}
                 onChange={onChangeAction}
-                className="
-                    peer block w-full py-0 px-0 text-base text-heading
-                    resize-none overflow-hidden bg-transparent
-                    border-0 border-b-2 border-sky-300
-                    appearance-none focus:outline-none focus:ring-0
-                "
+                className={clsx(
+                    "peer block w-full py-0 px-0 cursor-text text-base text-heading " +
+                    "bg-transparent border-0 border-b-2 border-sky-300 " +
+                    "appearance-none focus:outline-none focus:ring-0 resize-none overflow-hidden ",
+                    {
+                        "border-green-600!": subjectData.status === "approved",
+                        "border-amber-600!": subjectData.status === "submitted",
+                        "border-red-600!": subjectData.status === "rejected",
+                        "cursor-not-allowed": disabled,
+                    },
+                )}
             />
 
+            {/* Animated underline */}
+            {animate &&
             <span className="pointer-events-none
                absolute bg-sky-500 left-0 bottom-0 h-0.5 w-full
                origin-left scale-x-0
                transition-transform duration-250
                group-focus-within:scale-x-100 "
             />
+            }
+
 
             <label
                 htmlFor={id}

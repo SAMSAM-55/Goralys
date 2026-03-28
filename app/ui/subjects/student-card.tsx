@@ -110,7 +110,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             <SubjectInputStudent id={`subject-input-student-for-${key}`}
                                  label="Votre Question"
                                  subjectData={subjectData}
-                                 onChange={(e) => {
+                                 onChangeAction={(e) => {
                                      setSubject(e.target.value)
                                  }}
             />
