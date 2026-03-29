@@ -35,8 +35,9 @@ export function SideNav() {
     function getSubjectLinkText() {
         switch (role) {
             case "student":
+                return "Mes Questions"
             case "none":
-                return "Mes Questions";
+                return "Mon Espace";
             case "teacher": return "Mes Elèves";
             case "admin": return "Administration";
         }

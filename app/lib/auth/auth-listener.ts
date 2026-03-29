@@ -26,7 +26,7 @@ export function AuthListener() {
                 toast.showToast({
                     type: "info",
                     title: "Connexion",
-                    message: "Connectez-vous pour accéder à vos questions.",
+                    message: "Veuillez vous connecter pour accéder à votre espace",
                 });
 
                 setTimeout(() => {

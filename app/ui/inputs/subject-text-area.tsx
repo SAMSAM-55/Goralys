@@ -38,7 +38,7 @@ export function SubjectTextArea({
     return (
         <div
             className={clsx(
-                "relative mt-3 mb-1 group min-w-50 w-full",
+                "relative mt-0 mb-0 group min-w-50 w-full",
                 { "mb-5!": !!helper }
             )}
         >

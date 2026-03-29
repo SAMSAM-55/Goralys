@@ -29,7 +29,7 @@ export default function LoginPageClient() {
             showToast({
                 type: "info",
                 title: "Connexion",
-                message: "Veuillez vous connecter pour accéder à vos question"
+                message: "Veuillez vous connecter pour accéder à votre espace"
             })
         }
 
