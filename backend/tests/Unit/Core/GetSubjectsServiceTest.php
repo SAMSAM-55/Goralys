@@ -50,38 +50,45 @@ class GetSubjectsServiceTest extends TestCase
     {
         $subjects = [
                 [
-                        'teachers'       => 'j.doe1',
-                        'student'        => 'e.doe3',
-                        'topic'          => 'Maths',
-                        'subject'        => 'Étude des fonctions',
-                        'last_rejected'  => null,
-                        'subject_status' => 3,
-                        'draftPath'      => "/path/to/draft"
+                        'teachers'        => 'j.doe1',
+                        'student'         => 'e.doe3',
+                        'topic'           => 'Maths',
+                        'subject'         => 'Étude des fonctions',
+                        'last_rejected'   => null,
+                        'subject_status'  => 3,
+                        'draftPath'       => "/path/to/draft",
+                        'last_updated_at' => '2026-03-29 10:15:00',
                 ],
                 [
-                        'teachers'       => 'm.smith2',
-                        'student'        => 'e.doe3',
-                        'topic'          => 'Physique',
-                        'subject'        => 'Ondes et interférences',
-                        'last_rejected'  => null,
-                        'subject_status' => 1,
+                        'teachers'        => 'm.smith2',
+                        'student'         => 'e.doe3',
+                        'topic'           => 'Physique',
+                        'subject'         => 'Ondes et interférences',
+                        'last_rejected'   => null,
+                        'subject_status'  => 1,
+                        'draftPath'       => null,
+                        'last_updated_at' => '2026-03-29 10:15:00',
                 ],
                 [
-                        'teachers'       => 'j.doe1',
-                        'student'        => 'l.dupont4',
-                        'topic'          => 'Informatique',
-                        'comment'        => "foo",
-                        'subject'        => 'Algorithmes de tri',
-                        'last_rejected'  => 'Algorithmes de tri',
-                        'subject_status'         => 2,
+                        'teachers'        => 'j.doe1',
+                        'student'         => 'l.dupont4',
+                        'topic'           => 'Informatique',
+                        'comment'         => "foo",
+                        'subject'         => 'Algorithmes de tri',
+                        'last_rejected'   => 'Algorithmes de tri',
+                        'subject_status'  => 2,
+                        'draftPath'       => null,
+                        'last_updated_at' => '2026-03-29 10:15:00',
                 ],
                 [
-                        'teachers'       => 'm.smith2',
-                        'student'        => 'l.dupont4',
-                        'topic'          => 'Sciences',
-                        'subject'        => 'Intelligence artificielle',
-                        'last_rejected'  => null,
-                        'subject_status'         => 3,
+                        'teachers'        => 'm.smith2',
+                        'student'         => 'l.dupont4',
+                        'topic'           => 'Sciences',
+                        'subject'         => 'Intelligence artificielle',
+                        'last_rejected'   => null,
+                        'subject_status'  => 3,
+                        'draftPath'       => null,
+                        'last_updated_at' => '2026-03-29 10:15:00',
                 ],
                 null
         ];
@@ -129,7 +136,8 @@ class GetSubjectsServiceTest extends TestCase
                 ],
         ];
 
-        $this->mysqliResult->method('fetch_assoc')
+        $this->mysqliResult->expects($this->atLeastOnce())
+            ->method('fetch_assoc')
             ->willReturnOnConsecutiveCalls(...$subjects);
         $this->repo->setGetResult($this->mysqliResult);
 
@@ -149,21 +157,24 @@ class GetSubjectsServiceTest extends TestCase
     {
         $subjects = [
                 [
-                        'teachers'       => 'j.doe1',
-                        'student'        => 'e.doe3',
-                        'topic'          => 'Maths',
-                        'subject'        => 'Étude des fonctions',
-                        'last_rejected'  => null,
-                        'subject_status' => 3,
-                        'draftPath'      => "/path/to/draft"
+                        'teachers'        => 'j.doe1',
+                        'student'         => 'e.doe3',
+                        'topic'           => 'Maths',
+                        'subject'         => 'Étude des fonctions',
+                        'last_rejected'   => null,
+                        'subject_status'  => 3,
+                        'draftPath'       => "/path/to/draft",
+                        'last_updated_at' => '2026-03-26 11:15:00'
                 ],
                 [
-                        'teachers'       => 'm.smith2',
-                        'student'        => 'e.doe3',
-                        'topic'          => 'Physique',
-                        'subject'        => 'Ondes et interférences',
-                        'last_rejected'  => null,
-                        'subject_status' => 1,
+                        'teachers'        => 'm.smith2',
+                        'student'         => 'e.doe3',
+                        'topic'           => 'Physique',
+                        'subject'         => 'Ondes et interférences',
+                        'last_rejected'   => null,
+                        'subject_status'  => 1,
+                        'draftPath'       => null,
+                        'last_updated_at' => '2026-03-26 11:15:00'
                 ],
                 null
         ];
@@ -191,7 +202,8 @@ class GetSubjectsServiceTest extends TestCase
                 ],
         ];
 
-        $this->mysqliResult->method('fetch_assoc')
+        $this->mysqliResult->expects($this->atLeastOnce())
+            ->method('fetch_assoc')
             ->willReturnOnConsecutiveCalls(...$subjects);
         $this->repo->setGetResult($this->mysqliResult);
 
@@ -211,22 +223,25 @@ class GetSubjectsServiceTest extends TestCase
     {
         $subjects = [
                 [
-                        'teachers'       => 'j.doe1',
-                        'student'        => 'e.doe3',
-                        'topic'          => 'Maths',
-                        'subject'        => 'Étude des fonctions',
-                        'last_rejected'  => null,
-                        'subject_status' => 3,
-                        'draftPath'      => "/path/to/draft"
+                        'teachers'        => 'j.doe1',
+                        'student'         => 'e.doe3',
+                        'topic'           => 'Maths',
+                        'subject'         => 'Étude des fonctions',
+                        'last_rejected'   => null,
+                        'subject_status'  => 3,
+                        'draftPath'       => "/path/to/draft",
+                        'last_updated_at' => '2026-02-26 11:45:00'
                 ],
                 [
-                        'teachers'       => 'j.doe1',
-                        'student'        => 'l.dupont4',
-                        'topic'          => 'Informatique',
-                        'comment'        => "foo",
-                        'subject'        => 'Algorithmes de tri',
-                        'last_rejected'  => 'Algorithmes de tri',
-                        'subject_status'         => 2,
+                        'teachers'        => 'j.doe1',
+                        'student'         => 'l.dupont4',
+                        'topic'           => 'Informatique',
+                        'comment'         => "foo",
+                        'subject'         => 'Algorithmes de tri',
+                        'last_rejected'   => 'Algorithmes de tri',
+                        'subject_status'  => 2,
+                        'draftPath'       => null,
+                        'last_updated_at' => '2026-03-26 11:15:00'
                 ],
                 null
         ];
@@ -254,7 +269,8 @@ class GetSubjectsServiceTest extends TestCase
                 ],
         ];
 
-        $this->mysqliResult->method('fetch_assoc')
+        $this->mysqliResult->expects($this->atLeastOnce())
+            ->method('fetch_assoc')
             ->willReturnOnConsecutiveCalls(...$subjects);
         $this->repo->setGetResult($this->mysqliResult);
 
