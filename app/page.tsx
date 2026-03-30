@@ -14,7 +14,7 @@ import Image from "next/image";
 
 export default function Home() {
     return (
-        <div className="flex flex-col min-h-screen font-sans">
+        <div className="flex flex-col min-h-screen font-sans w-full">
 
             <div className="self-center w-3/4 mt-11">
                 <h1 className="font-bold text-xl mb-5">
