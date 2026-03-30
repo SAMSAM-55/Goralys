@@ -93,7 +93,8 @@ To run the tests, use the following command after installing the projects depend
 
 ## License and contributing information
 
-This project is under an MIT license (see: [`LICENSE`](LICENSE)).
+This project was originally licensed under the MIT license, as of version 2.1.1, this project is now licensed under the 
+GNU Affero General Public License v3.0 (see: [`LICENSE`](LICENSE)). Third-party licenses can be found in [`THIRD-LICENSE-PARTY`](THIRD-PARTY-LICENSE).
 All contributions are welcome as long as they respect the terms inside [`Contributing`](CONTRIBUTING.md).
 
 ## Notes
