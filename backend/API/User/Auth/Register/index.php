@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
@@ -24,7 +29,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
 
     // --------------- Inputs --------------- //
 
-    if (!$request->validate("username", "password", "first-name", "last-name")) {
+    if (!$request->validate("user-name", "password", "first-name", "last-name")) {
         $kernel->flashToast(
             ToastType::WARNING,
             "Formulaire",

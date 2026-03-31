@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import {cacheUserDataClient} from "@/app/lib/user/user.client";
 import {emitUserEvent} from "@/app/lib/auth/user-event";
 

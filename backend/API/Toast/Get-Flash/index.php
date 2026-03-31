@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 

@@ -23,8 +23,6 @@ class LoginServiceTest extends TestCase
     {
         $this->logger = new FakeGoralysLogger();
         $this->repo = new FakeUserRepository();
-        $this->formatter = new UsernameFormatterService();
-        $this->usernameManager = new SubjectsUsernameManager($this->logger);
 
         $this->service = new LoginService(
             $this->logger,

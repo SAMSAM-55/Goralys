@@ -28,9 +28,7 @@ export default function CommentStudent({subjectData, disabled, onChange} : {subj
                     <SubjectInputStudent id={subjectData.studentToken + subjectData.teacherToken + "-last-rejected"}
                                          label="Votre question non validée"
                                          helper=""
-                                         animate={false}
                                          subjectData={subjectData}
-                                         rejected={!!showLastRejected}
                     />}
                 <TextArea id={subjectData.studentToken + subjectData.teacherToken + "-subject-comment"}
                           label="Commentaire"

@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 /**
  * List of school subjects with their short and long names.
  * Each entry is a tuple where the first element is a short name/alias
