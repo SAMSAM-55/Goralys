@@ -20,6 +20,7 @@ Thank you for your interest in contributing to Goralys! This document provides g
 - Follow PSR-12 coding style for PHP code
 - Use four spaces for indentation (no tabs)
 - Use camelCase naming for variable and function
+- Use lowercase SQL queries
 - Add comments for complex logic
 - Always write the meaning of the HTTP codes in PHP
 - Write descriptive variable/function names
