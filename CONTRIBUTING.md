@@ -7,7 +7,7 @@ Thank you for your interest in contributing to Goralys! This document provides g
 ### Pull Requests
 
 1. Fork the repository and create your branch from `develop`
-2. Install dependencies: `composer install --working-dir=PHP`
+2. Install dependencies: `composer install --working-dir=backend` and `npm install` (or `pnpm install`)
 3. Make your changes following the coding conventions below
 4. Write clear commit messages
 5. Update documentation as needed
@@ -18,7 +18,7 @@ Thank you for your interest in contributing to Goralys! This document provides g
 #### Coding Conventions
 
 - Follow PSR-12 coding style for PHP code
-- Use 4 spaces for indentation (no tabs)
+- Use four spaces for indentation (no tabs)
 - Use camelCase naming for variable and function
 - Add comments for complex logic
 - Always write the meaning of the HTTP codes in PHP
@@ -28,7 +28,7 @@ Thank you for your interest in contributing to Goralys! This document provides g
 #### Security Guidelines
 
 - Never commit sensitive credentials (use `.env` for local testing)
-- Use prepared statements for database queries
+- Use prepared statements for database queries (via the `DbContainer`)
 - Implement CSRF protection for forms
 
 ### File Organization
@@ -37,23 +37,25 @@ New code should follow the existing project structure:
 
 ```
 goralys/
-├── CSS/                   # Stylesheets
-├── JS/                    # Frontend JavaScript
-├── PHP/                   # Backend PHP files
-│   ├── subject/           # Subject-related endpoints
-│   ├── vendor/            # Composer dependencies
-│   ├── config.php         # Configuration (using .env)
-│   └── utility.php        # Helper functions
-└── *_page.php             # Pages that require PHP
-└── *.html                 # Static pages that don't require PHP
-└── .env                   # Environnement configuration file
+├── app/                   # Next.js frontend pages and components
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility functions and types
+│   ├── ui/                # UI components
+├── backend/               # Backend PHP files (Symfony-like structure)
+│   ├── API/               # API endpoints
+│   ├── src/               # Core backend logic source code (Kernel, Core, Shared)
+│   ├── tests/             # Backend tests
+│   └── vendor/            # Composer dependencies
+├── public/                # Static assets (images, fonts)
+├── scripts/               # Helper scripts (seeding, etc.)
+└── .env                   # Environment configuration file
 ```
 
 ### Documentation
 
 - Update README.md for significant changes
 - Keep code comments current
-- Update database schema in `PHP/data_structure.txt` if needed; if you do so, please provide a test file (.sql)
+- Update database schema in `backend/data_structure.sql` if needed; if you do so, please provide a test file (.sql)
 
 ### Testing
 
@@ -70,13 +72,13 @@ Before submitting a PR:
 
 Recommended setup:
 
-- PHP 7.4+
-- MySQL/MariaDB
-- Apache with mod_rewrite
+- PHP 8.3+
+- MariaDB
 - Composer
-- IDE with PHP support (VS Code, PhpStorm, etc.)
+- pnpm
+- IDE with PHP and Next.js support (VS Code, PhpStorm, etc.)
 
-*Note: I personally recommend PhpStorm for IDE if you can afford it as it integrates seamlessly with a local server and database. Also, on windows, I recommend using [xampp](https://www.apachefriends.org) for testing.*
+*Note: I personally recommend PhpStorm for IDE if you can afford it as it integrates seamlessly with a local server and database.*
 
 ### Getting Help
 
@@ -88,7 +90,7 @@ If you need help:
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the project's [AGPL-3.0 LICENSE](LICENSE).
 
 ## Acknowledgements
 
