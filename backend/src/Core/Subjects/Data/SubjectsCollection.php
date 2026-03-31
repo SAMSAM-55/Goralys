@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Core\Subjects\Data;
 
 use JsonSerializable;
@@ -10,7 +15,7 @@ use JsonSerializable;
 class SubjectsCollection implements JsonSerializable
 {
     /* @var SubjectDTO[] */
-    private array $subjects;
+    private array $subjects = [];
 
     /**
      * Adds a new subject to the collection.
@@ -20,6 +25,15 @@ class SubjectsCollection implements JsonSerializable
     public function addSubject(SubjectDTO $newSubject): void
     {
         $this->subjects[] = $newSubject;
+    }
+
+    /**
+     * Gets the list of subjects held by the collection
+     * @return SubjectDTO[]
+     */
+    public function getSubjects(): array
+    {
+        return $this->subjects;
     }
 
     /**

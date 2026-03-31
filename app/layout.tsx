@@ -20,17 +20,16 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     return (
     <html lang="fr">
     <head>
-        {/* Font Awesome CDN */}
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-              integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-              crossOrigin="anonymous"
-              referrerPolicy="no-referrer"
-        />
         <title>Goralys</title>
     </head>
 
-    <body className={`${lusitana.className} antialiased text-gray-900 bg-gray-50`}>
+    <body className={`${lusitana.className} antialiased text-gray-900 bg-gray-50 lg:overflow-auto overflow-hidden`}>
+
+    <div className="z-50 absolute h-screen w-screen lg:hidden bg-gray-200 flex items-center justify-center p-6 overflow-hidden">
+        <h1 className="font-bold text-center text-2xl">
+            Goralys n&#39;est malheureusement pas disponible sur téléphone et tablette pour l&#39;instant.
+        </h1>
+    </div>
 
     <div id="toast-root"></div>
     <div id="confirm-root"></div>

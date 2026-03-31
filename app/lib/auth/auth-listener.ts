@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 'use client';
 
 import {useEffect} from "react";
@@ -26,7 +31,7 @@ export function AuthListener() {
                 toast.showToast({
                     type: "info",
                     title: "Connexion",
-                    message: "Connectez-vous pour accéder à vos questions.",
+                    message: "Veuillez vous connecter pour accéder à votre espace",
                 });
 
                 setTimeout(() => {

@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\App\Topics\Controllers;
 
 use Goralys\App\HTTP\Files\Data\UploadedFileDTO;
@@ -35,7 +40,7 @@ class TopicsController implements TopicsControllerInterface
     /** @var TopicsImportConfig Configuration for topic imports. */
     private TopicsImportConfig $config;
     /** @var TopicsRepository Repository for topic database operations. */
-    private TopicsRepository $repository;
+    private TopicsRepository $repo;
     /** @var BuildFromCSVService Service to build topics from CSV data. */
     private BuildFromCSVService $CSVBuilder;
     /** @var GoralysFileManager Manager for file operations. */
@@ -64,7 +69,7 @@ class TopicsController implements TopicsControllerInterface
         $this->db = $db;
         $this->config = new TopicsImportConfig();
 
-        $this->repository = new TopicsRepository($this->db);
+        $this->repo = new TopicsRepository($this->db);
         $this->CSVBuilder = new BuildFromCSVService($this->utils, $this->config);
         $this->nextId = 0;
         $this->files = $files;
@@ -123,21 +128,21 @@ class TopicsController implements TopicsControllerInterface
      */
     public function insert(TopicDTO $topic): void
     {
-        $this->repository->insertTopic(
+        $this->repo->insertTopic(
             $topic->getId(),
             $topic->getCode(),
             $topic->getName()
         );
 
         foreach ($topic->getTeachers() as $t) {
-            $this->repository->insertTeacher(
+            $this->repo->insertTeacher(
                 $topic->getId(),
                 $this->generateUsername($t)
             );
         }
 
         foreach ($topic->getStudents() as $s) {
-            $this->repository->insertStudent(
+            $this->repo->insertStudent(
                 $topic->getId(),
                 $this->generateUsername($s)
             );
@@ -284,5 +289,15 @@ class TopicsController implements TopicsControllerInterface
         file_put_contents($path, $out);
 
         return $path;
+    }
+
+    /**
+     * Removes all topics and associated subjects from the database.
+     * @return bool If the deletion was successful
+     * @throws GoralysPrepareException|GoralysQueryException
+     */
+    public function clear(): bool
+    {
+        return $this->repo->clearAll();
     }
 }

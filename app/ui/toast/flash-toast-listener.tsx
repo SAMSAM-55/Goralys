@@ -1,14 +1,34 @@
 'use client';
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useToast } from "@/app/ui/toast/toast-provider";
-import {goralysFetchClient} from "@/app/lib/fetch/fetch.client";
+import { goralysFetchClient } from "@/app/lib/fetch/fetch.client";
+import {Toast} from "@/app/lib/types";
 
 export default function FlashToastListener() {
-    const toast = useToast();
+    const { showToast, cacheToast } = useToast();
+    const pathname = usePathname();
 
     useEffect(() => {
         let cancelled = false;
+
+        const showCachedToast = () => {
+            const raw = sessionStorage.getItem('flash_toast');
+            if (!raw) return;
+
+            sessionStorage.removeItem('flash_toast');
+
+            try {
+                const parsed: Toast = JSON.parse(raw);
+                if (!parsed.expires) return;
+
+                const remaining = parsed.expires - Date.now();
+                if (remaining <= 0) return;
+
+                showToast(parsed, remaining);
+            } catch {}
+        };
 
         const run = async () => {
             try {
@@ -19,25 +39,29 @@ export default function FlashToastListener() {
 
                 const data = await res.json();
 
-                if (cancelled || !data) return;
+                if (cancelled) return;
 
-
-                if (data.toast) {
-                    toast.showToast({
+                if (data?.toast) {
+                    // Server returned a toast — clear cache to avoid double-showing
+                    sessionStorage.removeItem('flash_toast');
+                    showToast({
                         type: data.toast.toastType,
                         title: data.toast.toastTitle,
                         message: data.toast.toastMessage,
                     });
+                } else {
+                    showCachedToast();
                 }
-            } catch {}
+            } catch {
+                if (!cancelled) showCachedToast();
+            }
         };
 
         void run();
 
-        return () => {
-            cancelled = true;
-        };
-    }, [toast]);
+        return () => { cancelled = true; };
+
+    }, [pathname, showToast, cacheToast]);
 
     return null;
 }

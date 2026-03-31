@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Platform\DB\Facade;
 
 use Goralys\Platform\DB\Data\DbDto;
@@ -86,7 +91,6 @@ class DbContainer implements DbContainerInterface
         $stmt = $service->prepareAndBind($StmtData);
 
         if (!$stmt->execute()) {
-            $this->logger->error(LoggerInitiator::PLATFORM, "Could not run the statement");
             throw new GoralysQueryException("Could not run the statement");
         }
 
@@ -108,7 +112,6 @@ class DbContainer implements DbContainerInterface
         $stmt = $service->prepare($query);
 
         if (!$stmt->execute()) {
-            $this->logger->error(LoggerInitiator::PLATFORM, "Could not run the statement");
             throw new GoralysQueryException("Could not run the statement");
         }
 
@@ -138,6 +141,28 @@ class DbContainer implements DbContainerInterface
         $service = new PrepareService($this->logger, $this->conn);
 
         $stmt = $service->prepareAndBind($StmtData);
+
+        if (!$stmt->execute()) {
+            throw new GoralysQueryException("Could not run the statement");
+        }
+
+        return true;
+    }
+
+    /**
+     * Executes a request on the database.
+     * It uses prepared statements to avoid SQL injection.
+     * Note that the preparation of the statement is delegated to a specialized service
+     * @param string $query The request to execute.
+     * Uses the same types as the default `mysqli` implementation.
+     * @return bool `true` if the request execution was successful, `false` elsewise.
+     * @throws GoralysPrepareException|GoralysQueryException Thrown if something goes wrong during the execution.
+     */
+    public function runNoArgs(string $query): bool
+    {
+        $service = new PrepareService($this->logger, $this->conn);
+
+        $stmt = $service->prepare($query);
 
         if (!$stmt->execute()) {
             throw new GoralysQueryException("Could not run the statement");

@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\App\Subjects\Interfaces;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
@@ -17,5 +22,7 @@ interface SubjectsControllerInterface
         string|SubjectStatus $newValue
     ): bool;
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): SubjectStatus;
-    public function getForRole(UserRole $role, string $username = ""): SubjectsCollection|false;
+    public function getForRole(UserRole $role, string $username = ""): ?SubjectsCollection;
+    public function exportAll(SubjectsCollection $subjects): string;
+    public function cleanExports(): void;
 }

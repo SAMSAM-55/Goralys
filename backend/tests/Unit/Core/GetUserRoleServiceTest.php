@@ -19,7 +19,6 @@ class GetUserRoleServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->repo = new FakeUserRepository();
-        $this->formatter = new UsernameFormatterService();
 
         $this->service = new GetUserRoleService(
             $this->repo

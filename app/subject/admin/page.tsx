@@ -1,16 +1,22 @@
 'use client';
 
-import {useImportTopicsModal} from "@/app/ui/modals/import-topics/import-topics-modal-provider";
-import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
-import {useToast} from "@/app/ui/toast/toast-provider";
-import {Button} from "@/app/ui/button";
-import {useSubjects} from "@/app/hooks/useSubjects";
+import { useImportTopicsModal } from "@/app/ui/modals/import-topics/import-topics-modal-provider";
+import { fetchCsrfClient, goralysFetchClient } from "@/app/lib/fetch/fetch.client";
+import { useToast } from "@/app/ui/toast/toast-provider";
+import { Button } from "@/app/ui/button";
+import { useSubjects } from "@/app/hooks/useSubjects";
 import AdminCard from "@/app/ui/subjects/admin-card";
+import { Subject } from "@/app/lib/types";
+import { SubjectsSearchBar } from "@/app/ui/subjects/subjects-search-bar";
+import { useState } from "react";
+import { useConfirm } from "@/app/ui/modals/confirm/confirm-provider";
 
 export default function Page() {
     const modal = useImportTopicsModal();
-    const toast = useToast()
-    const {subjects} = useSubjects("admin");
+    const confirm = useConfirm();
+    const toast = useToast();
+    const { subjects, refetch } = useSubjects("admin");
+    const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects || null);
 
     async function sendTopics() {
         const csrfToken = await fetchCsrfClient("import-topics");
@@ -23,7 +29,7 @@ export default function Page() {
                 type: 'warning',
                 title: "Import des données",
                 message: "Veuillez importer un fichier."
-            })
+            });
             return;
         }
 
@@ -42,12 +48,80 @@ export default function Page() {
 
         if (res.ok) {
             const blob = await res.blob();
-
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
-
             a.href = url;
             a.download = "utilisateurs.txt";
+            a.click();
+            URL.revokeObjectURL(url);
+            await refetch();
+            setCurrentSubjects(subjects || []);
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data?.toast) {
+            toast.showToast({
+                type: data.toastType,
+                title: data.toastTitle,
+                message: data.toastMessage,
+            });
+        }
+    }
+
+    async function deleteTopics() {
+        const confirmResult = await confirm.showConfirm({
+            title: "Suppression des sujets",
+            message: "Ête-vous sûr de vouloir supprimer les sujets et les utilisateurs (sauf administrateurs) ?",
+        });
+
+        if (!confirmResult) return;
+
+        const csrfToken = await fetchCsrfClient("delete-topics");
+        const payload = {
+            'csrf-token': csrfToken
+        };
+
+        const res = await goralysFetchClient("Topics/Delete/", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (data?.toast) {
+            toast.showToast({
+                type: data.toastType,
+                title: data.toastTitle,
+                message: data.toastMessage,
+            });
+        }
+
+        if (res.ok) {
+            await refetch();
+            setCurrentSubjects(subjects || []);
+        }
+    }
+
+    async function exportTopics() {
+        const csrfToken = await fetchCsrfClient("export-subjects");
+        const payload = {
+            'csrf-token': csrfToken
+        };
+
+        const res = await goralysFetchClient("Subjects/Export/", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+            const blob = await res.blob();
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sujets-go.zip';
             a.click();
 
             URL.revokeObjectURL(url);
@@ -70,15 +144,16 @@ export default function Page() {
             <div className="h-auto w-fit p-2 bg-sky-200 rounded-md">
                 <p className="underline text-xl self-start mb-2.5">Gestion des sujets:</p>
                 <div className="w-150">
-                    <Button text="Importer les sujets" type="button" onClick={sendTopics}></Button>
-                    <Button text="Exporter les sujets en PDF" type="button" onClick={() => {}}></Button>
-                    <Button text="Supprimer les sujets" type="button" onClick={() => {}}></Button>
+                    <Button text="Importer les sujets" type="button" onClick={sendTopics} />
+                    <Button text="Exporter les sujets en PDF" type="button" onClick={exportTopics} />
+                    <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} />
                 </div>
             </div>
-            <div className="h-auto w-fit p-2">
+            <div className="h-auto w-fit p-2 mt-4">
                 <p className="underline text-2xl self-start mb-3">Les questions de l&apos;établissement :</p>
+                <SubjectsSearchBar subjects={subjects} setCurrentSubjects={setCurrentSubjects} />
                 <div className="flex flex-col gap-2">
-                    {subjects?.map((s) => (
+                    {currentSubjects?.map((s) => (
                         <AdminCard key={s.studentToken + s.teacherToken} subjectData={s} />
                     ))}
                 </div>

@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Core\Subjects\Repository;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
@@ -34,19 +39,20 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     public function findByStudent(string $studentUsername): mysqli_result
     {
         return $this->db->fetch(
-            "SELECT
+            "select
                 st.subject,
                 st.subject_status,
-                st.teacher_comment AS comment,
+                st.teacher_comment as comment,
                 st.last_rejected,
-                t.name AS topic,
-                GROUP_CONCAT(DISTINCT tt.teacher_id ORDER BY tt.teacher_id SEPARATOR ', ') AS teachers
-            FROM student_topics st
-            JOIN topics t ON t.id = st.topic_id
-            JOIN topic_teachers tt ON t.id = tt.topic_id
-            WHERE st.student_id = ?
-            GROUP BY
-                st.subject, st.subject_status, st.teacher_comment, st.last_rejected, t.name",
+                st.last_updated_at,
+                t.name as topic,
+                t.topic_code as topic_code,
+                GROUP_CONCAT(distinct tt.teacher_id order by tt.teacher_id separator ', ') as teachers
+            from student_topics st
+            join topics t on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            where st.student_id = ?
+            group by st.student_id, st.topic_id",
             "s",
             $studentUsername
         );
@@ -61,21 +67,22 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     public function findByTeacher(string $teacherUsername): mysqli_result
     {
         return $this->db->fetch(
-            "SELECT
-                st.student_id AS student,
+            "select
+                st.student_id as student,
                 st.subject,
                 st.subject_status,
-                st.teacher_comment AS comment,
+                st.teacher_comment as comment,
                 st.last_rejected,
-                t.name AS topic,
-                st.draft_path AS draftPath,
-                GROUP_CONCAT(DISTINCT tt.teacher_id ORDER BY tt.teacher_id SEPARATOR ', ') AS teachers
-            FROM topics t
-            JOIN student_topics st ON t.id = st.topic_id
-            JOIN topic_teachers tt ON t.id = tt.topic_id
-            WHERE tt.teacher_id = ?
-            GROUP BY
-            st.student_id, st.subject, st.subject_status, st.teacher_comment, st.last_rejected, t.name, st.draft_path",
+                st.last_updated_at,
+                t.name as topic,
+                t.topic_code as topic_code,
+                st.draft_path as draftPath,
+                GROUP_CONCAT(distinct tt.teacher_id order by tt.teacher_id separator ', ') as teachers
+            from topics t
+            join student_topics st on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            where tt.teacher_id = ?
+            group by st.student_id, st.topic_id",
             "s",
             $teacherUsername
         );
@@ -90,19 +97,20 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     public function findAll(): mysqli_result
     {
         return $this->db->fetchNoArgs(
-            "SELECT
-                st.student_id AS student,
+            "select
+                st.student_id as student,
                 st.subject,
                 st.subject_status,
-                st.teacher_comment AS comment,
+                st.teacher_comment as comment,
                 st.last_rejected,
-                t.name AS topic,
-                GROUP_CONCAT(DISTINCT tt.teacher_id ORDER BY tt.teacher_id SEPARATOR ', ') AS teachers
-            FROM topics t
-            JOIN u599334177_goralys.topic_teachers tt ON t.id = tt.topic_id
-            JOIN student_topics st ON t.id = st.topic_id
-            GROUP BY
-                st.student_id, st.subject, st.subject_status, st.teacher_comment, st.last_rejected, t.name"
+                st.last_updated_at,
+                t.name as topic,
+                t.topic_code as topic_code,
+                GROUP_CONCAT(distinct tt.teacher_id order by tt.teacher_id separator ', ') as teachers
+            from topics t
+            join topic_teachers tt on t.id = tt.topic_id
+            join student_topics st on t.id = st.topic_id
+            group by st.student_id, st.topic_id"
         );
     }
 
@@ -117,13 +125,13 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
     {
         return $this->db->fetch(
-            "SELECT st.subject_status AS status
-            FROM topics t
-            JOIN student_topics st ON t.id = st.topic_id
-            JOIN topic_teachers tt ON t.id = tt.topic_id
-            WHERE tt.teacher_id = ?
-              AND st.student_id = ?
-              AND t.name = ?",
+            "select st.subject_status as status
+            from topics t
+            join student_topics st on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            where tt.teacher_id = ?
+              and st.student_id = ?
+              and t.name = ?",
             "sss",
             $teacherUsername,
             $studentUsername,
@@ -142,13 +150,13 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     public function getDraftPath(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
     {
         return $this->db->fetch(
-            "SELECT st.draft_path AS path
-            FROM topics t
-            JOIN student_topics st ON t.id = st.topic_id
-            JOIN topic_teachers tt ON t.id = tt.topic_id
-            WHERE tt.teacher_id = ?
-              AND st.student_id = ?
-              AND t.name = ?",
+            "select st.draft_path as path
+            from topics t
+            join student_topics st on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            where tt.teacher_id = ?
+              and st.student_id = ?
+              and t.name = ?",
             "sss",
             $teacherUsername,
             $studentUsername,
@@ -173,14 +181,14 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $newSubject
     ): bool {
         return $this->db->run(
-            "UPDATE student_topics st
-            JOIN topics t on t.id = st.topic_id
-            JOIN topic_teachers tt on t.id = tt.topic_id
-            SET st.subject = ?, st.subject_status = 0
-            WHERE tt.teacher_id = ?
-            AND st.student_id = ?
-            AND t.name = ?
-            AND (st.subject_status = 0 OR st.subject_status = 2)",
+            "update student_topics st
+            join topics t on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            set st.subject = ?, st.subject_status = 0
+            where tt.teacher_id = ?
+            and st.student_id = ?
+            and t.name = ?
+            and (st.subject_status = 0 or st.subject_status = 2)",
             "ssss",
             $newSubject,
             $teacherUsername,
@@ -206,14 +214,14 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         SubjectStatus $newStatus
     ): bool {
         return $this->db->run(
-            "UPDATE student_topics st
-            JOIN topics t on t.id = st.topic_id
-            JOIN topic_teachers tt on t.id = tt.topic_id
-            SET st.subject_status = ?,
+            "update student_topics st
+            join topics t on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            set st.subject_status = ?,
                 st.last_rejected = IF(? = 2, st.subject, st.last_rejected)
-            WHERE tt.teacher_id = ?
-            AND st.student_id = ?
-            AND t.name = ?",
+            where tt.teacher_id = ?
+            and st.student_id = ?
+            and t.name = ?",
             "iisss",
             $newStatus->value,
             $newStatus->value,
@@ -230,7 +238,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
      * @param string $topic The name of the topic.
-     * @param string$newComment The new comment for the subject.
+     * @param string $newComment The new comment for the subject.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
@@ -241,13 +249,13 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $newComment
     ): bool {
         return $this->db->run(
-            "UPDATE student_topics st
-            JOIN topics t on t.id = st.topic_id
-            JOIN topic_teachers tt on t.id = tt.topic_id
-            SET st.teacher_comment = ?
-            WHERE tt.teacher_id = ?
-            AND st.student_id = ?
-            AND t.name = ?",
+            "update student_topics st
+            join topics t on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            set st.teacher_comment = ?
+            where tt.teacher_id = ?
+            and st.student_id = ?
+            and t.name = ?",
             "ssss",
             $newComment,
             $teacherUsername,
@@ -274,13 +282,13 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $newPath
     ): bool {
         return $this->db->run(
-            "UPDATE student_topics st
-            JOIN topics t on t.id = st.topic_id
-            JOIN topic_teachers tt on t.id = tt.topic_id
-            SET st.draft_path = ?
-            WHERE tt.teacher_id = ?
-            AND st.student_id = ?
-            AND t.name = ?",
+            "update student_topics st
+            join topics t on t.id = st.topic_id
+            join topic_teachers tt on t.id = tt.topic_id
+            set st.draft_path = ?
+            where tt.teacher_id = ?
+            and st.student_id = ?
+            and t.name = ?",
             "ssss",
             $newPath,
             $teacherUsername,

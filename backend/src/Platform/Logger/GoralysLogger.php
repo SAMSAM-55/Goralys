@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Platform\Logger;
 
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -20,7 +25,58 @@ class GoralysLogger implements LoggerInterface
     public function __construct()
     {
         LoggerConfigLoader::init();
-        LoggerService::init(__DIR__ . "/../../../Logs/");
+        LoggerService::init(LoggerConfigLoader::getBaseDir());
+    }
+
+    /**
+     * Automatically deletes log files when they get too old
+     * @return void
+     */
+    public function rotate(): void
+    {
+        foreach (LoggerInitiator::cases() as $case) {
+            $lifetime = LoggerConfigLoader::getFileLifeTime($case);
+            $path = LoggerConfigLoader::getInitiatorPath($case);
+
+            if (!file_exists($path)) {
+                continue;
+            }
+
+            $fileAge = time() - filemtime($path);
+
+            if ($fileAge >= $lifetime) {
+                unlink($path);
+
+                $dir = dirname($path);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+
+                touch($path);
+                chmod($path, 0644);
+            }
+        }
+
+        $lifetime = LoggerConfigLoader::getGlobalLifetime();
+        $path = LoggerConfigLoader::getGlobalPath();
+
+        if (!file_exists($path)) {
+            return;
+        }
+
+        $fileAge = time() - filemtime($path);
+
+        if ($fileAge >= $lifetime) {
+            unlink($path);
+
+            $dir = dirname($path);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+
+            touch($path);
+            chmod($path, 0644);
+        }
     }
 
     /**

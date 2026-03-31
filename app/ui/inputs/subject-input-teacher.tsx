@@ -1,7 +1,9 @@
 import {clsx} from "clsx";
-import {SubjectInputProps} from "@/app/lib/types";
+import {SubjectInputMultilineProps} from "@/app/lib/types";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import {SubjectTextArea} from "@/app/ui/inputs/subject-text-area";
 
-export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, animate = true }: SubjectInputProps) {
+export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAction}: SubjectInputMultilineProps) {
     const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
     helper = subjectData.status === "submitted"
         ? "Cette question est en attente de validation."
@@ -19,24 +21,14 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, 
         )}
         >
             <div className="flex flex-row">
-                <input type="text"
-                   id={id}
-                   name={id}
-                   placeholder=" "
-                   spellCheck="true"
-                   disabled={true}
-                   defaultValue={subjectData.subject}
-                   onChange={onChange}
-                   className={clsx(
-                       "peer block w-full py-0 px-0 cursor-not-allowed text-base text-heading " +
-                       "bg-transparent border-0 border-b-2 border-sky-300 " +
-                       "appearance-none focus:outline-none focus:ring-0 ",
-                       {
-                           "border-green-600!": subjectData.status === "approved",
-                           "border-amber-600!": subjectData.status === "submitted",
-                           "border-red-600!": subjectData.status === "rejected",
-                       },
-                   )}
+                <SubjectTextArea
+                    id={id}
+                    disabled={true}
+                    defaultValue={subjectData.status == "rejected" ? subjectData.lastRejected : subjectData.subject}
+                    onChangeAction={onChangeAction}
+                    label={label}
+                    subjectData={subjectData}
+                    animate={false}
                 />
                 {subjectData.hasDraft &&
                     <form action={requestUrl} method="POST">
@@ -47,31 +39,11 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChange, 
                         <button className="h-6 w-6 cursor-pointer bg-sky-300 rounded-xs"
                                 type="submit"
                                 title="Télécharger le brouillon de l'élève">
-                            <i className="fas fa-download"/>
+                            <ArrowDownTrayIcon className="size-5" />
                         </button>
                     </form>
                 }
             </div>
-            {/* Animated underline */}
-            {animate &&
-            <span className="pointer-events-none
-                absolute bg-sky-500 left-0 bottom-0 h-0.5 w-full
-                origin-left scale-x-0
-                transition-transform duration-250
-                group-focus-within:scale-x-100 "
-            />
-            }
-
-            <label htmlFor={id}
-                   className="absolute text-base text-body cursor-not-allowed duration-300 transform
-                       -translate-y-4.5 scale-75 top-0 origin-left
-                       peer-placeholder-shown:scale-100
-                       peer-placeholder-shown:translate-y-0
-                       peer-focus:scale-75
-                       peer-focus:-translate-y-4.5"
-            >
-                {label}
-            </label>
 
             {helper.length !== 0 && <p className="mt-0 absolute text-[13px] italic text-gray-600">
                 *{helper}

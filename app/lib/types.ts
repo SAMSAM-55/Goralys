@@ -1,8 +1,10 @@
-import {ChangeEventHandler, MouseEventHandler, RefObject} from "react";
+import {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
 
 export type UserRole = {
-    role: "admin" | "teacher" | "student",
+    role: "admin" | "teacher" | "student" | "none",
 };
+
+export const USER_ROLES = ["admin", "teacher", "student", "none"] as const satisfies ReadonlyArray<UserRole['role']>;
 
 export type SubjectStatus = "not_submitted" | "submitted" | "rejected" | "approved";
 
@@ -28,6 +30,7 @@ export type InputProps = {
     password?: boolean,
     required?: boolean,
     defaultValue?: string,
+    onInput?: FormEventHandler<HTMLInputElement>,
 };
 
 export type TextAreaProps = {
@@ -37,16 +40,26 @@ export type TextAreaProps = {
     helper?: string,
     id: string,
     label: string,
-    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>
+    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
 };
 
-export type SubjectInputProps = {
-    animate?: boolean,
-    rejected?: boolean,
+export type SubjectTextAreaProps = {
+    defaultValue?: string,
+    disabled?: boolean,
+    ref?:RefObject<HTMLTextAreaElement | null>
     helper?: string,
     id: string,
     label: string,
-    onChange?: ChangeEventHandler<HTMLInputElement>,
+    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
+    subjectData: Subject,
+    animate: boolean,
+};
+
+export type SubjectInputMultilineProps = {
+    helper?: string,
+    id: string,
+    label: string,
+    onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
     subjectData: Subject,
 };
 
@@ -68,6 +81,7 @@ export type Toast = {
     type: "error" | "warning" | "info" | "success",
     title: string,
     message: string,
+    expires?: number,
 };
 
 export type AuthEvent = "unauthenticated" | "expired";
@@ -101,6 +115,11 @@ export type ImportTopicsModalProps = {
     onCloseModal: () => void,
 }
 
+export type SubjectsSearchBarProps = {
+    subjects: Subject[] | null,
+    setCurrentSubjects: (v: Subject[]) => void
+}
+
 export type UserData = {
     username: string,
     full_name: string,
@@ -108,3 +127,12 @@ export type UserData = {
 }
 
 export type CookieValue = string | boolean | number | null | undefined
+
+export const searchFields = {
+    all: "Tout",
+    student: "Elèves",
+    teacher: "Professeur",
+    topic: "Matière",
+} as const;
+
+export type SubjectsSearchField = keyof typeof searchFields

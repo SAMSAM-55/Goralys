@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Core\Topics\Config;
 
 /**
@@ -13,6 +18,4 @@ final class TopicsImportConfig
     public const string TEACHERS_SEPARATOR = "|";
     /** @var string The separator between the topic code and name in the CSV filename. */
     public const string TOPIC_CODE_NAME_SEPARATOR = "_";
-    /** @var string The file where the usernames should be exported. */
-    public const string TOPICS_USERNAMES_FILE_PATH = "Assets/users.txt";
 }

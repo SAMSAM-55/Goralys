@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 'use client';
 
 import {useEffect} from "react";
@@ -15,7 +20,7 @@ export function UserListener() {
             if (event === "logout") {
                 emptyUserCacheClient();
                 setTimeout(() => {
-                    router.replace('/user/login');
+                    window.location.href = '/user/login';
                 }, 0);
             }
         });

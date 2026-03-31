@@ -3,6 +3,7 @@
 import {clsx} from "clsx";
 import {ConfirmProps} from "@/app/lib/types";
 import {Button} from "@/app/ui/button";
+import {QuestionMarkCircleIcon} from "@heroicons/react/24/outline"
 
 export default function ConfirmElement({ title, message, visible, onConfirm, onCancel }: ConfirmProps) {
     return (
@@ -21,7 +22,7 @@ export default function ConfirmElement({ title, message, visible, onConfirm, onC
         >
             <div className="flex gap-3">
                 <div className="w-11 h-11 flex self-center items-center justify-center">
-                    <i className="text-4xl fas fa-circle-question text-blue-600" />
+                    <QuestionMarkCircleIcon className="size-15 text-blue-600" />
                 </div>
 
                 <div className="flex flex-col justify-center flex-1">

@@ -3,7 +3,8 @@
       "ext-json": "*",
       "ext-mysqli": "*",
         "vlucas/phpdotenv": "^5.6",
-      "ext-zip": "*"
+      "ext-zip": "*",
+        "dompdf/dompdf": "^3.1"
     },
 
   "autoload": {

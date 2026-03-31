@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
@@ -28,14 +33,6 @@ $kernel->run(function (GoralysKernel $kernel) {
     // ------- Get the subjects ------- //
 
     $result = $kernel->subjects->getForRole(UserRole::ADMIN);
-
-    if (!$result) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la récupération de vos questions, 
-            veuillez réessayer ultérieurement."
-        );
-    }
 
     $kernel->sendJSON($result);
     exit;

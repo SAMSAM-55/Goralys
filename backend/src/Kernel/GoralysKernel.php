@@ -1,5 +1,23 @@
 <?php
 
+/*
+ * Goralys — application de gestion des sujets du Grand oral
+    Copyright (C) 2025-2026 Sami Saubion
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 namespace Goralys\Kernel;
 
 use ErrorException;
@@ -17,11 +35,13 @@ use Goralys\App\Subjects\Controllers\SubjectsController;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\App\Topics\Controllers\TopicsController;
 use Goralys\App\User\Controllers\AuthController;
+use Goralys\App\User\Controllers\UserController;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\Doc\PDF\DomPdfExporter;
 use Goralys\Platform\Loader\Services\EnvService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\GoralysLogger;
@@ -45,6 +65,7 @@ class GoralysKernel
     public DbContainer $db;
     public LoggerInterface $logger;
     public AuthController $auth;
+    public UserController $users;
     public GoralysFileManager $fileManager;
     public SubjectsController $subjects;
     public TopicsController $topics;
@@ -57,6 +78,7 @@ class GoralysKernel
     private bool $useFlash;
     public SubjectsUsernameManager $usernameManager;
     private RequestInterface $request;
+    private DomPdfExporter $exporter;
     private int $sessionLifetime;
     /**
      * Multiplier applied to the base session lifetime to determine the upper bound
@@ -105,7 +127,9 @@ class GoralysKernel
 
         $this->initDb();
         $this->initAuth();
+        $this->initUser();
         $this->bootFileSubsystem($test, $testFiles);
+        $this->initExporter();
         $this->initSubjects();
         $this->initTopics();
         $this->initCSRF();
@@ -190,6 +214,7 @@ class GoralysKernel
     private function initLogger(): void
     {
         $this->logger = new GoralysLogger();
+        $this->logger->rotate();
     }
 
     /**
@@ -213,6 +238,18 @@ class GoralysKernel
             $this->db,
             $this->sessionLifetime,
             $this->sessionLifetimeMultiplier
+        );
+    }
+
+    /**
+     * Initializes the user controller of the kernel.
+     * @return void
+     */
+    private function initUser(): void
+    {
+        $this->users = new UserController(
+            $this->logger,
+            $this->db
         );
     }
 
@@ -257,12 +294,21 @@ class GoralysKernel
     }
 
     /**
+     * Initializes the PDF exporter of the kernel.
+     * @return void
+     */
+    private function initExporter(): void
+    {
+        $this->exporter = new DomPdfExporter();
+    }
+
+    /**
      * Initializes the subjects controller of the kernel.
      * @return void
      */
     private function initSubjects(): void
     {
-        $this->subjects = new SubjectsController($this->logger, $this->db, $this->fileManager);
+        $this->subjects = new SubjectsController($this->logger, $this->db, $this->fileManager, $this->exporter);
     }
 
     /**
@@ -424,6 +470,10 @@ class GoralysKernel
                 exit;
             case UserAuthStatus::NOT_AUTHENTICATED:
                 $this->destroySession();
+                $this->logger->warning(
+                    LoggerInitiator::CORE,
+                    "Tried to perform action: $context without authentification"
+                );
 
                 http_response_code(401); // Unauthorized
                 echo json_encode(["authEvent" => "unauthenticated"]);
@@ -431,6 +481,15 @@ class GoralysKernel
             case UserAuthStatus::AUTHENTICATED:
                 break;
         }
+    }
+
+    /**
+     * Helper to check if the user is authenticated
+     * @return bool If the user is authenticated
+     */
+    public function checkAuth(): bool
+    {
+        return $this->auth->getAuthStatus($this->sinceLastActivity) == UserAuthStatus::AUTHENTICATED;
     }
 
     /**

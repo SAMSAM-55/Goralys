@@ -9,8 +9,7 @@ import {FloatingInput} from "@/app/ui/inputs/floating-input";
 import Cookies from "universal-cookie";
 
 export default function Page() {
-    const toast = useToast();
-
+    const { showToast } = useToast();
     async function logout() {
         const payload = {'csrf-token': await fetchCsrfClient("logout")};
 
@@ -20,7 +19,7 @@ export default function Page() {
         });
         emitUserEvent("logout");
 
-        toast.showToast({
+        showToast({
             type: "success",
             title: "Déconnexion",
             message: "Vous avez bien été déconnecté"
@@ -33,9 +32,9 @@ export default function Page() {
 
     return (<Card className="flex-col absolute top-25 bg-sky-200 left-1/2 -translate-x-1/2 w-100!">
         <p className="underline-offset-1 underline text-2xl">Vos informations:</p>
-        <FloatingInput id="username" label="Identifiant" defaultValue={username} />
-        <FloatingInput id="username" label="Prénom" defaultValue={fullName.split(" ")[0]} />
-        <FloatingInput id="username" label="Nom" defaultValue={fullName.split(" ")[1]} />
+        <FloatingInput id="username" label="Identifiant" disabled defaultValue={username} />
+        <FloatingInput id="firstname" label="Prénom" disabled defaultValue={fullName.split(" ")[0]} />
+        <FloatingInput id="lastname"  label="Nom"    disabled defaultValue={fullName.split(" ").slice(1).join(" ")} />
         <Button key="logout-button" text="Se déconnecter" type="button" onClick={logout} />
     </Card>);
 }

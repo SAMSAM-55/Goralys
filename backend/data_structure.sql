@@ -1,64 +1,65 @@
--- GORALYS DATABASE SCHEMA
+-- goralys database schema
 -- version 2.3
 
--- Makes sure all previous tables are deleted
-DROP TABLE IF EXISTS student_topics, topic_teachers, topics, admins_list, users;
+-- makes sure all previous tables are deleted
+drop table if exists student_topics, topic_teachers, topics, admins_list, users;
 
 -- -----------------------------------------------------
--- USERS TABLE (main active accounts)
+-- users table (main active accounts)
 -- -----------------------------------------------------
 
-CREATE TABLE users (
-                       id INT AUTO_INCREMENT PRIMARY KEY,
-                       user_id VARCHAR(32) NOT NULL UNIQUE,         -- e.g. "j.dupont3"
-                       full_name VARCHAR(100) NOT NULL,
-                       password_hash VARCHAR(255),
-                       role ENUM('teacher', 'student', 'admin') NOT NULL,
-                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+create table users (
+                       id int auto_increment primary key,
+                       user_id varchar(32) not null unique,         -- e.g. "j.dupont3"
+                       full_name varchar(100) not null,
+                       password_hash varchar(255),
+                       role enum('teacher', 'student', 'admin') not null,
+                       created_at datetime default current_timestamp
+) engine=innodb;
 
 -- -----------------------------------------------------
--- ADMINS_LIST TABLE (only source to create admins)
+-- admins_list table (only source to create admins)
 -- -----------------------------------------------------
-CREATE TABLE admins_list (
-                            user_id VARCHAR(32) NOT NULL UNIQUE
-) ENGINE=InnoDB;
+create table admins_list (
+                             user_id varchar(32) not null unique
+) engine=innodb;
 
 -- -----------------------------------------------------
--- TOPICS TABLE
+-- topics table
 -- -----------------------------------------------------
-CREATE TABLE topics (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        topic_code VARCHAR(32) NOT NULL,      -- e.g. "maths_2025_jd"
-                        name VARCHAR(100) NOT NULL,
-                        teacher_id VARCHAR(32) NOT NULL
-) ENGINE=InnoDB;
+drop table if exists topics;
+create table topics (
+                        id int auto_increment primary key,
+                        topic_code varchar(32) not null,      -- e.g. "maths_2025_jd"
+                        name varchar(100) not null
+) engine=innodb;
 
 -- -----------------------------------------------------
--- STUDENT_TOPICS TABLE (Many-to-Many)
+-- student_topics table (many-to-many)
 -- -----------------------------------------------------
-CREATE TABLE student_topics (
-                                student_id VARCHAR(32) NOT NULL,
-                                topic_id INT NOT NULL,                       -- FK → topics.id
-                                subject VARCHAR(255),
-                                last_rejected VARCHAR(255),
-                                teacher_comment VARCHAR(255),
-                                draft_path VARCHAR(255),
-                                subject_status TINYINT(1) DEFAULT 0, -- 0=not submitted, 1=submitted, 2=rejected, 3=approved
-                                PRIMARY KEY (student_id, topic_id),
-                                FOREIGN KEY (topic_id) REFERENCES topics(id)
-                                    ON DELETE CASCADE
-                                    ON UPDATE CASCADE
-) ENGINE=InnoDB;
+create table student_topics (
+                                student_id varchar(32) not null,
+                                topic_id int not null,                       -- fk → topics.id
+                                subject varchar(255),
+                                last_rejected varchar(255),
+                                teacher_comment varchar(255),
+                                draft_path varchar(255),
+                                subject_status tinyint(1) default 0, -- 0=not submitted, 1=submitted, 2=rejected, 3=approved
+                                last_updated_at timestamp default current_timestamp on update current_timestamp,
+                                primary key (student_id, topic_id),
+                                foreign key (topic_id) references topics(id)
+                                    on delete cascade
+                                    on update cascade
+) engine=innodb;
 
 -- -----------------------------------------------------
--- TOPIC_TEACHERS TABLE
+-- topic_teachers table
 -- -----------------------------------------------------
-CREATE TABLE topic_teachers (
-    topic_id INT, -- FK → topics.id
-    teacher_id VARCHAR(32) NOT NULL,
-    PRIMARY KEY (topic_id, teacher_id),
-    FOREIGN KEY (topic_id) REFERENCES topics(id)
-                            ON DELETE CASCADE
-                            ON UPDATE CASCADE
-) ENGINE=InnoDB;
+create table topic_teachers (
+                                topic_id int, -- fk → topics.id
+                                teacher_id varchar(32) not null,
+                                primary key (topic_id, teacher_id),
+                                foreign key (topic_id) references topics(id)
+                                    on delete cascade
+                                    on update cascade
+) engine=innodb;

@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -19,6 +24,8 @@ export function useSubjects(role: UserRole['role']) {
     const inFlightRef = useRef<Promise<void> | null>(null);
 
     const fetchSubjects = useCallback(async () => {
+        if (!cookies.get("username")) return;
+
         if (inFlightRef.current) {
             return inFlightRef.current;
         }

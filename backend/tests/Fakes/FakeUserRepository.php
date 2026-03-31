@@ -72,4 +72,14 @@ class FakeUserRepository implements UserRepositoryInterface
     {
         $this->existsResult = $existsResult;
     }
+
+    public function clearAll(): bool
+    {
+        return true;
+    }
+
+    public function getFullNameForUsername(string $username): ?string
+    {
+        return null;
+    }
 }

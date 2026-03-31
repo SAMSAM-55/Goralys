@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 // Client only fetches helpers.
 
 'use client';
@@ -25,10 +30,8 @@ export async function goralysFetchClient(input: string | URL | Request, requestO
     // Ensure JSON before parsing:
     const clone = res.clone()
     const contentType = clone.headers.get("Content-Type");
-    if (!(contentType && contentType.toLowerCase().trim().includes("application/json"))) {
-        await actionHandler.handle(res);
-        return res;
-    }
+
+    if (!(contentType && contentType.toLowerCase().trim().includes("application/json"))) return res;
 
     const data = await clone.json();
     // Auth check

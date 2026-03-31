@@ -2,21 +2,30 @@
 
 import Link from "next/link";
 import Cookies from "universal-cookie";
-import {useEffect, useState} from "react";
-import {onUserEvent} from "@/app/lib/auth/user-event";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { onUserEvent } from "@/app/lib/auth/user-event";
+import { UserCircleIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 
 export function UserNav() {
     const [text, setText] = useState<string | null>(null);
     const [loggedIn, setLoggedIn] = useState<boolean>(false);
+    const current = usePathname();
+
+    const targetUrl = loggedIn ? '/user/me' : '/user/login';
+    const isActive = current === targetUrl || current.startsWith(`${targetUrl}/`);
 
     useEffect(() => {
         const cookies = new Cookies();
 
         const run = () => {
             const isLoggedIn = !!cookies.get("username");
-
             setLoggedIn(isLoggedIn);
-            setText(isLoggedIn ? cookies.get("full-name") : "Se connecter");
+
+            let name = isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter";
+            if (name.length > 20) name = name.substring(0, 17) + "...";
+            setText(name);
         };
 
         run();
@@ -34,21 +43,28 @@ export function UserNav() {
             }
 
             setLoggedIn(isLoggedIn);
-            setText(isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter");
+
+            let name = isLoggedIn ? (cookies.get("full-name") ?? "") : "Se connecter";
+            if (name.length > 25) name = name.substring(0, 22) + "...";
+            setText(name);
         });
 
-        return () => {
-            unsubscribe?.();
-        };
+        return () => { unsubscribe?.(); };
     }, []);
 
     return (
         <Link
-            className="bg-gray-100 hover:bg-sky-200 h-12.5 w-full flex items-center gap-2
-                       text-gray-900 hover:text-sky-600 rounded-md transition-colors p-2"
-            href={loggedIn ? '/user/me' : '/user/login'}
+            className={clsx(
+                "h-12.5 w-full flex items-center gap-2 rounded-md transition-colors p-2",
+                "hover:bg-sky-200 hover:text-sky-600",
+                {
+                    "bg-sky-200 text-sky-600": isActive,
+                    "bg-gray-100 text-gray-900": !isActive,
+                }
+            )}
+            href={targetUrl}
         >
-            {loggedIn && <i className="fas fa-user h-3 w-3" />}
+            {loggedIn && <UserCircleIcon width={27.5} className="-mr-1.25"/>}
             {text}
         </Link>
     );

@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Core\Topics\Repository;
 
 use Goralys\Platform\DB\Facade\DbContainer;
@@ -35,7 +40,7 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function insertTopic(int $topicId, string $topicCode, string $topicName): void
     {
         $this->db->run(
-            "INSERT INTO topics (id, topic_code, name) VALUES (?, ?, ?)",
+            "insert into topics (id, topic_code, name) values (?, ?, ?)",
             "iss",
             $topicId,
             $topicCode,
@@ -54,7 +59,7 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function insertTeacher(int $topicId, string $teacherUsername): void
     {
         $this->db->run(
-            "INSERT INTO topic_teachers (topic_id, teacher_id) VALUES (?, ?)",
+            "insert into topic_teachers (topic_id, teacher_id) values (?, ?)",
             "is",
             $topicId,
             $teacherUsername
@@ -72,12 +77,29 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     public function insertStudent(int $topicId, string $studentUsername): void
     {
         $this->db->run(
-            "INSERT INTO student_topics 
+            "insert into student_topics 
                    (student_id, topic_id, subject, last_rejected, teacher_comment, draft_path, subject_status)
-                   VALUES (?, ?, NULL, NULL, NULL, NULL, 0)",
+                   values (?, ?, null, null, null, null, 0)",
             "si",
             $studentUsername,
             $topicId
         );
+    }
+
+    /**
+     * Removes all topics and associated subjects from the database.
+     * @return bool If the deletion was successful
+     * @throws GoralysPrepareException|GoralysQueryException
+     */
+    public function clearAll(): bool
+    {
+        $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
+        // Nuke the entire db, but this is what we want.
+        $this->db->runNoArgs("delete from student_topics");
+        $this->db->runNoArgs("delete from topic_teachers");
+        $this->db->runNoArgs("delete from topics");
+        $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
+
+        return true;
     }
 }

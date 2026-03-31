@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\Platform\Logger;
 
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -10,7 +15,16 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 class LoggerConfigLoader
 {
     private static array $loggerFiles;
+    /* @var array<string, int> */
+    private static array $filesLifeTime = [
+        "APP" => 7,
+        "CORE" => 14,
+        "PLATFORM" => 20,
+        "KERNEL" => 14,
+        "GLOBAL" => 30
+    ];
     private static string $goralysEnv;
+    private static string $baseDir = __DIR__ . "/../../../Logs/";
     private static bool $isInitialized = false;
 
     /**
@@ -54,6 +68,25 @@ class LoggerConfigLoader
     }
 
     /**
+     * Returns the full path to the log file for the given layer.
+     * @param LoggerInitiator $type The layer to get the path to the log file for.
+     * @return string The path to the file.
+     */
+    final public static function getInitiatorPath(LoggerInitiator $type): string
+    {
+        return self::$baseDir . self::$loggerFiles[$type->name] . ".log";
+    }
+
+    /**
+     * Get the full path to the global log.
+     * @return string The path to the file.
+     */
+    final public static function getGlobalPath(): string
+    {
+        return self::$baseDir . self::$loggerFiles["GLOBAL"] . ".log";
+    }
+
+    /**
      * Get the current environment.
      * The two possible values are 'dev' and 'prod'.
      * @return string The current environment.
@@ -61,5 +94,33 @@ class LoggerConfigLoader
     public static function getGoralysEnv(): string
     {
         return self::$goralysEnv;
+    }
+
+    /**
+     * Gets the lifetime of a log file.
+     * @param LoggerInitiator $type The layer to get the log file for.
+     * @return int The lifetime of the file in seconds.
+     */
+    public static function getFileLifeTime(LoggerInitiator $type): int
+    {
+        return self::$filesLifeTime[$type->name] * 24 * 60 * 60;
+    }
+
+    /**
+     * Get the global log file lifetime.
+     * @return int The lifetime of the file.
+     */
+    final public static function getGlobalLifetime(): int
+    {
+        return self::$filesLifeTime["GLOBAL"] * 24 * 60 * 60;
+    }
+
+    /**
+     * Gets the root logs directory
+     * @return string
+     */
+    public static function getBaseDir(): string
+    {
+        return self::$baseDir;
     }
 }
