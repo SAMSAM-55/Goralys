@@ -54,6 +54,12 @@ To run the tests, use the following command after installing the projects depend
 .\backend\vendor\bin\phpunit --configuration backend\phpunit.xml
 ```
 
+### Topics import
+
+To test the topics import system, you can use the test file under the `assets/` folder ([test.zip](assets/test.zip)).
+This can also help you understand the required format for Goralys topics import. If your data does not follow this exact
+format, the system will not be able to import it successfully.
+
 ## Security notes
 
 - CSRF:
