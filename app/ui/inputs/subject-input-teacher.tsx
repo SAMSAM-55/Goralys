@@ -64,13 +64,7 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
 
             <div className="flex flex-row content-between w-full">
                 <div className="flex flex-col">
-                    <p className={clsx("mt-0 mb-0 p-0 relative text-[11px] italic",
-                        {
-                            "text-gray-600": currentValue.length < MAX_CHARS * 0.9,
-                            "text-amber-600": currentValue.length >= MAX_CHARS * 0.9 && MAX_CHARS > currentValue.length,
-                            "text-red-600": currentValue.length >= MAX_CHARS
-                        },
-                    )}>
+                    <p className="mt-0 mb-0 p-0 relative text-[11px] italic text-gray-600">
                         {currentValue.length}/250 caractères
                     </p>
                     {helper.length !== 0 && (
@@ -80,7 +74,8 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
                     )}
                 </div>
 
-                <Checkbox className="ml-auto self-center"
+                <Checkbox id={`interdisciplinary-teacher-${subjectData.studentToken}-${subjectData.teacherToken}`}
+                          className="ml-auto self-center"
                           label="Question transversale"
                           setValue={() => {}}
                           defaultValue={subjectData.interdisciplinary}

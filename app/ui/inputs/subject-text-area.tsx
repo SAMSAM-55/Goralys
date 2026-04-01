@@ -64,7 +64,7 @@ export function SubjectTextArea({
                         "border-red-600!": subjectData.status === "rejected",
                     },
                     {
-                        "text-gray-600 cursor-not-allowed!": disabled,
+                        "text-gray-700 cursor-not-allowed!": disabled,
                     },
                 )}
             />

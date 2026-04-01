@@ -1,7 +1,7 @@
 import {Subject} from "@/app/lib/types";
 import {TextArea} from "@/app/ui/inputs/text-area";
-import {SubjectInputStudent} from "@/app/ui/inputs/subject-input-student";
 import {ChangeEventHandler} from "react";
+import {SubjectTextArea} from "@/app/ui/inputs/subject-text-area";
 
 export default function CommentStudent({subjectData, disabled, onChange} : {subjectData: Subject, disabled: boolean, onChange?: ChangeEventHandler<HTMLTextAreaElement>}) {
     const visible = !!subjectData?.comment && !(subjectData.status === "submitted" || subjectData.status === "approved");
@@ -25,11 +25,16 @@ export default function CommentStudent({subjectData, disabled, onChange} : {subj
                     <span>Commentaire du professeur</span>
                 </summary>
                 {showLastRejected &&
-                    <SubjectInputStudent id={subjectData.studentToken + subjectData.teacherToken + "-last-rejected"}
-                                         label="Votre question non validée"
-                                         helper=""
-                                         subjectData={subjectData}
-                    />}
+                    <>
+                    <span className="h-2 w-full block"/>
+                    <SubjectTextArea id={subjectData.studentToken + subjectData.teacherToken + "-last-rejected"}
+                                     label="Votre question non validée"
+                                     defaultValue={subjectData.lastRejected}
+                                     disabled animate={false}
+                                     subjectData={subjectData}  />
+                    </>
+                }
+                <span className="h-1.5 w-full block"/>
                 <TextArea id={subjectData.studentToken + subjectData.teacherToken + "-subject-comment"}
                           label="Commentaire"
                           defaultValue={subjectData.comment}

@@ -129,6 +129,7 @@ export type SubjectsSearchBarProps = {
 }
 
 export type CheckBoxProps = {
+    id?: string,
     label: string,
     setValue: (v: boolean) => void,
     defaultValue: boolean,

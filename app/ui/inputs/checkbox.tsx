@@ -2,7 +2,7 @@
 
 import { CheckBoxProps } from "@/app/lib/types";
 
-export default function Checkbox({ label, setValue, defaultValue, className, disabled = false }: CheckBoxProps) {
+export default function Checkbox({ id, label, setValue, defaultValue, className, disabled = false }: CheckBoxProps) {
     return (
         <div className={`flex items-center gap-0.5 ${className ?? ""}`}>
             <label
@@ -14,7 +14,7 @@ export default function Checkbox({ label, setValue, defaultValue, className, dis
                     disabled={disabled}
                     defaultChecked={defaultValue}
                     onChange={(e) => setValue(e.target.checked)}
-                    id="ripple-on"
+                    id={id}
                     type="checkbox"
                     className="peer h-4 w-4 appearance-none rounded border border-sky-400
                     bg-white shadow hover:shadow-md transition-all
