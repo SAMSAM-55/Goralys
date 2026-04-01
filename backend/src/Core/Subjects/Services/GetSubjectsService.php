@@ -92,6 +92,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
                 $this->usernameManager->store($teachers[0]),
+                $row['is_interdisciplinary'],
             );
 
             $subjects->addSubject($subject);
@@ -129,6 +130,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['topic_code'] ?? "",
                 $this->formatter->formatUsername($teacherUsername),
                 $this->usernameManager->store($teacherUsername),
+                $row['is_interdisciplinary'],
                 (bool)$row['draftPath']
             );
 
@@ -175,6 +177,7 @@ class GetSubjectsService implements GetSubjectsServiceInterface
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
                 $this->usernameManager->store($teachers[0]),
+                $row['is_interdisciplinary']
             );
 
             $subjects->addSubject($subject);

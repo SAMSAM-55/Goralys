@@ -12,6 +12,7 @@ use Goralys\Core\Subjects\Data\StudentSubjectsDTO;
 use Goralys\Core\Subjects\Interfaces\SubjectsTemplateRendererInterface;
 use Goralys\Platform\Doc\PDF\Data\PdfSourceDTO;
 use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
+use InvalidArgumentException;
 
 class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
 {
@@ -24,11 +25,28 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
         $this->config = $config;
     }
 
+    private function resolveConditionals(string $html, array $vars): string
+    {
+        // Ternary operator match
+        return preg_replace_callback(
+            '/\{\{\s*(not\s+|!)?(\w+)\s*\?\s*["\']([^"\']*)["\']?\s*:\s*["\']([^"\']*)["\']?\s*}}/',
+            function (array $matches) use ($vars): string {
+                [, $negation, $varName, $ifTrue, $ifFalse] = $matches;
+                $value = $vars[$varName] ?? null;
+                if ($negation !== '') {
+                    $value = !$value;
+                }
+                return $value ? $ifTrue : $ifFalse;
+            },
+            $html
+        );
+    }
+
     public function render(StudentSubjectsDTO $student): PdfSourceDTO
     {
         if (count($student->getSubjects()) < 2) {
-            throw new \InvalidArgumentException(
-                "Student {$student->studentName} must have at least 2 subjects. Got: "
+            throw new InvalidArgumentException(
+                "Student $student->studentName must have at least 2 subjects. Got: "
                 . print_r($student->getSubjects(), true)
             );
         }
@@ -83,21 +101,29 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
             .qt-col4 { width: {$pct['trans']}%; }
             ";
 
-        $replacements = [
-            '{{nom}}'    => $lastname,
-            '{{prenom}}' => $firstname,
-            '{{serie}}'  => $pathway,
-            '{{spe1}}'   => $student->getSubjects()[0]->speciality,
-            '{{prof1}}'  => $student->getSubjects()[0]->teacherName,
-            '{{q1}}'     => $student->getSubjects()[0]->subject,
-            '{{dateQ1}}' => $student->getSubjects()[0]->validatedAt->format("d/m/Y"),
-            '{{spe2}}'   => $student->getSubjects()[1]->speciality,
-            '{{prof2}}'  => $student->getSubjects()[1]->teacherName,
-            '{{q2}}'     => $student->getSubjects()[1]->subject,
-            '{{dateQ2}}' => $student->getSubjects()[1]->validatedAt->format("d/m/Y"),
-            '{{year}}'   => date("Y"),
+        $vars = [
+                'nom'    => $lastname,
+                'prenom' => $firstname,
+                'serie'  => $pathway,
+                'year'   => date("Y"),
         ];
 
+        foreach ($student->getSubjects() as $i => $subject) {
+            $n = $i + 1;
+            $vars["spe$n"]              = $subject->speciality;
+            $vars["prof$n"]             = $subject->teacherName;
+            $vars["q$n"]                = $subject->subject;
+            $vars["dateQ$n"]            = $subject->validatedAt->format("d/m/Y");
+            $vars["interdisciplinary$n"] = $subject->interdisciplinary;
+        }
+
+        $html = $this->resolveConditionals($html, $vars);
+
+         // Simple replacements
+        $replacements = array_combine(
+            array_map(fn($k) => "{{{$k}}}", array_keys($vars)),
+            array_values($vars)
+        );
         $html = strtr($html, $replacements);
 
         $this->exporter->setSource($pdf, $html);

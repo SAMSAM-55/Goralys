@@ -48,6 +48,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     $studentUsername = $kernel->usernameManager->get($request->get('student-token'));
     $topic = $request->get('topic');
     $newSubject = $request->get('draft');
+    $interdisciplinary = (bool)$request->get('interdisciplinary');
 
     // As the user must be a student, we can do a quick-validation to ensure the usernam token is correct.
 
@@ -64,7 +65,8 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         $studentUsername,
         $topic,
         SubjectFields::SUBJECT,
-        $newSubject
+        $newSubject,
+        $interdisciplinary
     );
 
     if (!$result) {

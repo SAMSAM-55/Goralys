@@ -15,7 +15,8 @@ interface UpdateSubjectServiceInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newSubject
+        string $newSubject,
+        bool $interdisciplinary
     ): bool;
     public function updateComment(
         string $teacherUsername,

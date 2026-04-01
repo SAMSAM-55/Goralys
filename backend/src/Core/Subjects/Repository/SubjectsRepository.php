@@ -44,6 +44,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 st.subject_status,
                 st.teacher_comment as comment,
                 st.last_rejected,
+                st.is_interdisciplinary,
                 st.last_updated_at,
                 t.name as topic,
                 t.topic_code as topic_code,
@@ -73,6 +74,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 st.subject_status,
                 st.teacher_comment as comment,
                 st.last_rejected,
+                st.is_interdisciplinary,
                 st.last_updated_at,
                 t.name as topic,
                 t.topic_code as topic_code,
@@ -103,6 +105,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
                 st.subject_status,
                 st.teacher_comment as comment,
                 st.last_rejected,
+                st.is_interdisciplinary,
                 st.last_updated_at,
                 t.name as topic,
                 t.topic_code as topic_code,
@@ -167,10 +170,11 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     /**
      * Update a subject's content inside the database.
      * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
-     * @param string $teacherUsername The teacher's username.
-     * @param string $studentUsername The student's username.
-     * @param string $topic The name of the topic.
-     * @param string $newSubject The new subject.
+     * @param string $teacherUsername
+     * @param string $studentUsername
+     * @param string $topic
+     * @param string $newSubject
+     * @param bool $interdisciplinary
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
@@ -178,19 +182,21 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newSubject
+        string $newSubject,
+        bool $interdisciplinary
     ): bool {
         return $this->db->run(
             "update student_topics st
             join topics t on t.id = st.topic_id
             join topic_teachers tt on t.id = tt.topic_id
-            set st.subject = ?, st.subject_status = 0
+            set st.subject = ?, st.subject_status = 0, is_interdisciplinary = ?
             where tt.teacher_id = ?
             and st.student_id = ?
             and t.name = ?
             and (st.subject_status = 0 or st.subject_status = 2)",
-            "ssss",
+            "sisss",
             $newSubject,
+            $interdisciplinary,
             $teacherUsername,
             $studentUsername,
             $topic
