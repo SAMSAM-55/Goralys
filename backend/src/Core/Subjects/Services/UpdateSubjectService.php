@@ -69,6 +69,7 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
      * @param string $teacherUsername The teacher's username.
      * @param string $studentUsername The student's username.
      * @param string $newSubject The subject's new content.
+     * @param bool $interdisciplinary If the subject is interdisciplinary.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
@@ -76,9 +77,16 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newSubject
+        string $newSubject,
+        bool $interdisciplinary
     ): bool {
-        $result = $this->repo->updateSubject($teacherUsername, $studentUsername, $topic, $newSubject);
+        $result = $this->repo->updateSubject(
+            $teacherUsername,
+            $studentUsername,
+            $topic,
+            $newSubject,
+            $interdisciplinary
+        );
 
         $this->handleResult($result, $teacherUsername, $studentUsername, "subject");
         return $result;

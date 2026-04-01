@@ -11,6 +11,7 @@ export function SubjectTextArea({
                              disabled = false,
                              ref,
                              defaultValue,
+                             maxLength,
                              onChangeAction,
                              subjectData,
                              animate,
@@ -51,6 +52,7 @@ export function SubjectTextArea({
                 spellCheck="true"
                 defaultValue={defaultValue}
                 readOnly={disabled}
+                maxLength={maxLength}
                 onChange={onChangeAction}
                 className={clsx(
                     "peer block w-full py-0 px-0 cursor-text text-base text-heading " +
@@ -62,7 +64,7 @@ export function SubjectTextArea({
                         "border-red-600!": subjectData.status === "rejected",
                     },
                     {
-                        "text-gray-600 cursor-not-allowed!": disabled,
+                        "text-gray-700 cursor-not-allowed!": disabled,
                     },
                 )}
             />

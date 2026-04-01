@@ -19,6 +19,7 @@ export type Subject = {
     teacher: string,
     teacherToken: string,
     topic: string,
+    interdisciplinary: boolean,
 };
 
 export type InputProps = {
@@ -50,6 +51,7 @@ export type SubjectTextAreaProps = {
     helper?: string,
     id: string,
     label: string,
+    maxLength?: number,
     onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
     subjectData: Subject,
     animate: boolean,
@@ -60,6 +62,7 @@ export type SubjectInputMultilineProps = {
     id: string,
     label: string,
     onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
+    setIsInterdisciplinaryAction?: (v: boolean) => void,
     subjectData: Subject,
 };
 
@@ -108,6 +111,11 @@ export type DraftModalProps = {
     onCloseModal: () => void,
 }
 
+export type DraftModalResult =
+    | { type: "withDraft"; file: File | null }
+    | { type: "withoutDraft" }
+    | { type: "closed" }
+
 export type ImportTopicsModalProps = {
     visible: boolean,
     onCancel: () => void,
@@ -118,6 +126,15 @@ export type ImportTopicsModalProps = {
 export type SubjectsSearchBarProps = {
     subjects: Subject[] | null,
     setCurrentSubjects: (v: Subject[]) => void
+}
+
+export type CheckBoxProps = {
+    id?: string,
+    label: string,
+    setValue: (v: boolean) => void,
+    defaultValue: boolean,
+    className?: string|null
+    disabled?: boolean
 }
 
 export type UserData = {

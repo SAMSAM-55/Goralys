@@ -45,6 +45,7 @@ create table student_topics (
                                 teacher_comment varchar(255),
                                 draft_path varchar(255),
                                 subject_status tinyint(1) default 0, -- 0=not submitted, 1=submitted, 2=rejected, 3=approved
+                                is_interdisciplinary bool default false,
                                 last_updated_at timestamp default current_timestamp on update current_timestamp,
                                 primary key (student_id, topic_id),
                                 foreign key (topic_id) references topics(id)

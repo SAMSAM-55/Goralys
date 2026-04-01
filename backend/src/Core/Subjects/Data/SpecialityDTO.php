@@ -16,18 +16,21 @@ readonly class SpecialityDTO
     public string $subject;
     public string $topicCode;
     public DateTime $validatedAt;
+    public bool $interdisciplinary;
 
     public function __construct(
         string $teacherName,
         string $speciality,
         string $topicCode,
         string $subject,
-        DateTime $validatedAt
+        DateTime $validatedAt,
+        bool $interdisciplinary
     ) {
         $this->teacherName = $teacherName;
         $this->speciality = $speciality;
         $this->topicCode = $topicCode;
         $this->subject = $subject;
         $this->validatedAt = $validatedAt;
+        $this->interdisciplinary = $interdisciplinary;
     }
 }

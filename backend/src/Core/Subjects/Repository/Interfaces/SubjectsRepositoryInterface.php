@@ -25,7 +25,8 @@ interface SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newSubject
+        string $newSubject,
+        bool $interdisciplinary
     ): bool;
     public function updateStatus(
         string $teacherUsername,

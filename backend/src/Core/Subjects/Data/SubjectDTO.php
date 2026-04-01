@@ -7,7 +7,6 @@
 
 namespace Goralys\Core\Subjects\Data;
 
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use DateTime;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use JsonSerializable;
@@ -30,6 +29,7 @@ readonly class SubjectDTO implements JsonSerializable
     public string $lastRejected;
     public ?DateTime $lastUpdatedAt;
     public bool $hasDraft;
+    public bool $interdisciplinary;
 
     public function __construct(
         string $studentUsername,
@@ -43,6 +43,7 @@ readonly class SubjectDTO implements JsonSerializable
         string $topicCode,
         string $teacherUsername,
         string $teacherUsernameToken,
+        bool $interdisciplinary,
         bool $hasDraft = false
     ) {
         $this->studentUsername = $studentUsername;
@@ -57,6 +58,7 @@ readonly class SubjectDTO implements JsonSerializable
         $this->lastRejected = $lastRejected;
         $this->lastUpdatedAt = $lastUpdatedAt;
         $this->hasDraft = $hasDraft;
+        $this->interdisciplinary = $interdisciplinary;
     }
 
     /**
@@ -75,7 +77,8 @@ readonly class SubjectDTO implements JsonSerializable
                 "topic" => $this->topic,
                 "teacher" => $this->teacherUsername,
                 "teacherToken" => $this->teacherUsernameToken,
-                "hasDraft" => $this->hasDraft
+                "hasDraft" => $this->hasDraft,
+                "interdisciplinary" => $this->interdisciplinary
         ];
     }
 }

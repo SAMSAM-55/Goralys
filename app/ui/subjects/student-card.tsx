@@ -13,6 +13,7 @@ import {useDraftModal} from "@/app/ui/modals/drafts/draft-modal-provider";
 export default function StudentCard({subjectData, onUpdateAction}: {subjectData: Subject, onUpdateAction: () => void}) {
     const toast = useToast();
     const [subject, setSubject] = useState<string | null>(subjectData.subject);
+    const [isInterdisciplinary, setIsInterdisciplinary] = useState<boolean>(subjectData.interdisciplinary);
     const modal = useDraftModal();
     const cookies = new Cookies();
 
@@ -24,6 +25,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             'student-token': subjectData.studentToken,
             'topic': subjectData.topic,
             'draft': subject,
+            'interdisciplinary': isInterdisciplinary,
             'csrf-token': csrfToken,
         };
 
@@ -60,9 +62,18 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         const csrfToken = await fetchCsrfClient("submit-subject");
-        const file = await modal.showDraftModal();
+        const result = await modal.showDraftModal();
 
-        if (file === "modalClosed") return;
+        if (result.type === "closed") return;
+
+        if (result.type == "withDraft" && !result.file) {
+            toast.showToast({
+                type: "warning",
+                title: "Envoi",
+                message: "Veuillez choisir un brouillon ou envoyer la question seule."
+            });
+            return;
+        }
 
         const formData = new FormData();
         formData.append('teacher-token', subjectData.teacherToken);
@@ -70,9 +81,10 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         formData.append('topic', subjectData.topic);
         formData.append('subject', subject ?? '');
         formData.append('csrf-token', csrfToken ?? '');
+        formData.append('interdisciplinary', isInterdisciplinary ? '1' : '0')
 
-        if (file) {
-            formData.append('draft-file', file);
+        if (result.type == "withDraft") {
+            formData.append('draft-file', result.file ?? "");
         }
 
         const res = await goralysFetchClient(
@@ -107,12 +119,14 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
                 <strong>{subjectData.topic}</strong>
                 <strong>{subjectData.teacher}</strong>
             </div>
+
             <SubjectInputStudent id={`subject-input-student-for-${key}`}
                                  label="Votre Question"
                                  subjectData={subjectData}
                                  onChangeAction={(e) => {
                                      setSubject(e.target.value)
                                  }}
+                                 setIsInterdisciplinaryAction={setIsInterdisciplinary}
             />
             <CommentStudent key={`comment-student-for-${key}`}
                             subjectData={subjectData}
