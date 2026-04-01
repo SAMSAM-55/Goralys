@@ -201,7 +201,8 @@ class SubjectsController implements SubjectsControllerInterface
                         $subject->topic,
                         $subject->topicCode,
                         $subject->subject,
-                        $subject->lastUpdatedAt ?? new DateTime()
+                        $subject->lastUpdatedAt ?? new DateTime(),
+                        $subject->interdisciplinary
                     ));
                 }
 

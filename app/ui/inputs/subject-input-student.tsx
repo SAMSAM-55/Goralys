@@ -19,7 +19,7 @@ export function SubjectInputStudent({
                 : subjectData.status === "approved" ? "Cette question a été validée, vous ne pouvez plus la modifier."
                 : "";
 
-    const editable = subjectData.status != "approved";
+    const editable = subjectData.status != "approved" && subjectData.status != "submitted";
 
     return (
         <div
@@ -35,7 +35,7 @@ export function SubjectInputStudent({
                 onChangeAction={onChangeAction}
                 label={label}
                 subjectData={subjectData}
-                animate={true}
+                animate={editable}
             />
 
             <div className="flex flex-row content-between w-full">
@@ -49,6 +49,7 @@ export function SubjectInputStudent({
                           label="Question transversale"
                           setValue={setIsInterdisciplinaryAction}
                           defaultValue={subjectData.interdisciplinary}
+                          disabled={!editable}
                 />
             </div>
         </div>
