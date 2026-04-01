@@ -78,7 +78,8 @@ class UpdateSubjectServiceTest extends TestCase
             "j.doe1",
             "e.doe3",
             "Maths",
-            "foo"
+            "foo",
+            false
         ));
 
         $this->repo->setUpdateResult(true);
@@ -86,7 +87,8 @@ class UpdateSubjectServiceTest extends TestCase
             "j.doe1",
             "e.doe3",
             "Maths",
-            "bar"
+            "bar",
+            true
         ));
     }
 }

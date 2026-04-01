@@ -11,7 +11,6 @@
 'use client';
 
 import Image from "next/image";
-import Checkbox from "@/app/ui/inputs/checkbox";
 
 export default function Home() {
     return (
@@ -29,7 +28,6 @@ export default function Home() {
                 <p>
                     Cette plateforme a été entièrement développée par Sami Saubion, élève du lycée.
                 </p>
-                <Checkbox label="Question transversale" setValue={(() => {})} defaultValue={false} />
             </div>
 
             <div className="flex grow" />
