@@ -2,26 +2,28 @@
 
 import { CheckBoxProps } from "@/app/lib/types";
 
-export default function Checkbox({ label, setValue, defaultValue, className }: CheckBoxProps) {
+export default function Checkbox({ label, setValue, defaultValue, className, disabled = false }: CheckBoxProps) {
     return (
         <div className={`flex items-center gap-0.5 ${className ?? ""}`}>
             <label
-                className="relative flex cursor-pointer items-center justify-center rounded-full p-1"
+                className={`relative flex items-center justify-center rounded-full p-1 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
                 htmlFor="ripple-on"
                 data-ripple-dark="true"
             >
                 <input
+                    disabled={disabled}
                     defaultChecked={defaultValue}
                     onChange={(e) => setValue(e.target.checked)}
                     id="ripple-on"
                     type="checkbox"
-                    className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-sky-400
+                    className="peer h-4 w-4 appearance-none rounded border border-sky-400
                     bg-white shadow hover:shadow-md transition-all
                     before:absolute before:top-2/4 before:left-2/4 before:block
                     before:h-5 before:w-5 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full
                     before:bg-sky-500 before:opacity-0 before:transition-opacity
                     checked:border-sky-600 checked:bg-sky-600
-                    checked:before:bg-sky-500 hover:before:opacity-10"
+                    checked:before:bg-sky-500 hover:before:opacity-10
+                    cursor-pointer disabled:cursor-not-allowed"
                 />
                 <span className="pointer-events-none absolute inset-0 flex items-center justify-center
                 text-white opacity-0 transition-opacity peer-checked:opacity-100">
@@ -43,7 +45,10 @@ export default function Checkbox({ label, setValue, defaultValue, className }: C
                 </span>
             </label>
 
-            <label className="cursor-pointer text-black text-sm" htmlFor="ripple-on">
+            <label
+                className={`text-black text-sm `}
+                htmlFor="ripple-on"
+            >
                 {label}
             </label>
         </div>

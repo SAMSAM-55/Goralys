@@ -2,6 +2,7 @@ import {clsx} from "clsx";
 import {SubjectInputMultilineProps} from "@/app/lib/types";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import {SubjectTextArea} from "@/app/ui/inputs/subject-text-area";
+import Checkbox from "@/app/ui/inputs/checkbox";
 
 export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAction}: SubjectInputMultilineProps) {
     const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
@@ -45,9 +46,20 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
                 }
             </div>
 
-            {helper.length !== 0 && <p className="mt-0 absolute text-[13px] italic text-gray-600">
-                *{helper}
-            </p>}
+            <div className="flex flex-row content-between w-full">
+                {helper.length !== 0 && (
+                    <p className="mt-0 self-center relative text-[13px] italic text-gray-600">
+                        *{helper}
+                    </p>
+                )}
+
+                <Checkbox className="ml-auto self-center"
+                          label="Question transversale"
+                          setValue={() => {}}
+                          defaultValue={subjectData.interdisciplinary}
+                          disabled
+                />
+            </div>
         </div>
     );
 }

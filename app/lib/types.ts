@@ -132,6 +132,7 @@ export type CheckBoxProps = {
     setValue: (v: boolean) => void,
     defaultValue: boolean,
     className?: string|null
+    disabled?: boolean
 }
 
 export type UserData = {
