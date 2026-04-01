@@ -19,6 +19,7 @@ export type Subject = {
     teacher: string,
     teacherToken: string,
     topic: string,
+    interdisciplinary: boolean,
 };
 
 export type InputProps = {
@@ -60,6 +61,7 @@ export type SubjectInputMultilineProps = {
     id: string,
     label: string,
     onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
+    setIsInterdisciplinaryAction?: (v: boolean) => void,
     subjectData: Subject,
 };
 
@@ -118,6 +120,13 @@ export type ImportTopicsModalProps = {
 export type SubjectsSearchBarProps = {
     subjects: Subject[] | null,
     setCurrentSubjects: (v: Subject[]) => void
+}
+
+export type CheckBoxProps = {
+    label: string,
+    setValue: (v: boolean) => void,
+    defaultValue: boolean,
+    className?: string|null
 }
 
 export type UserData = {

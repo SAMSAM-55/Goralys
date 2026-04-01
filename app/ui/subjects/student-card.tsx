@@ -13,6 +13,7 @@ import {useDraftModal} from "@/app/ui/modals/drafts/draft-modal-provider";
 export default function StudentCard({subjectData, onUpdateAction}: {subjectData: Subject, onUpdateAction: () => void}) {
     const toast = useToast();
     const [subject, setSubject] = useState<string | null>(subjectData.subject);
+    const [isInterdisciplinary, setIsInterdisciplinary] = useState<boolean>(subjectData.interdisciplinary);
     const modal = useDraftModal();
     const cookies = new Cookies();
 
@@ -24,6 +25,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             'student-token': subjectData.studentToken,
             'topic': subjectData.topic,
             'draft': subject,
+            'interdisciplinary': isInterdisciplinary,
             'csrf-token': csrfToken,
         };
 
@@ -70,6 +72,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         formData.append('topic', subjectData.topic);
         formData.append('subject', subject ?? '');
         formData.append('csrf-token', csrfToken ?? '');
+        formData.append('interdisciplinary', isInterdisciplinary ? '1' : '0')
 
         if (file) {
             formData.append('draft-file', file);
@@ -113,6 +116,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
                                  onChangeAction={(e) => {
                                      setSubject(e.target.value)
                                  }}
+                                 setIsInterdisciplinaryAction={setIsInterdisciplinary}
             />
             <CommentStudent key={`comment-student-for-${key}`}
                             subjectData={subjectData}

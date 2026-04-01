@@ -7,7 +7,6 @@
 
 namespace Goralys\Core\Subjects\Data;
 
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use DateTime;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use JsonSerializable;
@@ -75,7 +74,8 @@ readonly class SubjectDTO implements JsonSerializable
                 "topic" => $this->topic,
                 "teacher" => $this->teacherUsername,
                 "teacherToken" => $this->teacherUsernameToken,
-                "hasDraft" => $this->hasDraft
+                "hasDraft" => $this->hasDraft,
+                "interdisciplinary" => true
         ];
     }
 }
