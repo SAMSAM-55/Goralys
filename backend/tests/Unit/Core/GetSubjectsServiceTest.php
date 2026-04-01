@@ -58,6 +58,7 @@ class GetSubjectsServiceTest extends TestCase
                         'subject_status'  => 3,
                         'draftPath'       => "/path/to/draft",
                         'last_updated_at' => '2026-03-29 10:15:00',
+                        'is_interdisciplinary' => true,
                 ],
                 [
                         'teachers'        => 'm.smith2',
@@ -68,6 +69,7 @@ class GetSubjectsServiceTest extends TestCase
                         'subject_status'  => 1,
                         'draftPath'       => null,
                         'last_updated_at' => '2026-03-29 10:15:00',
+                        'is_interdisciplinary' => false,
                 ],
                 [
                         'teachers'        => 'j.doe1',
@@ -79,6 +81,7 @@ class GetSubjectsServiceTest extends TestCase
                         'subject_status'  => 2,
                         'draftPath'       => null,
                         'last_updated_at' => '2026-03-29 10:15:00',
+                        'is_interdisciplinary' => false,
                 ],
                 [
                         'teachers'        => 'm.smith2',
@@ -89,6 +92,7 @@ class GetSubjectsServiceTest extends TestCase
                         'subject_status'  => 3,
                         'draftPath'       => null,
                         'last_updated_at' => '2026-03-29 10:15:00',
+                        'is_interdisciplinary' => false,
                 ],
                 null
         ];
@@ -103,6 +107,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Maths',
                         'teacher'        => 'DOE J.',
                         'hasDraft'       => false,
+                        'interdisciplinary' => true,
                 ],
                 [
                         'student'        => 'DOE E.',
@@ -113,6 +118,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Physique',
                         'teacher'        => 'SMITH M.',
                         'hasDraft'       => false,
+                        'interdisciplinary' => false,
                 ],
                 [
                         'student'        => 'DUPONT L.',
@@ -123,6 +129,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Informatique',
                         'teacher'        => "DOE J.",
                         'hasDraft'       => false,
+                        'interdisciplinary' => false,
                 ],
                 [
                         'student'        => 'DUPONT L.',
@@ -133,6 +140,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Sciences',
                         'teacher'        => 'SMITH M.',
                         'hasDraft'       => false,
+                        'interdisciplinary' => false,
                 ],
         ];
 
@@ -164,7 +172,8 @@ class GetSubjectsServiceTest extends TestCase
                         'last_rejected'   => null,
                         'subject_status'  => 3,
                         'draftPath'       => "/path/to/draft",
-                        'last_updated_at' => '2026-03-26 11:15:00'
+                        'last_updated_at' => '2026-03-26 11:15:00',
+                        'is_interdisciplinary' => false
                 ],
                 [
                         'teachers'        => 'm.smith2',
@@ -174,7 +183,8 @@ class GetSubjectsServiceTest extends TestCase
                         'last_rejected'   => null,
                         'subject_status'  => 1,
                         'draftPath'       => null,
-                        'last_updated_at' => '2026-03-26 11:15:00'
+                        'last_updated_at' => '2026-03-26 11:15:00',
+                        'is_interdisciplinary' => true
                 ],
                 null
         ];
@@ -189,6 +199,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Maths',
                         'teacher'        => 'DOE J.',
                         'hasDraft'       => false,
+                        'interdisciplinary' => false,
                 ],
                 [
                         'student'        => 'DOE E.',
@@ -199,6 +210,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Physique',
                         'teacher'        => 'SMITH M.',
                         'hasDraft'       => false,
+                        'interdisciplinary' => true,
                 ],
         ];
 
@@ -230,7 +242,8 @@ class GetSubjectsServiceTest extends TestCase
                         'last_rejected'   => null,
                         'subject_status'  => 3,
                         'draftPath'       => "/path/to/draft",
-                        'last_updated_at' => '2026-02-26 11:45:00'
+                        'last_updated_at' => '2026-02-26 11:45:00',
+                        'is_interdisciplinary' => false
                 ],
                 [
                         'teachers'        => 'j.doe1',
@@ -241,7 +254,8 @@ class GetSubjectsServiceTest extends TestCase
                         'last_rejected'   => 'Algorithmes de tri',
                         'subject_status'  => 2,
                         'draftPath'       => null,
-                        'last_updated_at' => '2026-03-26 11:15:00'
+                        'last_updated_at' => '2026-03-26 11:15:00',
+                        'is_interdisciplinary' => true
                 ],
                 null
         ];
@@ -256,6 +270,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Maths',
                         'teacher'        => 'DOE J.',
                         'hasDraft'       => true,
+                        'interdisciplinary' => false,
                 ],
                 [
                         'student'        => 'DUPONT L.',
@@ -266,6 +281,7 @@ class GetSubjectsServiceTest extends TestCase
                         'topic'          => 'Informatique',
                         'teacher'        => "DOE J.",
                         'hasDraft'       => false,
+                        'interdisciplinary' => true,
                 ],
         ];
 
