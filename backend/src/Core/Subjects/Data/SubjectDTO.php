@@ -29,6 +29,7 @@ readonly class SubjectDTO implements JsonSerializable
     public string $lastRejected;
     public ?DateTime $lastUpdatedAt;
     public bool $hasDraft;
+    public bool $interdisciplinary;
 
     public function __construct(
         string $studentUsername,
@@ -42,6 +43,7 @@ readonly class SubjectDTO implements JsonSerializable
         string $topicCode,
         string $teacherUsername,
         string $teacherUsernameToken,
+        bool $interdisciplinary,
         bool $hasDraft = false
     ) {
         $this->studentUsername = $studentUsername;
@@ -56,6 +58,7 @@ readonly class SubjectDTO implements JsonSerializable
         $this->lastRejected = $lastRejected;
         $this->lastUpdatedAt = $lastUpdatedAt;
         $this->hasDraft = $hasDraft;
+        $this->interdisciplinary = $interdisciplinary;
     }
 
     /**
@@ -75,7 +78,7 @@ readonly class SubjectDTO implements JsonSerializable
                 "teacher" => $this->teacherUsername,
                 "teacherToken" => $this->teacherUsernameToken,
                 "hasDraft" => $this->hasDraft,
-                "interdisciplinary" => true
+                "interdisciplinary" => $this->interdisciplinary
         ];
     }
 }

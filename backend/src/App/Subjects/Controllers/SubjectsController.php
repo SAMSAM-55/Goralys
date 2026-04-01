@@ -95,6 +95,7 @@ class SubjectsController implements SubjectsControllerInterface
      * @param string $topic The name of the topic.
      * @param SubjectFields $field The field to update.
      * @param string|SubjectStatus $newValue The new value of the field.
+     * @param bool|null $interdisciplinary [Optional] Only used when updating the subject.
      * @return bool If the update was successful or not.
      * @throws GoralysPrepareException|GoralysQueryException Only thrown if the database request goes wrong.
      */
@@ -103,14 +104,16 @@ class SubjectsController implements SubjectsControllerInterface
         string $studentUsername,
         string $topic,
         SubjectFields $field,
-        string|SubjectStatus $newValue
+        string|SubjectStatus $newValue,
+        bool|null $interdisciplinary = null
     ): bool {
         return match ($field) {
             SubjectFields::SUBJECT => $this->updateService->updateSubject(
                 $teacherUsername,
                 $studentUsername,
                 $topic,
-                $newValue
+                $newValue,
+                $interdisciplinary
             ),
             SubjectFields::STATUS => $this->updateService->updateSubjectStatus(
                 $teacherUsername,

@@ -3,21 +3,22 @@
 import {createContext, useContext, useState, ReactNode} from "react";
 import DraftModalElement from "@/app/ui/modals/drafts/draft-modal-element";
 import {createPortal} from "react-dom";
+import {DraftModalResult} from "@/app/lib/types";
 
 export type DraftModalContext = {
-    showDraftModal: () => Promise<File | string | null>;
+    showDraftModal: () => Promise<DraftModalResult>;
 };
 
 const DraftModalContext = createContext<DraftModalContext | null>(null);
 
 export function DraftModalProvider({ children }: { children: ReactNode }) {
     const [fileChosen, setChosenFile] = useState<{
-        resolve: (value: File | string | null) => void;
+        resolve: (value: DraftModalResult) => void;
     } | null>(null);
     const [visible, setVisible] = useState(false);
 
-    function showDraftModal(): Promise<File | string | null> {
-        return new Promise((resolve: (value: File | string | null) => void) => {
+    function showDraftModal(): Promise<DraftModalResult> {
+        return new Promise((resolve: (value: DraftModalResult) => void) => {
             setChosenFile({resolve});
             setVisible(false);
             requestAnimationFrame(() => setVisible(true));
@@ -27,7 +28,7 @@ export function DraftModalProvider({ children }: { children: ReactNode }) {
     function handleChooseDraft(file: File | null) {
         setVisible(false);
         setTimeout(() => {
-            fileChosen?.resolve(file);
+            fileChosen?.resolve({ type: "withDraft", file: file});
             setChosenFile(null);
         }, 500);
     }
@@ -35,7 +36,7 @@ export function DraftModalProvider({ children }: { children: ReactNode }) {
     function handleCancel() {
         setVisible(false);
         setTimeout(() => {
-            fileChosen?.resolve(null);
+            fileChosen?.resolve({ type: "withoutDraft" });
             setChosenFile(null);
         }, 500);
     }
@@ -43,7 +44,7 @@ export function DraftModalProvider({ children }: { children: ReactNode }) {
     function handleClose() {
         setVisible(false);
         setTimeout(() => {
-            fileChosen?.resolve("modalClosed");
+            fileChosen?.resolve({ type: "closed" });
             setChosenFile(null);
         }, 500);
     }

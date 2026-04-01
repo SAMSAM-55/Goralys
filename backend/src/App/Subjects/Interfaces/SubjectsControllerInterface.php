@@ -19,7 +19,8 @@ interface SubjectsControllerInterface
         string $studentUsername,
         string $topic,
         SubjectFields $field,
-        string|SubjectStatus $newValue
+        string|SubjectStatus $newValue,
+        bool|null $interdisciplinary = null
     ): bool;
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): SubjectStatus;
     public function getForRole(UserRole $role, string $username = ""): ?SubjectsCollection;

@@ -48,6 +48,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     $studentUsername = $kernel->usernameManager->get($request->get('student-token'));
     $topic = $request->get('topic');
     $subject = $request->get('subject');
+    $interdisciplinary = (bool)$request->get('interdisciplinary');
     $draftFile = $kernel->fileManager->get("draft-file");
 
     if ($draftFile && $draftFile->size > 50 * 1024) {
@@ -87,7 +88,8 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
         $studentUsername,
         $topic,
         SubjectFields::SUBJECT,
-        $subject
+        $subject,
+        $interdisciplinary
     );
 
     if (!$subjectResult) {

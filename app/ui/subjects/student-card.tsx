@@ -62,9 +62,18 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         const csrfToken = await fetchCsrfClient("submit-subject");
-        const file = await modal.showDraftModal();
+        const result = await modal.showDraftModal();
 
-        if (file === "modalClosed") return;
+        if (result.type === "closed") return;
+
+        if (result.type == "withDraft" && !result.file) {
+            toast.showToast({
+                type: "warning",
+                title: "Envoi",
+                message: "Veuillez choisir un brouillon ou envoyer la question seule."
+            });
+            return;
+        }
 
         const formData = new FormData();
         formData.append('teacher-token', subjectData.teacherToken);
@@ -74,8 +83,8 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         formData.append('csrf-token', csrfToken ?? '');
         formData.append('interdisciplinary', isInterdisciplinary ? '1' : '0')
 
-        if (file) {
-            formData.append('draft-file', file);
+        if (result.type == "withDraft") {
+            formData.append('draft-file', result.file ?? "");
         }
 
         const res = await goralysFetchClient(

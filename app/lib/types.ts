@@ -110,6 +110,11 @@ export type DraftModalProps = {
     onCloseModal: () => void,
 }
 
+export type DraftModalResult =
+    | { type: "withDraft"; file: File | null }
+    | { type: "withoutDraft" }
+    | { type: "closed" }
+
 export type ImportTopicsModalProps = {
     visible: boolean,
     onCancel: () => void,
