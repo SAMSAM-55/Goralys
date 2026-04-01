@@ -58,7 +58,8 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newSubject
+        string $newSubject,
+        bool $interdisciplinary
     ): bool {
         return $this->updateResult;
     }
