@@ -3,6 +3,7 @@ import {SubjectInputMultilineProps} from "@/app/lib/types";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import {SubjectTextArea} from "@/app/ui/inputs/subject-text-area";
 import Checkbox from "@/app/ui/inputs/checkbox";
+import React, {useState} from "react";
 
 export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAction}: SubjectInputMultilineProps) {
     const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
@@ -11,6 +12,20 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
         : subjectData.status === "not_submitted" ? "Cette question n'a pas encore été envoyée."
         : subjectData.status === "rejected" ? "Vous n'avez pas validé cette question, l'élève doit en envoyer une nouvelle."
         : subjectData.status === "approved" ? "Vous avez validé cette question, elle ne peut plus être modifiée." : ""
+
+    const initialValue = subjectData.status == "rejected" ? (subjectData.lastRejected ?? "") : (subjectData.subject ?? "");
+    const [currentValue, setCurrentValue] = useState(initialValue);
+    const MAX_CHARS = 250
+
+    const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (e.target.value.length > MAX_CHARS) {
+            return;
+        }
+        setCurrentValue(e.target.value);
+        if (onChangeAction) {
+            onChangeAction(e);
+        }
+    };
 
     return (
         <div className={clsx(
@@ -25,8 +40,9 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
                 <SubjectTextArea
                     id={id}
                     disabled={true}
-                    defaultValue={subjectData.status == "rejected" ? subjectData.lastRejected : subjectData.subject}
-                    onChangeAction={onChangeAction}
+                    defaultValue={initialValue}
+                    maxLength={MAX_CHARS}
+                    onChangeAction={handleOnChange}
                     label={label}
                     subjectData={subjectData}
                     animate={false}
@@ -47,11 +63,22 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
             </div>
 
             <div className="flex flex-row content-between w-full">
-                {helper.length !== 0 && (
-                    <p className="mt-0 self-center relative text-[13px] italic text-gray-600">
-                        *{helper}
+                <div className="flex flex-col">
+                    <p className={clsx("mt-0 mb-0 p-0 relative text-[11px] italic",
+                        {
+                            "text-gray-600": currentValue.length < MAX_CHARS * 0.9,
+                            "text-amber-600": currentValue.length >= MAX_CHARS * 0.9 && MAX_CHARS > currentValue.length,
+                            "text-red-600": currentValue.length >= MAX_CHARS
+                        },
+                    )}>
+                        {currentValue.length}/250 caractères
                     </p>
-                )}
+                    {helper.length !== 0 && (
+                        <p className="mt-0 self-center relative text-[13px] italic text-gray-600">
+                            *{helper}
+                        </p>
+                    )}
+                </div>
 
                 <Checkbox className="ml-auto self-center"
                           label="Question transversale"

@@ -51,6 +51,7 @@ export type SubjectTextAreaProps = {
     helper?: string,
     id: string,
     label: string,
+    maxLength?: number,
     onChangeAction?: ChangeEventHandler<HTMLTextAreaElement>,
     subjectData: Subject,
     animate: boolean,

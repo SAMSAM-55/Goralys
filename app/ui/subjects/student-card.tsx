@@ -119,6 +119,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
                 <strong>{subjectData.topic}</strong>
                 <strong>{subjectData.teacher}</strong>
             </div>
+
             <SubjectInputStudent id={`subject-input-student-for-${key}`}
                                  label="Votre Question"
                                  subjectData={subjectData}
