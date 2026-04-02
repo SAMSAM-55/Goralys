@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+    --text-2xs: 0.8125rem;
+    --text-2xs--line-height: 1.2;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
