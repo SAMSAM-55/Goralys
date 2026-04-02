@@ -52,8 +52,8 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                         <ConfirmElement 
                             {...confirmState.options} 
                             visible={visible} 
-                            onConfirm={handleConfirm} 
-                            onCancel={handleCancel} 
+                            onConfirmAction={handleConfirm}
+                            onCancelAction={handleCancel}
                         />
                     </div>,
                     document.getElementById("confirm-root")!

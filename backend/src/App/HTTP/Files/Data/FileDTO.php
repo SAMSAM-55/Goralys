@@ -9,14 +9,14 @@ namespace Goralys\App\HTTP\Files\Data;
 
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
-class FileDTO
+readonly class FileDTO
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $type,
-        public readonly string $tmpPath,
-        public readonly int $size,
-        public readonly int $error
+        public string $name,
+        public string $type,
+        public string $tmpPath,
+        public int $size,
+        public int $error
     ) {
     }
 

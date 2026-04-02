@@ -8,14 +8,15 @@
 namespace Goralys\Core\Topics\Services;
 
 use Goralys\Core\Topics\Config\TopicsImportConfig;
-use Goralys\Core\Topics\Interfaces\BuildFromCSVServiceInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Utils\UtilitiesManager;
+use RuntimeException;
+use SplFileObject;
 
 /**
  * Service responsible for building topic-related data (groups and students) from CSV files.
  */
-class BuildFromCSVService implements BuildFromCSVServiceInterface
+class BuildFromCSVService
 {
     private UtilitiesManager $utils;
     private TopicsImportConfig $config;
@@ -34,10 +35,10 @@ class BuildFromCSVService implements BuildFromCSVServiceInterface
      * Ensures the provided path is a valid CSV file and returns a SplFileObject.
      *
      * @param string $path The full path to the CSV file.
-     * @return \SplFileObject
+     * @return SplFileObject
      * @throws GoralysRuntimeException If the file is not a valid CSV or cannot be opened.
      */
-    private function ensureCSV(string $path): \SplFileObject
+    private function ensureCSV(string $path): SplFileObject
     {
         if (!is_file($path) || strtolower(pathinfo($path, PATHINFO_EXTENSION)) !== 'csv') {
             throw new GoralysRuntimeException(
@@ -46,18 +47,18 @@ class BuildFromCSVService implements BuildFromCSVServiceInterface
         }
 
         try {
-            $file = new \SplFileObject($path, 'r');
+            $file = new SplFileObject($path, 'r');
 
             $file->setFlags(
-                \SplFileObject::READ_CSV |
-                \SplFileObject::SKIP_EMPTY |
-                \SplFileObject::DROP_NEW_LINE
+                SplFileObject::READ_CSV |
+                SplFileObject::SKIP_EMPTY |
+                SplFileObject::DROP_NEW_LINE
             );
 
-            $file->setCsvControl(",", escape: '');
+            $file->setCsvControl(escape: '');
 
             return $file;
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             throw new GoralysRuntimeException(
                 "Could not open CSV file ($path).",
                 previous: $e

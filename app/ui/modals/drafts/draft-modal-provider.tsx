@@ -58,9 +58,9 @@ export function DraftModalProvider({ children }: { children: ReactNode }) {
                     <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm">
                         <DraftModalElement
                             visible={visible}
-                            onChooseDraft={handleChooseDraft}
-                            onCancel={handleCancel}
-                            onCloseModal={handleClose}
+                            onChooseDraftAction={handleChooseDraft}
+                            onCancelAction={handleCancel}
+                            onCloseModalAction={handleClose}
                         />
                     </div>,
                     document.getElementById("draft-modal-root")!

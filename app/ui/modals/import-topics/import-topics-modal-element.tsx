@@ -3,42 +3,20 @@
 import {clsx} from "clsx";
 import {ImportTopicsModalProps} from "@/app/lib/types";
 import {Button} from "@/app/ui/button";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import InputZipFile from "@/app/ui/inputs/input-zip-file";
 import {QuestionMarkCircleIcon} from "@heroicons/react/24/outline";
+import {useModalClose} from "@/app/lib/modals";
 
-export default function ImportTopicsModalElement({ visible, onImportTopics, onCancel, onCloseModal }: ImportTopicsModalProps) {
+export default function ImportTopicsModalElement({ visible, onImportTopicsAction, onCancelAction, onCloseModalAction }: ImportTopicsModalProps) {
     const [topicsFile, setTopicsFile] = useState<File | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
 
+    useModalClose(modalRef, visible, onCloseModalAction);
+
     const onConfirm = () => {
-        onImportTopics(topicsFile);
+        onImportTopicsAction(topicsFile);
     };
-
-    useEffect(() => {
-        if (!visible) return;
-
-        const handleClickOutside = (e: MouseEvent) => {
-            if (
-                modalRef.current &&
-                !modalRef.current.contains(e.target as Node)
-            ) {
-                onCloseModal();
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        document.addEventListener("keypress", (e) => {
-            if (e.key === "Escape") onCloseModal();
-        });
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-            document.removeEventListener("keypress", (e) => {
-                if (e.key === "Escape") onCloseModal();
-            });
-        };
-
-    }, [visible, onCloseModal]);
 
     return (
         <div
@@ -73,7 +51,7 @@ export default function ImportTopicsModalElement({ visible, onImportTopics, onCa
                     className="bg-gray-400! before:bg-gray-500! text-white! border-none! shadow-none! mt-0! mb-0! h-11! w-50!"
                     text="Annuler"
                     type="button"
-                    onClick={onCancel}
+                    onClick={onCancelAction}
                 />
                 <Button
                     className="bg-blue-600! before:bg-blue-700! text-white! border-none! shadow-none! mt-0! mb-0! h-11! w-50!"

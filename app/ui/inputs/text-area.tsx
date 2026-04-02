@@ -1,8 +1,9 @@
 'use client';
 
 import { clsx } from "clsx";
-import React, { useCallback } from "react";
+import React from "react";
 import { TextAreaProps } from "@/app/lib/types";
+import {useAutoResize} from "@/app/lib/inputs";
 
 export function TextArea({
                              id,
@@ -14,24 +15,7 @@ export function TextArea({
                              onChangeAction,
                          }: TextAreaProps) {
 
-    const setRef = useCallback((el: HTMLTextAreaElement | null) => {
-        if (typeof ref === 'function') {
-            (ref as React.RefCallback<HTMLTextAreaElement>)(el);
-        } else if (ref) {
-            ref.current = el;
-        }
-
-        if (!el) return;
-
-        const resize = () => {
-            el.style.height = "auto";
-            el.style.height = `${el.scrollHeight}px`;
-        };
-
-        resize(); // Size correctly on mount
-        el.addEventListener("input", resize);
-        return () => el.removeEventListener("input", resize); // React 19 callback-ref cleanup
-    }, [ref]);
+    const setRef = useAutoResize(ref);
 
     return (
         <div

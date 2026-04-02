@@ -7,23 +7,22 @@
 
 namespace Goralys\Core\Topics\Repository;
 
-use Goralys\Platform\DB\Facade\DbContainer;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
+use Goralys\Core\Topics\Repository\Interfaces\TopicsRepositoryInterface;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 
 /**
  * Repository class for handling database operations related to Topics.
  */
-class TopicsRepository implements Interfaces\TopicsRepositoryInterface
+class TopicsRepository implements TopicsRepositoryInterface
 {
-    /** @var DbContainer The database container. */
-    private DbContainer $db;
+    /** @var DbContainerInterface The database container. */
+    private DbContainerInterface $db;
 
     /**
-     * @param DbContainer $db
+     * @param DbContainerInterface $db
      */
     public function __construct(
-        DbContainer $db
+        DbContainerInterface $db
     ) {
         $this->db = $db;
     }
@@ -35,7 +34,6 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
      * @param string $topicCode The unique code for the topic.
      * @param string $topicName The display name of the topic.
      * @return void
-     * @throws GoralysPrepareException|GoralysQueryException
      */
     public function insertTopic(int $topicId, string $topicCode, string $topicName): void
     {
@@ -54,7 +52,6 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
      * @param int $topicId The ID of the topic.
      * @param string $teacherUsername The username of the teacher.
      * @return void
-     * @throws GoralysPrepareException|GoralysQueryException
      */
     public function insertTeacher(int $topicId, string $teacherUsername): void
     {
@@ -72,7 +69,6 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
      * @param int $topicId The ID of the topic.
      * @param string $studentUsername The username of the student.
      * @return void
-     * @throws GoralysPrepareException|GoralysQueryException
      */
     public function insertStudent(int $topicId, string $studentUsername): void
     {
@@ -89,7 +85,6 @@ class TopicsRepository implements Interfaces\TopicsRepositoryInterface
     /**
      * Removes all topics and associated subjects from the database.
      * @return bool If the deletion was successful
-     * @throws GoralysPrepareException|GoralysQueryException
      */
     public function clearAll(): bool
     {

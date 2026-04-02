@@ -77,7 +77,7 @@ export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAc
                 <Checkbox id={`interdisciplinary-teacher-${subjectData.studentToken}-${subjectData.teacherToken}`}
                           className="ml-auto self-center"
                           label="Question transversale"
-                          setValue={() => {}}
+                          setValueAction={() => {}}
                           defaultValue={subjectData.interdisciplinary}
                           disabled
                 />

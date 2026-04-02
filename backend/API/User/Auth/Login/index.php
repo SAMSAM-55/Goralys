@@ -8,7 +8,7 @@
 require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
-use Goralys\App\HTTP\Request\GoralysRequest;
+use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Kernel\GoralysKernel;
@@ -19,7 +19,7 @@ $kernel = bootKernel(true);
 $request = $kernel->getRequest();
 $kernel->requireCSRF("login", "/user/login");
 
-$kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
+$kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     if (!$kernel->connect()) {
         $kernel->flashFatalError(
             "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
@@ -42,7 +42,7 @@ $kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
     $username = $request->get("username");
     $password = $request->get("password");
 
-    // Double check inputs
+    // Double-check inputs
     if (empty($username) || empty($password)) {
         $kernel->flashToast(
             ToastType::WARNING,

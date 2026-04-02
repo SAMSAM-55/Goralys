@@ -74,7 +74,7 @@ export function SubjectInputStudent({
 
                 <Checkbox className="ml-auto self-center"
                           label="Question transversale"
-                          setValue={setIsInterdisciplinaryAction}
+                          setValueAction={setIsInterdisciplinaryAction}
                           defaultValue={subjectData.interdisciplinary}
                           disabled={!editable}
                 />

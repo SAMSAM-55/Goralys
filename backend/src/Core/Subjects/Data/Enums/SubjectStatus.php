@@ -22,27 +22,4 @@ enum SubjectStatus: int
     {
         return strtolower($this->name);
     }
-
-    /**
-     * @param string $str
-     * @return SubjectStatus
-     */
-    public static function fromString(string $str): SubjectStatus
-    {
-        $str = trim(strtolower($str));
-
-        if ($str === "not_submitted") {
-            return SubjectStatus::NOT_SUBMITTED;
-        }
-        if ($str === "submitted") {
-            return SubjectStatus::SUBMITTED;
-        }
-        if ($str === "rejected") {
-            return SubjectStatus::REJECTED;
-        }
-        if ($str === "approved") {
-            return SubjectStatus::APPROVED;
-        }
-        return SubjectStatus::UNKNOWN;
-    }
 }

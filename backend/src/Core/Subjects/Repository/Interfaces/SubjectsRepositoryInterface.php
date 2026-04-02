@@ -8,7 +8,6 @@
 namespace Goralys\Core\Subjects\Repository\Interfaces;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
-use Goralys\Core\Subjects\Data\SubjectDTO;
 use mysqli_result;
 
 interface SubjectsRepositoryInterface

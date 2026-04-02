@@ -8,7 +8,7 @@
 require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
-use Goralys\App\HTTP\Request\GoralysRequest;
+use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
@@ -25,7 +25,7 @@ $kernel->requireAuth("approve subject");
 $kernel->requireRole(UserRole::TEACHER);
 $kernel->requireCSRF("approve-subject");
 
-$kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
+$kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     if (!$kernel->connect()) {
         $kernel->toast->fatalError(
             500, // Internal server error

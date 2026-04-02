@@ -9,13 +9,12 @@ namespace Goralys\App\Utils\Toast\Services;
 
 use Goralys\App\Utils\Toast\Data\FlashToastDTO;
 use Goralys\App\Utils\Toast\Data\ToastDTO;
-use Goralys\App\Utils\Toast\Interfaces\ToastFlashServiceInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
 /**
  * This service is used to store and retrieve flash toasts.
  */
-class ToastFlashService implements ToastFlashServiceInterface
+class ToastFlashService
 {
     /**
      * Stores a new flash toast in the session.
@@ -27,8 +26,8 @@ class ToastFlashService implements ToastFlashServiceInterface
     public function store(ToastDTO $toastData, ?string $action): void
     {
         $_SESSION["flash-toast"] = [
-            "toastInfo" => $toastData->getToastInfo(),
-            "redirect" => $toastData->getRedirect(),
+            "toastInfo" => $toastData->toastInfo,
+            "redirect" => $toastData->redirect,
             "flash" => true,
             "action" => $action
         ];

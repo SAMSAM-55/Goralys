@@ -11,7 +11,7 @@ export default function RegisterForm() {
     useEffect(() => {
         const run = async () => setCsrfToken(await fetchCsrfClient("register"));
 
-        run();
+        run().then();
     }, []);
 
     return (

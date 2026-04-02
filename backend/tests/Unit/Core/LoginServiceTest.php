@@ -2,12 +2,8 @@
 
 namespace Goralys\Tests\Unit\Core;
 
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Services\LoginService;
-use Goralys\Core\Utils\User\Services\UsernameFormatterService;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 use Goralys\Tests\Fakes\FakeGoralysLogger;
 use Goralys\Tests\Fakes\FakeUserRepository;
@@ -43,17 +39,23 @@ class LoginServiceTest extends TestCase
 
         try {
             $this->service->login(new UserLoginDTO("j.doe1", "foo"));
-        } catch (GoralysPrepareException | GoralysQueryException | UserNotFoundException $e) {
+        } catch (UserNotFoundException $e) {
             self::assertEquals("No such user : j.doe1", $e->getMessage());
         }
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function testLoginInvalidPassword()
     {
         $this->repo->setGetResult(new UserLoginDTO("j.doe1", "bar"));
         self::assertFalse($this->service->login(new UserLoginDTO("j.doe1", "foo")));
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function testLoginWorks()
     {
         $this->repo->setGetResult(new UserLoginDTO("j.doe1", password_hash("foo", PASSWORD_DEFAULT)));

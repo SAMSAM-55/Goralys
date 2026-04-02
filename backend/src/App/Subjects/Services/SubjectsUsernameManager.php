@@ -7,12 +7,11 @@
 
 namespace Goralys\App\Subjects\Services;
 
-use Goralys\App\Subjects\Interfaces\SubjectsUsernameManagerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Random\RandomException;
 
-class SubjectsUsernameManager implements SubjectsUsernameManagerInterface
+class SubjectsUsernameManager
 {
     private LoggerInterface $logger;
 
@@ -42,7 +41,10 @@ class SubjectsUsernameManager implements SubjectsUsernameManagerInterface
             $_SESSION["username-table"][$token] = $username;
             return $token;
         } catch (RandomException $e) {
-            $this->logger->warning(LoggerInitiator::APP, "Failed to generate user table token.");
+            $this->logger->warning(
+                LoggerInitiator::APP,
+                "Failed to generate user table token.\nError: " . $e->getMessage()
+            );
         }
 
         return "";

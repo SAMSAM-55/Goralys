@@ -8,17 +8,14 @@
 namespace Goralys\Core\Subjects\Services;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
-use Goralys\Core\Subjects\Interfaces\UpdateSubjectServiceInterface;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 
 /**
  * The service used to update the subjects info inside the database via the subjects repository
  */
-class UpdateSubjectService implements UpdateSubjectServiceInterface
+class UpdateSubjectService
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
@@ -71,7 +68,6 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
      * @param string $newSubject The subject's new content.
      * @param bool $interdisciplinary If the subject is interdisciplinary.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateSubject(
         string $teacherUsername,
@@ -100,7 +96,6 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
      * @param string $studentUsername The student's username.
      * @param string $newComment The new teacher's comment about the subject.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateComment(
         string $teacherUsername,
@@ -121,7 +116,6 @@ class UpdateSubjectService implements UpdateSubjectServiceInterface
      * @param string $studentUsername The student's username.
      * @param SubjectStatus $newStatus The new status of the subject.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateSubjectStatus(
         string $teacherUsername,

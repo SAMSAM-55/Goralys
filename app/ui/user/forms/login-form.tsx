@@ -11,7 +11,7 @@ export default function LoginForm() {
     useEffect(() => {
         const run = async () => setCsrfToken(await fetchCsrfClient("login"));
 
-        run();
+        run().then();
     }, []);
 
     return (

@@ -11,9 +11,6 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Interfaces\CreateUserInterface;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
-use Goralys\Core\User\Repository\UserRepository;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 
 /**
  * The service used to create users.
@@ -36,11 +33,10 @@ class CreateUserService implements CreateUserInterface
      * Creates a new user inside the database.
      * @param UserCreateDTO $userData The necessary data to create the user inside the database.
      * @return bool If the creation was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function createUser(UserCreateDTO $userData): bool
     {
-        if ($userData->getRole() == UserRole::UNKNOWN) {
+        if ($userData->role == UserRole::UNKNOWN) {
             return false;
         }
         return $this->repo->save($userData);

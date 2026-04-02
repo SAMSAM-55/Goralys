@@ -8,9 +8,7 @@
 namespace Goralys\Platform\DB\Services;
 
 use Goralys\Platform\DB\Data\DbDto;
-use Goralys\Platform\DB\Interfaces\ConnectInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysConnectException;
 use mysqli;
@@ -19,7 +17,7 @@ use mysqli_sql_exception;
 /**
  * Service used to connect to the database
  */
-class ConnectService implements ConnectInterface
+class ConnectService
 {
     private LoggerInterface $logger;
 
@@ -40,10 +38,10 @@ class ConnectService implements ConnectInterface
 
         try {
             $conn = new mysqli(
-                $credentials->getHost(),
-                $credentials->getUsername(),
-                $credentials->getPassword(),
-                $credentials->getName()
+                $credentials->host,
+                $credentials->username,
+                $credentials->password,
+                $credentials->name
             );
             $conn->set_charset('utf8mb4');
         } catch (mysqli_sql_exception) {

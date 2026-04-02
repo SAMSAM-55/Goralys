@@ -8,7 +8,7 @@
 require __DIR__ . "/../../../../vendor/autoload.php";
 require __DIR__ . "/../../../../src/Kernel/bootstrap.php";
 
-use Goralys\App\HTTP\Request\GoralysRequest;
+use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Kernel\GoralysKernel;
@@ -19,7 +19,7 @@ $kernel = bootKernel(true);
 $request = $kernel->getRequest();
 $kernel->requireCSRF("register", "/user/register");
 
-$kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
+$kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     if (!$kernel->connect()) {
         $kernel->flashFatalError(
             "Une erreur interne est survenue lors de la création du compte, veuillez réessayer ultérieurement.",

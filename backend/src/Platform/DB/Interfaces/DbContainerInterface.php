@@ -7,7 +7,6 @@
 
 namespace Goralys\Platform\DB\Interfaces;
 
-use mysqli_stmt;
 use mysqli_result;
 
 interface DbContainerInterface

@@ -9,9 +9,7 @@ namespace Goralys\Core\Subjects\Repository;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
-use Goralys\Platform\DB\Facade\DbContainer;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use mysqli_result;
 
 /**
@@ -19,13 +17,13 @@ use mysqli_result;
  */
 class SubjectsRepository implements SubjectsRepositoryInterface
 {
-    private DbContainer $db;
+    private DbContainerInterface $db;
 
     /**
      * Initializes the database container for the repository.
-     * @param DbContainer $db
+     * @param DbContainerInterface $db
      */
-    public function __construct(DbContainer $db)
+    public function __construct(DbContainerInterface $db)
     {
         $this->db = $db;
     }
@@ -34,7 +32,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * Gets all the subjects for a given student.
      * @param string $studentUsername The student's username.
      * @return mysqli_result The result of the request.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function findByStudent(string $studentUsername): mysqli_result
     {
@@ -63,7 +60,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * Gets all the subjects for a given teacher.
      * @param string $teacherUsername The teacher's username.
      * @return mysqli_result The result of the request.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * */
     public function findByTeacher(string $teacherUsername): mysqli_result
     {
@@ -94,7 +90,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * Gets all the subjects from the database.
      * This should only be used for admin accounts.
      * @return mysqli_result The result of the request.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function findAll(): mysqli_result
     {
@@ -123,7 +118,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $studentUsername The student's username.
      * @param string $topic The name of the topic.
      * @return mysqli_result The result of the request.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
     {
@@ -148,7 +142,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $studentUsername The student's username.
      * @param string $topic The name of the topic.
      * @return mysqli_result The result of the request.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function getDraftPath(string $teacherUsername, string $studentUsername, string $topic): mysqli_result
     {
@@ -176,7 +169,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $newSubject
      * @param bool $interdisciplinary
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateSubject(
         string $teacherUsername,
@@ -211,7 +203,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $topic The name of the topic.
      * @param SubjectStatus $newStatus The new status of the subject.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateStatus(
         string $teacherUsername,
@@ -246,7 +237,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $topic The name of the topic.
      * @param string $newComment The new comment for the subject.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateComment(
         string $teacherUsername,
@@ -279,7 +269,6 @@ class SubjectsRepository implements SubjectsRepositoryInterface
      * @param string $topic The name of the topic.
      * @param string$newPath The new path to the student's draft.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function updateDraftPath(
         string $teacherUsername,

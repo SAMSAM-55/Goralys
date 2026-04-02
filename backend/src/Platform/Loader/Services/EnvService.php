@@ -12,14 +12,11 @@ use Dotenv\Exception\InvalidEncodingException;
 use Dotenv\Exception\InvalidFileException;
 use Dotenv\Exception\InvalidPathException;
 use Dotenv\Exception\ValidationException;
-use Goralys\Platform\Loader\Interfaces\EnvInterface;
-use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
 
 /**
  * A simple wrapper around `DotEnv` to load the environment variables
  */
-class EnvService implements EnvInterface
+class EnvService
 {
     /**
      * Load the environment variables inside $_ENV
