@@ -9,19 +9,15 @@ namespace Goralys\Core\Subjects\Services;
 
 use Goralys\Core\Subjects\Config\SubjectsExportConfig;
 use Goralys\Core\Subjects\Data\StudentSubjectsDTO;
-use Goralys\Core\Subjects\Interfaces\SubjectsTemplateRendererInterface;
 use Goralys\Platform\Doc\PDF\Data\PdfSourceDTO;
-use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
 use InvalidArgumentException;
 
-class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
+class SubjectsTemplateRenderer
 {
-    private PdfExporterInterface $exporter;
     private SubjectsExportConfig $config;
 
-    public function __construct(PdfExporterInterface $exporter, SubjectsExportConfig $config)
+    public function __construct(SubjectsExportConfig $config)
     {
-        $this->exporter = $exporter;
         $this->config = $config;
     }
 
@@ -44,14 +40,13 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
 
     public function render(StudentSubjectsDTO $student): PdfSourceDTO
     {
-        if (count($student->getSubjects()) < 2) {
+        if (count($student->subjects) < 2) {
             throw new InvalidArgumentException(
                 "Student $student->studentName must have at least 2 subjects. Got: "
-                . print_r($student->getSubjects(), true)
+                . print_r($student->subjects, true)
             );
         }
 
-        $pdf = $this->exporter->create();
         $html = file_get_contents($this->config::TEMPLATE_SOURCE_PATH);
         $css = file_get_contents($this->config::TEMPLATE_STYLES_PATH);
 
@@ -84,9 +79,9 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
         $pathway = "générale";
 
         foreach ($this->config::getTechnologicalPathways() as $p) {
-            foreach ($student->getSubjects() as $subject) {
-                if ($subject->topicCode && str_contains($subject->topicCode, $p->getDetectPattern())) {
-                    $pathway = "technologique - " . $p->getFull();
+            foreach ($student->subjects as $subject) {
+                if ($subject->topicCode && str_contains($subject->topicCode, $p->detectPattern)) {
+                    $pathway = "technologique - " . $p->full;
                     break 2;
                 }
             }
@@ -108,7 +103,7 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
                 'year'   => date("Y"),
         ];
 
-        foreach ($student->getSubjects() as $i => $subject) {
+        foreach ($student->subjects as $i => $subject) {
             $n = $i + 1;
             $vars["spe$n"]              = $subject->speciality;
             $vars["prof$n"]             = $subject->teacherName;
@@ -126,9 +121,6 @@ class SubjectsTemplateRenderer implements SubjectsTemplateRendererInterface
         );
         $html = strtr($html, $replacements);
 
-        $this->exporter->setSource($pdf, $html);
-        $this->exporter->setStyle($pdf, $css);
-
-        return $pdf;
+        return new PdfSourceDTO($html, $css);
     }
 }

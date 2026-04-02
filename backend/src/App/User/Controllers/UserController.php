@@ -7,30 +7,28 @@
 
 namespace Goralys\App\User\Controllers;
 
-use Goralys\App\User\Interfaces\UserControllerInterface;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
-use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 
 /**
  * The controller that handles the user logic.
  */
-class UserController implements UserControllerInterface
+class UserController
 {
     private LoggerInterface $logger;
-    private DbContainer $db;
-    private UserRepository $repo;
+    private DbContainerInterface $db;
+    private UserRepositoryInterface $repo;
 
     /**
      * Initializes the logger and the database container used by the controller.
      * @param LoggerInterface $logger The injected logger.
-     * @param DbContainer $db The injected database container.
+     * @param DbContainerInterface $db The injected database container.
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainer $db,
+        DbContainerInterface $db,
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -41,7 +39,6 @@ class UserController implements UserControllerInterface
     /**
      * Deletes all users (except admins) from the database.
      * @return bool If the deletion was successful
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function clear(): bool
     {

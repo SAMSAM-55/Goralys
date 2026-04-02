@@ -30,6 +30,6 @@ try {
 
 $kernel->sendJSON([
     "success" => true,
-    "toast" => $toast->getToastInfo(),
-    "action" => $toast->getAction()
+    "toast" => $toast->toastInfo,
+    "action" => $toast->action
 ]);

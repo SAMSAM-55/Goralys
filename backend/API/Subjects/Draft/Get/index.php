@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-use Goralys\App\HTTP\Request\GoralysRequest;
+use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
@@ -21,7 +21,7 @@ $request = $kernel->getRequest();
 $kernel->requireAuth("download a student draft");
 $kernel->requireRole(UserRole::TEACHER, true);
 
-$kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
+$kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     if (!$kernel->connect()) {
         $kernel->flashFatalError(
             "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",

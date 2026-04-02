@@ -15,25 +15,18 @@ use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
 class DomPdfExporter implements PdfExporterInterface
 {
     /**
-     * @return PdfSourceDTO
-     */
-    public function create(): PdfSourceDTO
-    {
-        return new PdfSourceDTO();
-    }
-
-    /**
-     * @param PdfSourceDTO $pdf
-     * @param string $path
-     * @param string $basePath
+     * Exports an HTML template to a PDF file.
+     * @param PdfSourceDTO $pdf The PDF to export.
+     * @param string $path The path to export the PDF to.
+     * @param string $basePath The root path for assets used during PDF export.
      * @return void
      */
     public function export(PdfSourceDTO $pdf, string $path, string $basePath): void
     {
         $finalSource = str_replace(
             '</head>',
-            "<style>\n{$pdf->getCSS()}\n</style>\n</head>",
-            $pdf->getHTML()
+            "<style>\n$pdf->CSS\n</style>\n</head>",
+            $pdf->HTML
         );
 
         // --- Dompdf options ---
@@ -59,25 +52,5 @@ class DomPdfExporter implements PdfExporterInterface
 
         // Save to file
         file_put_contents($path, $dompdf->output());
-    }
-
-    /**
-     * @param PdfSourceDTO $pdf
-     * @param string $source
-     * @return void
-     */
-    public function setSource(PdfSourceDTO $pdf, string $source): void
-    {
-        $pdf->setHTML($source);
-    }
-
-    /**
-     * @param PdfSourceDTO $pdf
-     * @param string $style
-     * @return void
-     */
-    public function setStyle(PdfSourceDTO $pdf, string $style): void
-    {
-        $pdf->setCSS($style);
     }
 }

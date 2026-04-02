@@ -1,5 +1,5 @@
 import {clsx} from "clsx";
-import {useState} from "react";
+import React, {useState} from "react";
 import {InputProps} from "@/app/lib/types";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 

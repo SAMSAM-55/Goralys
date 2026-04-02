@@ -7,13 +7,13 @@
 
 namespace Goralys\App\HTTP\Files\Data;
 
-class UploadedFileDTO
+readonly class UploadedFileDTO
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $type,
-        public readonly string $tmpPath,
-        public readonly int $size
+        public string $name,
+        public string $type,
+        public string $tmpPath,
+        public int $size
     ) {
     }
 }

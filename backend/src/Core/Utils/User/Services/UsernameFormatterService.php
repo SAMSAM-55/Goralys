@@ -7,12 +7,10 @@
 
 namespace Goralys\Core\Utils\User\Services;
 
-use Goralys\Core\Utils\User\Interfaces\UsernameFormatterServiceInterface;
-
 /**
  * The service used to format the username before sending it to the frontend.
  */
-class UsernameFormatterService implements UsernameFormatterServiceInterface
+class UsernameFormatterService
 {
     /**
      * Formats a username with default format f.lastnameX into LASTNAME F. with f the first letter of the first name and

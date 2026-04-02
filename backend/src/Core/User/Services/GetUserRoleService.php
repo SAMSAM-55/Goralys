@@ -10,9 +10,6 @@ namespace Goralys\Core\User\Services;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Interfaces\GetUserRoleInterface;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
-use Goralys\Core\User\Repository\UserRepository;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 
 /**
@@ -36,7 +33,6 @@ class GetUserRoleService implements GetUserRoleInterface
      * Returns a user's role based on his username.
      * @param string $username The user's name.
      * @return UserRole The user's role.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws UserNotFoundException If the user could not be found.
      */
     public function getRoleByUsername(string $username): UserRole

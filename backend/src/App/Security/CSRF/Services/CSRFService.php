@@ -7,9 +7,7 @@
 
 namespace Goralys\App\Security\CSRF\Services;
 
-use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
-use Goralys\App\Security\CSRF\Interfaces\CSRFServiceInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Random\RandomException;
@@ -17,7 +15,7 @@ use Random\RandomException;
 /**
  * Service to manage the CSRF tokens system.
  */
-class CSRFService implements CSRFServiceInterface
+class CSRFService
 {
     private LoggerInterface $logger;
 
@@ -43,7 +41,7 @@ class CSRFService implements CSRFServiceInterface
 
     /**
      * Creates a new CSRF token.
-     * @param string $formId The id of the form to creat the token for.
+     * @param string $formId The id of the form to create the token for.
      * @return bool If the creation was successful or not.
      */
     public function create(string $formId): bool
@@ -60,7 +58,7 @@ class CSRFService implements CSRFServiceInterface
         } catch (RandomException $e) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "An error occurred while generating a CSRF token for form : " . $formId
+                "An error occurred while generating a CSRF token for form : " . $formId . "\nError:" . $e->getMessage()
             );
             return false;
         }

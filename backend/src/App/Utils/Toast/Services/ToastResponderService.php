@@ -7,16 +7,13 @@
 
 namespace Goralys\App\Utils\Toast\Services;
 
-// Loader
-use Goralys\App\Utils\AppConfig;
 // Toast specific classes
 use Goralys\App\Utils\Toast\Data\ToastDTO;
-use Goralys\App\Utils\Toast\Interfaces\ToastResponderInterface;
 
 /**
  * The service used to send a toast to the frontend
  */
-class ToastResponderService implements ToastResponderInterface
+class ToastResponderService
 {
     private ToastFlashService $flashService;
 
@@ -35,7 +32,7 @@ class ToastResponderService implements ToastResponderInterface
      */
     public function sendToast(ToastDTO $toastData, string $action = ""): void
     {
-        if ($toastData->isFlash()) {
+        if ($toastData->flash) {
             $this->flashService->store($toastData, $action);
             return;
         }
@@ -43,6 +40,6 @@ class ToastResponderService implements ToastResponderInterface
         if (!headers_sent()) {
             header('Content-Type: application/json; charset=utf-8');
         }
-        echo json_encode($toastData->getToastInfo(), JSON_UNESCAPED_UNICODE);
+        echo json_encode($toastData->toastInfo, JSON_UNESCAPED_UNICODE);
     }
 }

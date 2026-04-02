@@ -13,19 +13,16 @@ use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Data\SubjectDTO;
 use Goralys\Core\Subjects\Data\SubjectsCollection;
-use Goralys\Core\Subjects\Interfaces\GetSubjectsServiceInterface;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use mysqli_result;
 
 /**
  * The service used to fetch subjects inside the database via the subjects repository
  */
-class GetSubjectsService implements GetSubjectsServiceInterface
+class GetSubjectsService
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
@@ -192,7 +189,6 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * The subjects are returned using a subjects collection object.
      * @param string $studentUsername The student's username.
      * @return SubjectsCollection The array of all the student's subjects.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws DateMalformedStringException
      */
     public function getStudentSubjects(string $studentUsername): SubjectsCollection
@@ -214,7 +210,6 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * The subjects are returned using a subjects collection object.
      * @param string $teacherUsername The teacher's username.
      * @return SubjectsCollection The array of all the teacher's subjects.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws DateMalformedStringException
      * */
     public function getTeacherSubjects(string $teacherUsername): SubjectsCollection
@@ -234,7 +229,6 @@ class GetSubjectsService implements GetSubjectsServiceInterface
      * It uses the subjects repository to communicate with the database.
      * The subjects are returned using a subjects collection object.
      * @return SubjectsCollection The array of all the subjects inside the database.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws DateMalformedStringException
      */
     public function getAllSubjects(): SubjectsCollection

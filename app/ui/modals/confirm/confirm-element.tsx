@@ -4,10 +4,16 @@ import {clsx} from "clsx";
 import {ConfirmProps} from "@/app/lib/types";
 import {Button} from "@/app/ui/button";
 import {QuestionMarkCircleIcon} from "@heroicons/react/24/outline"
+import {useModalClose} from "@/app/lib/modals";
+import {useRef} from "react";
 
-export default function ConfirmElement({ title, message, visible, onConfirm, onCancel }: ConfirmProps) {
+export default function ConfirmElement({ title, message, visible, onConfirmAction, onCancelAction }: ConfirmProps) {
+    const modalRef = useRef<HTMLDivElement>(null);
+    useModalClose(modalRef, visible, onCancelAction);
+
     return (
         <div
+            ref={modalRef}
             className={clsx(
                 "fixed flex flex-col gap-2 p-3 w-115 bg-sky-300 rounded shadow overflow-hidden left-1/2 -translate-x-1/2 top-1 ",
                 "after:absolute after:left-0 after:top-0 after:h-full after:w-1.25 after:content-[''] after:bg-blue-600",
@@ -36,13 +42,13 @@ export default function ConfirmElement({ title, message, visible, onConfirm, onC
                     className="bg-gray-400! before:bg-gray-500! text-white! border-none! shadow-none! mt-0! mb-0! w-25!"
                     text="Annuler" 
                     type="button" 
-                    onClick={onCancel}
+                    onClick={onCancelAction}
                 />
                 <Button 
                     className="bg-blue-600! before:bg-blue-700! text-white! border-none! shadow-none! mt-0! mb-0! w-25!"
                     text="Confirmer" 
                     type="button" 
-                    onClick={onConfirm} 
+                    onClick={onConfirmAction}
                 />
             </div>
         </div>

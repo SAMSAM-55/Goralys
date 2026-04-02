@@ -2,6 +2,7 @@
 
 namespace Goralys\Tests\Unit\Core;
 
+use DateMalformedStringException;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
@@ -46,6 +47,9 @@ class GetSubjectsServiceTest extends TestCase
         unset($this->service);
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function testGetAllSubjects()
     {
         $subjects = [
@@ -161,6 +165,9 @@ class GetSubjectsServiceTest extends TestCase
         self::assertSame($expected, $actual);
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function testGetStudentSubjects()
     {
         $subjects = [
@@ -231,6 +238,9 @@ class GetSubjectsServiceTest extends TestCase
         self::assertSame($expected, $actual);
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function testGetTeacherSubjects()
     {
         $subjects = [

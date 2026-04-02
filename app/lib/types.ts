@@ -95,8 +95,8 @@ export type ConfirmProps = {
     title: string,
     message: string,
     visible: boolean,
-    onConfirm: () => void,
-    onCancel: () => void,
+    onConfirmAction: () => void,
+    onCancelAction: () => void,
 };
 
 export type ConfirmOptions = {
@@ -106,9 +106,9 @@ export type ConfirmOptions = {
 
 export type DraftModalProps = {
     visible: boolean,
-    onCancel: () => void,
-    onChooseDraft: (file: File | null) => void,
-    onCloseModal: () => void,
+    onCancelAction: () => void,
+    onChooseDraftAction: (file: File | null) => void,
+    onCloseModalAction: () => void,
 }
 
 export type DraftModalResult =
@@ -118,9 +118,9 @@ export type DraftModalResult =
 
 export type ImportTopicsModalProps = {
     visible: boolean,
-    onCancel: () => void,
-    onImportTopics: (file: File | null) => void,
-    onCloseModal: () => void,
+    onCancelAction: () => void,
+    onImportTopicsAction: (file: File | null) => void,
+    onCloseModalAction: () => void,
 }
 
 export type SubjectsSearchBarProps = {
@@ -131,7 +131,7 @@ export type SubjectsSearchBarProps = {
 export type CheckBoxProps = {
     id?: string,
     label: string,
-    setValue: (v: boolean) => void,
+    setValueAction: (v: boolean) => void,
     defaultValue: boolean,
     className?: string|null
     disabled?: boolean

@@ -8,7 +8,6 @@
 require __DIR__ . "/../../../vendor/autoload.php";
 require __DIR__ . "/../../../src/Kernel/bootstrap.php";
 
-use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Shared\Exception\GoralysRuntimeException;

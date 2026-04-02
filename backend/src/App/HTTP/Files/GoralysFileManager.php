@@ -11,13 +11,11 @@ use Goralys\App\HTTP\Files\Data\FileDTO;
 use Goralys\App\HTTP\Files\Data\UploadedFileDTO;
 use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\App\HTTP\Files\Interface\FileMover;
-use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
-final class GoralysFileManager implements GoralysFileManagerInterface
+final class GoralysFileManager
 {
     /**
      * @var UploadedFileDTO[]
@@ -62,30 +60,6 @@ final class GoralysFileManager implements GoralysFileManagerInterface
     public function get(string $fileName): ?UploadedFileDTO
     {
         return $this->uploads[$fileName] ?? null;
-    }
-
-    /**
-     * Retrieves a file inside the uploads array.
-     * @param string $fileName The name of the file to retrieve.
-     * @return UploadedFileDTO The information of the file.
-     * @throws GoralysRuntimeException Only thrown if the file could not be found
-     */
-    public function require(string $fileName): UploadedFileDTO
-    {
-        if (!array_key_exists($fileName, $this->uploads) || !$file = $this->uploads[$fileName] ?? null) {
-            throw new GoralysRuntimeException("File : " . $fileName . " is not a valid upload or does not exists");
-        }
-
-        return $file;
-    }
-
-    /**
-     * Retrieves all valid file uploads.
-     * @return UploadedFileDTO[]
-     */
-    public function all(): array
-    {
-        return $this->uploads;
     }
 
     /**

@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -22,7 +21,7 @@ $kernel->requireAuth("import topics");
 $kernel->requireRole(UserRole::ADMIN, true);
 $kernel->requireCSRF("import-topics");
 
-$kernel->run(function (GoralysKernel $kernel, GoralysRequest $request) {
+$kernel->run(function (GoralysKernel $kernel) {
     if (!$kernel->connect()) {
         $kernel->toast->fatalError(
             "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",

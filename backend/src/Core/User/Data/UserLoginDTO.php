@@ -10,26 +10,11 @@ namespace Goralys\Core\User\Data;
 /**
  * The DTO used to log in a user
  */
-class UserLoginDTO
+readonly class UserLoginDTO
 {
-    private string $username;
-    private string $password;
-
     public function __construct(
-        string $username,
-        string $password
+        public string $username,
+        public string $password
     ) {
-        $this->username = $username;
-        $this->password = $password;
-    }
-
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
     }
 }

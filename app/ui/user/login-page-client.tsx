@@ -45,7 +45,7 @@ export default function LoginPageClient() {
                     <Image src="/user/login.svg" alt="Login illustration." width={200} height={150} />
 
                     <h1 className="text-xl">Bon retour chez Goralys !</h1>
-                    <p className="text-xs">Reprenez vos questions là vous les avez laissées.
+                    <p className="text-2xs">Reprenez vos questions là vous les avez laissées.
                         Vous n&apos;avez pas encore de compte ? Pas de panique, créez-en un sur la
                         <Link className="text-sky-600 underline" href="/user/register"> page d&apos;enregistrement</Link></p>
                 </Card>

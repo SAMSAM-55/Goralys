@@ -7,10 +7,10 @@
 
 namespace Goralys\App\Subjects\Controllers;
 
+use DateMalformedStringException;
 use DateTime;
-use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
+use Goralys\App\HTTP\Files\GoralysFileManager;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
-use Goralys\App\Subjects\Interfaces\SubjectsControllerInterface;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Drafts\Services\StudentDraftsManager;
 use Goralys\Core\Subjects\Config\SubjectsExportConfig;
@@ -19,36 +19,36 @@ use Goralys\Core\Subjects\Data\SpecialityDTO;
 use Goralys\Core\Subjects\Data\StudentSubjectsDTO;
 use Goralys\Core\Subjects\Data\SubjectsCollection;
 use Goralys\Core\Subjects\Data\SubjectDTO;
+use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Core\Subjects\Repository\SubjectsRepository;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
 use Goralys\Core\Subjects\Services\SubjectsTemplateRenderer;
 use Goralys\Core\Subjects\Services\UpdateSubjectService;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
-use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use ZipArchive;
 
 /**
  * The controller used to update/get subjects from the database via the `SubjectsRepository` (and intermediate services)
  */
-class SubjectsController implements SubjectsControllerInterface
+class SubjectsController
 {
     private LoggerInterface $logger;
-    private DbContainer $db;
-    private SubjectsRepository $repo;
+    private DbContainerInterface $db;
+    private SubjectsRepositoryInterface $repo;
     private UpdateSubjectService $updateService;
     private UsernameFormatterService $formatter;
     private SubjectsUsernameManager $usernameManager;
     public StudentDraftsManager $draftsManager;
-    private GoralysFileManagerInterface $fileManager;
+    private GoralysFileManager $fileManager;
     private GetSubjectsService $getService;
-    private UserRepository $userRepo;
+    private UserRepositoryInterface $userRepo;
     private SubjectsTemplateRenderer $renderer;
     private SubjectsExportConfig $exportConfig;
     private PdfExporterInterface $exporter;
@@ -57,14 +57,14 @@ class SubjectsController implements SubjectsControllerInterface
      * Initializes the logger and database container for the controller.
      * Also instantiates all of its sub-services.
      * @param LoggerInterface $logger The injected logger.
-     * @param DbContainer $db The injected db.
-     * @param GoralysFileManagerInterface $fileManager The injected file manager.
+     * @param DbContainerInterface $db The injected db.
+     * @param GoralysFileManager $fileManager The injected file manager.
      * @param PdfExporterInterface $exporter The injected PDF exporter.
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainer $db,
-        GoralysFileManagerInterface $fileManager,
+        DbContainerInterface $db,
+        GoralysFileManager $fileManager,
         PdfExporterInterface $exporter
     ) {
         $this->logger = $logger;
@@ -85,7 +85,7 @@ class SubjectsController implements SubjectsControllerInterface
         );
         $this->exportConfig = new SubjectsExportConfig();
         $this->exporter = $exporter;
-        $this->renderer = new SubjectsTemplateRenderer($exporter, $this->exportConfig);
+        $this->renderer = new SubjectsTemplateRenderer($this->exportConfig);
     }
 
     /**
@@ -97,7 +97,6 @@ class SubjectsController implements SubjectsControllerInterface
      * @param string|SubjectStatus $newValue The new value of the field.
      * @param bool|null $interdisciplinary [Optional] Only used when updating the subject.
      * @return bool If the update was successful or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the database request goes wrong.
      */
     public function updateField(
         string $teacherUsername,
@@ -136,7 +135,7 @@ class SubjectsController implements SubjectsControllerInterface
      * @param string $username The username of the student or teacher to get the subjects for.
      * Let the defaults value ("") for admins as they have access to all subjects.
      * @return SubjectsCollection The list of the retrieved subjects.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the database request goes wrong.
+     * @throws DateMalformedStringException
      */
     public function getForRole(UserRole $role, string $username = ""): SubjectsCollection
     {
@@ -156,7 +155,6 @@ class SubjectsController implements SubjectsControllerInterface
      * @param string $studentUsername The username of the student.
      * @param string $topic The name of the topic.
      * @return SubjectStatus The status of the subject.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function getStatus(string $teacherUsername, string $studentUsername, string $topic): SubjectStatus
     {
@@ -168,9 +166,10 @@ class SubjectsController implements SubjectsControllerInterface
     }
 
     /**
-     * @param SubjectsCollection $subjects
-     * @return StudentSubjectsDTO[]
-     * @throws GoralysPrepareException|GoralysQueryException
+     * Groups the given subjects by students.
+     * @param SubjectsCollection $subjects The subjects to group.
+     * @return StudentSubjectsDTO[] The students associated with their subjects.
+     * @throws DateMalformedStringException
      */
     private function groupByStudents(SubjectsCollection $subjects): array
     {
@@ -185,16 +184,11 @@ class SubjectsController implements SubjectsControllerInterface
          * @param string $username
          * @param SubjectDTO[] $subjects
          * @return StudentSubjectsDTO
-         * @throws GoralysPrepareException
-         * @throws GoralysQueryException
          */
             function (string $username, array $subjects) {
-                $dto = new StudentSubjectsDTO(
-                    $this->userRepo->getFullNameForUsername($username)
-                );
-
+                $specialities = [];
                 foreach ($subjects as $subject) {
-                    $dto->addSubject(new SpecialityDTO(
+                    $specialities[] = new SpecialityDTO(
                         $this->userRepo->getFullNameForUsername(
                             $this->usernameManager->get($subject->teacherUsernameToken)
                         ),
@@ -203,10 +197,13 @@ class SubjectsController implements SubjectsControllerInterface
                         $subject->subject,
                         $subject->lastUpdatedAt ?? new DateTime(),
                         $subject->interdisciplinary
-                    ));
+                    );
                 }
 
-                return $dto;
+                return new StudentSubjectsDTO(
+                    $this->userRepo->getFullNameForUsername($username),
+                    $specialities
+                );
             },
             array_keys($grouped),
             $grouped
@@ -214,10 +211,11 @@ class SubjectsController implements SubjectsControllerInterface
     }
 
     /**
-     * @param SubjectsCollection $subjects
+     * Exports all subjects in the given collection.
+     * @param SubjectsCollection $subjects The subjects to export.
      * @return string The path to the generated zip file.
-     * @throws GoralysPrepareException|GoralysQueryException
-     * @throws GoralysRuntimeException
+     * @throws GoralysRuntimeException If the zip export goes wrong.
+     * @throws DateMalformedStringException
      */
     public function exportAll(SubjectsCollection $subjects): string
     {

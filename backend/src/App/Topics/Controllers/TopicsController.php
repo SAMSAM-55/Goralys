@@ -9,38 +9,30 @@ namespace Goralys\App\Topics\Controllers;
 
 use Goralys\App\HTTP\Files\Data\UploadedFileDTO;
 use Goralys\App\HTTP\Files\GoralysFileManager;
-use Goralys\App\HTTP\Files\Interface\FileExtractor;
-use Goralys\App\Topics\Interfaces\TopicsControllerInterface;
 use Goralys\Core\Topics\Config\TopicsImportConfig;
 use Goralys\Core\Topics\Data\TopicDescriptorDTO;
 use Goralys\Core\Topics\Data\TopicDTO;
+use Goralys\Core\Topics\Repository\Interfaces\TopicsRepositoryInterface;
 use Goralys\Core\Topics\Repository\TopicsRepository;
 use Goralys\Core\Topics\Services\BuildFromCSVService;
-use Goralys\Platform\DB\Facade\DbContainer;
-use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Utils\String\Data\StringCase;
 use Goralys\Shared\Utils\UtilitiesManager;
-use ZipArchive;
 
 /**
  * Controller for managing topic-related operations, including CSV/ZIP imports and persistence.
  */
-class TopicsController implements TopicsControllerInterface
+class TopicsController
 {
     /** @var UtilitiesManager Utility manager for string operations and more. */
     private UtilitiesManager $utils;
-    /** @var LoggerInterface Logger instance. */
-    private LoggerInterface $logger;
-    /** @var DbContainer Database container instance. */
-    private DbContainer $db;
+    /** @var DbContainerInterface Database container instance. */
+    private DbContainerInterface $db;
     /** @var TopicsImportConfig Configuration for topic imports. */
     private TopicsImportConfig $config;
-    /** @var TopicsRepository Repository for topic database operations. */
-    private TopicsRepository $repo;
+    /** @var TopicsRepositoryInterface Repository for topic database operations. */
+    private TopicsRepositoryInterface $repo;
     /** @var BuildFromCSVService Service to build topics from CSV data. */
     private BuildFromCSVService $CSVBuilder;
     /** @var GoralysFileManager Manager for file operations. */
@@ -51,21 +43,18 @@ class TopicsController implements TopicsControllerInterface
     private int $nextId;
 
     /**
-     * @param LoggerInterface $logger
-     * @param DbContainer $db
+     * @param DbContainerInterface $db
      * @param UtilitiesManager $utils
      * @param GoralysFileManager $files
      */
     public function __construct(
-        LoggerInterface $logger,
-        DbContainer $db,
+        DbContainerInterface $db,
         UtilitiesManager $utils,
         GoralysFileManager $files
     ) {
         $this->usernameTable = [];
         $this->utils = $utils;
 
-        $this->logger = $logger;
         $this->db = $db;
         $this->config = new TopicsImportConfig();
 
@@ -124,26 +113,25 @@ class TopicsController implements TopicsControllerInterface
      * Inserts a TopicDTO into the database, including its students and teachers.
      *
      * @param TopicDTO $topic The topic data transfer object to insert.
-     * @throws GoralysQueryException|GoralysPrepareException
      */
     public function insert(TopicDTO $topic): void
     {
         $this->repo->insertTopic(
-            $topic->getId(),
-            $topic->getCode(),
-            $topic->getName()
+            $topic->id,
+            $topic->code,
+            $topic->name
         );
 
-        foreach ($topic->getTeachers() as $t) {
+        foreach ($topic->teachers as $t) {
             $this->repo->insertTeacher(
-                $topic->getId(),
+                $topic->id,
                 $this->generateUsername($t)
             );
         }
 
-        foreach ($topic->getStudents() as $s) {
+        foreach ($topic->students as $s) {
             $this->repo->insertStudent(
-                $topic->getId(),
+                $topic->id,
                 $this->generateUsername($s)
             );
         }
@@ -248,9 +236,9 @@ class TopicsController implements TopicsControllerInterface
             }
 
             $students = $this->CSVBuilder->buildStudents($csvPath);
-            $teachers = $groupsToTeachers[$descriptor->getCode()] ?? [];
+            $teachers = $groupsToTeachers[$descriptor->code] ?? [];
 
-            $topics[] = $this->makeTopic($descriptor->getName(), $descriptor->getCode(), $students, $teachers);
+            $topics[] = $this->makeTopic($descriptor->name, $descriptor->code, $students, $teachers);
         }
 
         if (count($topics) === 0) {
@@ -269,16 +257,16 @@ class TopicsController implements TopicsControllerInterface
     {
         $out = "";
         foreach ($topics as $topic) {
-            $head = "--------------- " . $topic->getCode() . ": " . $topic->getName() . " ---------------";
+            $head = "--------------- " . $topic->code . ": " . $topic->name . " ---------------";
             $out .= $head . PHP_EOL;
 
             $out .= "Professeurs:" . PHP_EOL;
-            foreach ($topic->getTeachers() as $teacher) {
+            foreach ($topic->teachers as $teacher) {
                 $out .= "    - " . $teacher . ": " . $this->usernameTable[$teacher] . PHP_EOL;
             }
 
             $out .= "Elèves:" . PHP_EOL;
-            foreach ($topic->getStudents() as $student) {
+            foreach ($topic->students as $student) {
                 $out .= "    - " . $student . ": " . $this->usernameTable[$student] . PHP_EOL;
             }
 
@@ -294,7 +282,6 @@ class TopicsController implements TopicsControllerInterface
     /**
      * Removes all topics and associated subjects from the database.
      * @return bool If the deletion was successful
-     * @throws GoralysPrepareException|GoralysQueryException
      */
     public function clear(): bool
     {

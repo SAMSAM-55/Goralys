@@ -7,28 +7,15 @@
 
 namespace Goralys\Core\Subjects\Data;
 
-class StudentSubjectsDTO
+readonly class StudentSubjectsDTO
 {
-    public readonly string $studentName;
-    /** @var SpecialityDTO[] */
-    private array $subjects;
-
-    public function __construct(string $studentName)
-    {
-        $this->studentName = $studentName;
-        $this->subjects = [];
-    }
-
-    public function addSubject(SpecialityDTO $subject): void
-    {
-        $this->subjects[] = $subject;
-    }
-
     /**
-     * @return SpecialityDTO[]
+     * @param string $studentName
+     * @param SpecialityDTO[] $subjects
      */
-    public function getSubjects(): array
-    {
-        return $this->subjects;
+    public function __construct(
+        public string $studentName,
+        public array $subjects = []
+    ) {
     }
 }

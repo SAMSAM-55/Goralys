@@ -17,48 +17,21 @@ use JsonSerializable;
  */
 readonly class SubjectDTO implements JsonSerializable
 {
-    public string $studentUsername;
-    public string $studentUsernameToken;
-    public string $subject;
-    public SubjectStatus $status;
-    public string $comment;
-    public string $teacherUsername;
-    public string $teacherUsernameToken;
-    public string $topic;
-    public string $topicCode;
-    public string $lastRejected;
-    public ?DateTime $lastUpdatedAt;
-    public bool $hasDraft;
-    public bool $interdisciplinary;
-
     public function __construct(
-        string $studentUsername,
-        string $studentUsernameToken,
-        string $subject,
-        SubjectStatus $status,
-        string $comment,
-        string $lastRejected,
-        ?DateTime $lastUpdatedAt,
-        string $topic,
-        string $topicCode,
-        string $teacherUsername,
-        string $teacherUsernameToken,
-        bool $interdisciplinary,
-        bool $hasDraft = false
+        public string $studentUsername,
+        public string $studentUsernameToken,
+        public string $subject,
+        public SubjectStatus $status,
+        public string $comment,
+        public string $lastRejected,
+        public ?DateTime $lastUpdatedAt,
+        public string $topic,
+        public string $topicCode,
+        public string $teacherUsername,
+        public string $teacherUsernameToken,
+        public bool $interdisciplinary,
+        public bool $hasDraft = false
     ) {
-        $this->studentUsername = $studentUsername;
-        $this->studentUsernameToken = $studentUsernameToken;
-        $this->subject = $subject;
-        $this->status = $status;
-        $this->comment = $comment;
-        $this->teacherUsername = $teacherUsername;
-        $this->teacherUsernameToken = $teacherUsernameToken;
-        $this->topic = $topic;
-        $this->topicCode = $topicCode;
-        $this->lastRejected = $lastRejected;
-        $this->lastUpdatedAt = $lastUpdatedAt;
-        $this->hasDraft = $hasDraft;
-        $this->interdisciplinary = $interdisciplinary;
     }
 
     /**

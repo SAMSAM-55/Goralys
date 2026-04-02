@@ -4,9 +4,6 @@ namespace Goralys\Tests\Unit\Core;
 
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Services\GetUserRoleService;
-use Goralys\Core\Utils\User\Services\UsernameFormatterService;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 use Goralys\Tests\Fakes\FakeUserRepository;
 use PHPUnit\Framework\TestCase;
@@ -37,17 +34,23 @@ class GetUserRoleServiceTest extends TestCase
 
         try {
             $this->service->getRoleByUsername("j.doe1");
-        } catch (GoralysPrepareException | GoralysQueryException | UserNotFoundException $e) {
+        } catch (UserNotFoundException $e) {
             self::assertEquals("No such user : j.doe1", $e->getMessage());
         }
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function testGetRoleByUsernameRoleUnknown()
     {
         $this->repo->setGetResult(UserRole::UNKNOWN);
         self::assertEquals(UserRole::UNKNOWN, $this->service->getRoleByUsername("j.doe1"));
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function testGetRoleByUsernameWorks()
     {
         $this->repo->setGetResult(UserRole::STUDENT);

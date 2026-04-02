@@ -56,6 +56,5 @@ class FakeGoralysLogger implements LoggerInterface
 
     public function rotate(): void
     {
-        return;
     }
 }

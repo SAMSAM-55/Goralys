@@ -51,15 +51,21 @@ class ToastFlashServiceTest extends TestCase
         );
     }
 
+    /**
+     * @throws GoralysRuntimeException
+     */
     public function testGetToastReturnsStoredToast(): void
     {
         $toast = new ToastDTO(['toast' => true, 'toastType' => 'info'], "/dashboard", true);
         $this->service->store($toast, "myAction");
         $flashToast = $this->service->getToast();
-        self::assertSame("/dashboard", $flashToast->getRedirect(), "Expected redirect to be '/dashboard'");
-        self::assertSame("myAction", $flashToast->getAction(), "Expected action to be 'myAction'");
+        self::assertSame("/dashboard", $flashToast->redirect, "Expected redirect to be '/dashboard'");
+        self::assertSame("myAction", $flashToast->action, "Expected action to be 'myAction'");
     }
 
+    /**
+     * @throws GoralysRuntimeException
+     */
     public function testGetToastRemovesFromSession(): void
     {
         $toast = new ToastDTO(['toast' => true, 'toastType' => 'warning'], "/page", true);

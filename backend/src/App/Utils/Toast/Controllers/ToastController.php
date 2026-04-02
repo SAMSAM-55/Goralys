@@ -8,7 +8,6 @@
 namespace Goralys\App\Utils\Toast\Controllers;
 
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
-use Goralys\App\Utils\Toast\Interfaces\ToastControllerInterface;
 use Goralys\App\Utils\Toast\Services\ToastBuilderService;
 use Goralys\App\Utils\Toast\Services\ToastFlashService;
 use Goralys\App\Utils\Toast\Services\ToastResponderService;
@@ -17,7 +16,7 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * The controller that manages the toasts interactions with the frontend.
  */
-class ToastController implements ToastControllerInterface
+class ToastController
 {
     private ToastBuilderService $builder;
     public readonly ToastFlashService $flashService;

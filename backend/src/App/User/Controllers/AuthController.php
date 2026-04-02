@@ -10,29 +10,27 @@ namespace Goralys\App\User\Controllers;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Data\UserRegisterDTO;
-use Goralys\App\User\Interfaces\AuthControllerInterface;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Core\User\Services\CreateUserService;
 use Goralys\Core\User\Services\GetUserRoleService;
 use Goralys\Core\User\Services\LoginService;
 use Goralys\Core\User\Services\RegisterService;
 use Goralys\Core\User\Services\RegisterValidatorService;
-use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 
 /**
- * The controller that handles the authentification logic (register, login and logout).
+ * The controller that handles the authentification logic (register, login, and logout).
  */
-class AuthController implements AuthControllerInterface
+class AuthController
 {
     private LoggerInterface $logger;
-    private DbContainer $db;
-    private UserRepository $repo;
+    private DbContainerInterface $db;
+    private UserRepositoryInterface $repo;
     /**
-     * The lifetime of the PHP session, this variable is passed by the kernel when the controller is constructed.
+     * The lifetime of the PHP session, the kernel passes this variable when the controller is constructed.
      * @var int
      */
     private readonly int $sessionLifetime;
@@ -41,13 +39,13 @@ class AuthController implements AuthControllerInterface
     /**
      * Initializes the logger and the database container used by the controller.
      * @param LoggerInterface $logger The injected logger.
-     * @param DbContainer $db The injected database container.
+     * @param DbContainerInterface $db The injected database container.
      * @param int $sessionLifetime The lifetime of the PHP session.
      * @param float $sessionLifetimeMultiplier The lifetime multiplier of the PHP session.
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainer $db,
+        DbContainerInterface $db,
         int $sessionLifetime,
         float $sessionLifetimeMultiplier
     ) {
@@ -63,15 +61,13 @@ class AuthController implements AuthControllerInterface
      * Registers a new user via a register service.
      * @param UserRegisterDTO $userData The necessary data to register the user.
      * @return bool If the creation was successful or not.
-     * @throws GoralysQueryException|GoralysPrepareException Only thrown if the database request goes wrong.
-     * @throws UserNotFoundException If the user id was invalid.
      */
     public function register(UserRegisterDTO $userData): bool
     {
         $userData = new UserRegisterDTO(
-            $userData->getUsername(),
-            $userData->getFullName(),
-            $userData->getPassword()
+            $userData->username,
+            $userData->fullName,
+            $userData->password
         );
 
         $validator = new RegisterValidatorService($this->repo);
@@ -88,10 +84,9 @@ class AuthController implements AuthControllerInterface
     }
 
     /**
-     * Login the user via a login service.
+     * Log in the user via a login service.
      * @param UserLoginDTO $userData The necessary credentials to log in the user.
      * @return bool If the login was successful or not.
-     * @throws GoralysQueryException|GoralysPrepareException Only thrown if the database request goes wrong.
      */
     public function login(UserLoginDTO $userData): bool
     {
@@ -103,12 +98,12 @@ class AuthController implements AuthControllerInterface
             }
 
             session_regenerate_id(true);
-            $sessionData = $this->repo->getByUsername($userData->getUsername());
+            $sessionData = $this->repo->getByUsername($userData->username);
 
-            $_SESSION['current_id'] = $sessionData->getId();
-            $_SESSION['current_full_name'] = $sessionData->getFullName();
-            $_SESSION['current_username'] = $sessionData->getUsername();
-            $_SESSION['current_role'] = $sessionData->getRole()->toString();
+            $_SESSION['current_id'] = $sessionData->id;
+            $_SESSION['current_full_name'] = $sessionData->fullName;
+            $_SESSION['current_username'] = $sessionData->username;
+            $_SESSION['current_role'] = $sessionData->role->toString();
 
             return true;
         } catch (UserNotFoundException) {

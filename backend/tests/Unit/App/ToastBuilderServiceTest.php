@@ -22,7 +22,7 @@ class ToastBuilderServiceTest extends TestCase
     public function testBuildToastReturnsCorrectToastInfo(): void
     {
         $toast = $this->service->buildToast(ToastType::SUCCESS, "Success", "Operation completed", "/home");
-        $info = $toast->getToastInfo();
+        $info = $toast->toastInfo;
         self::assertTrue($info['toast'], "Expected 'toast' to be true");
         self::assertSame(ToastType::SUCCESS->value, $info['toastType'], "Expected toastType to be 'success'");
         self::assertSame("Success", $info['toastTitle'], "Expected toastTitle to be 'Success'");
@@ -37,19 +37,19 @@ class ToastBuilderServiceTest extends TestCase
     public function testBuildToastReturnsCorrectRedirect(): void
     {
         $toast = $this->service->buildToast(ToastType::ERROR, "Error", "Something went wrong", "/error");
-        self::assertSame("/error", $toast->getRedirect(), "Expected redirect to be '/error'");
+        self::assertSame("/error", $toast->redirect, "Expected redirect to be '/error'");
     }
 
     public function testBuildToastDefaultFlashIsFalse(): void
     {
         $toast = $this->service->buildToast(ToastType::INFO, "Info", "Just info", "/info");
-        self::assertFalse($toast->isFlash(), "Expected flash to be false by default");
+        self::assertFalse($toast->flash, "Expected flash to be false by default");
     }
 
     public function testBuildToastWithFlashTrue(): void
     {
         $toast = $this->service->buildToast(ToastType::WARNING, "Warning", "Be careful", "/warn", true);
-        self::assertTrue($toast->isFlash(), "Expected flash to be true when explicitly set");
+        self::assertTrue($toast->flash, "Expected flash to be true when explicitly set");
     }
 
     public function testBuildToastAllToastTypes(): void
@@ -58,7 +58,7 @@ class ToastBuilderServiceTest extends TestCase
             $toast = $this->service->buildToast($type, "Title", "Message", "/");
             self::assertSame(
                 $type->value,
-                $toast->getToastInfo()['toastType'],
+                $toast->toastInfo['toastType'],
                 "Expected toastType to match for type $type->name"
             );
         }

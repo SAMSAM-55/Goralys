@@ -8,8 +8,6 @@
 namespace Goralys\Platform\DB\Services;
 
 use Goralys\Platform\DB\Data\StmtDto;
-use Goralys\Platform\DB\Interfaces\PrepareInterface;
-use Goralys\Platform\Logger\GoralysLogger;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\DB\GoralysPrepareException;
@@ -20,7 +18,7 @@ use mysqli_sql_exception;
 /**
  * The service used to prepare statements
  */
-class PrepareService implements PrepareInterface
+class PrepareService
 {
     private LoggerInterface $logger;
     private mysqli $conn;
@@ -67,18 +65,18 @@ class PrepareService implements PrepareInterface
     {
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-        if (strlen($stmtData->getTypes()) !== count($stmtData->getArgs())) {
+        if (strlen($stmtData->types) !== count($stmtData->args)) {
             $this->logger->error(
                 LoggerInitiator::PLATFORM,
-                "Invalid param count for statement with query : " . $stmtData->getQuery()
+                "Invalid param count for statement with query : " . $stmtData->query
             );
             throw new GoralysPrepareException("Failed to prepare statement.");
         }
 
         try {
-            $stmt = $this->conn->prepare($stmtData->getQuery());
+            $stmt = $this->conn->prepare($stmtData->query);
 
-            $args = $stmtData->getArgs();
+            $args = $stmtData->args;
             $refs = [];
 
             foreach ($args as &$a) {
@@ -86,13 +84,13 @@ class PrepareService implements PrepareInterface
             }
 
             $stmt->bind_param(
-                $stmtData->getTypes(),
+                $stmtData->types,
                 ...$refs
             );
         } catch (mysqli_sql_exception $e) {
             $this->logger->error(
                 LoggerInitiator::PLATFORM,
-                "An error occurred while preparing statement with query : " . $stmtData->getQuery() .
+                "An error occurred while preparing statement with query : " . $stmtData->query .
                 ". Error : " . $e->getMessage()
             );
             throw new GoralysPrepareException("Failed to prepare statement.");

@@ -12,11 +12,9 @@ use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
-use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Goralys\Shared\Exception\DB\GoralysPrepareException;
-use Goralys\Shared\Exception\DB\GoralysQueryException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 use mysqli_result;
 
@@ -26,16 +24,16 @@ use mysqli_result;
 class UserRepository implements UserRepositoryInterface
 {
     private LoggerInterface $logger;
-    private DbContainer $db;
+    private DbContainerInterface $db;
 
     /**
      * Initializes the logger and the database container for the repository.
      * @param LoggerInterface $logger The injected logger.
-     * @param DbContainer $db The injected database container.
+     * @param DbContainerInterface $db The injected database container.
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainer $db
+        DbContainerInterface $db
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -77,7 +75,6 @@ class UserRepository implements UserRepositoryInterface
      * Get a user's info with its username.
      * @param string $username The user's username.
      * @return UserFullDTO The user's info.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      * @throws UserNotFoundException If the user is invalid.
      */
     public function getByUsername(string $username): UserFullDTO
@@ -95,17 +92,16 @@ class UserRepository implements UserRepositoryInterface
      * Saves a new user to the database
      * @param UserCreateDTO $userData The necessary data to save the user
      * @return bool If the save was successful or not
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function save(UserCreateDTO $userData): bool
     {
         return $this->db->run(
             "insert into users (user_id, full_name, password_hash, role) values (?, ?, ?, ?)",
             "ssss",
-            $userData->getUsername(),
-            $userData->getFullName(),
-            $userData->getPasswordHash(),
-            $userData->getRole()->toString()
+            $userData->username,
+            $userData->fullName,
+            $userData->passwordHash,
+            $userData->role->toString()
         );
     }
 
@@ -113,7 +109,6 @@ class UserRepository implements UserRepositoryInterface
      * Checks if a user exists inside the database.
      * @param string $username The user's username.
      * @return bool If the user exits or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function exists(string $username): bool
     {
@@ -128,7 +123,6 @@ class UserRepository implements UserRepositoryInterface
      * Checks if a username is valid.
      * @param string $username The user's username.
      * @return bool If the username is valid or not.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function isUsernameValid(string $username): bool
     {
@@ -150,7 +144,6 @@ class UserRepository implements UserRepositoryInterface
      * If it exists, it returns a new login DTO.
      * @param string $username
      * @return UserLoginDTO|null
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function getLoginDTO(string $username): ?UserLoginDTO
     {
@@ -177,7 +170,6 @@ class UserRepository implements UserRepositoryInterface
      * Gets the role of a user.
      * @param string $username The user's username.
      * @return ?UserRole The user's role.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function getRoleForUsername(string $username): ?UserRole
     {
@@ -214,7 +206,6 @@ class UserRepository implements UserRepositoryInterface
      * Gets the full name of a user.
      * @param string $username The user's username.
      * @return ?string The user's full name.
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function getFullNameForUsername(string $username): ?string
     {
@@ -239,7 +230,6 @@ class UserRepository implements UserRepositoryInterface
     /**
      * Deletes all users (except admins) from the database.
      * @return bool If the deletion was successful
-     * @throws GoralysPrepareException|GoralysQueryException Only thrown if the request goes wrong.
      */
     public function clearAll(): bool
     {

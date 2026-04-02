@@ -41,6 +41,7 @@ use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Platform\DB\Facade\DbContainer;
+use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Doc\PDF\DomPdfExporter;
 use Goralys\Platform\Loader\Services\EnvService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -62,7 +63,7 @@ class GoralysKernel
     private string $rootPath;
     public EnvService $env;
     public UtilitiesManager $utils;
-    public DbContainer $db;
+    public DbContainerInterface $db;
     public LoggerInterface $logger;
     public AuthController $auth;
     public UserController $users;
@@ -317,7 +318,7 @@ class GoralysKernel
      */
     private function initTopics(): void
     {
-        $this->topics = new TopicsController($this->logger, $this->db, $this->utils, $this->fileManager);
+        $this->topics = new TopicsController($this->db, $this->utils, $this->fileManager);
     }
 
     /**
@@ -421,9 +422,9 @@ class GoralysKernel
 
     /**
      * Gets the kernel's current HTTP request
-     * @return GoralysRequest The request.
+     * @return RequestInterface The request.
      */
-    public function getRequest(): GoralysRequest
+    public function getRequest(): RequestInterface
     {
         if (!isset($this->request)) {
             $this->request = new GoralysRequest();

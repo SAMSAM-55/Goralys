@@ -57,9 +57,9 @@ export function ImportTopicsModalProvider({ children }: { children: ReactNode })
                     <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm">
                         <ImportTopicsModalElement
                             visible={visible}
-                            onImportTopics={handleImportTopics}
-                            onCancel={handleCancel}
-                            onCloseModal={handleClose}
+                            onImportTopicsAction={handleImportTopics}
+                            onCancelAction={handleCancel}
+                            onCloseModalAction={handleClose}
                         />
                     </div>,
                     document.getElementById("import-topics-modal-root")!

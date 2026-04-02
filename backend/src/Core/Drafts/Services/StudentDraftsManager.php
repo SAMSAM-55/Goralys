@@ -8,23 +8,22 @@
 namespace Goralys\Core\Drafts\Services;
 
 use DirectoryIterator;
-use Goralys\App\HTTP\Files\Interface\GoralysFileManagerInterface;
-use Goralys\Core\Drafts\Interfaces\StudentDraftsManagerInterface;
+use Goralys\App\HTTP\Files\GoralysFileManager;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
-class StudentDraftsManager implements StudentDraftsManagerInterface
+class StudentDraftsManager
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
-    private GoralysFileManagerInterface $fileManager;
+    private GoralysFileManager $fileManager;
 
     public function __construct(
         LoggerInterface $logger,
         SubjectsRepositoryInterface $repo,
-        GoralysFileManagerInterface $fileManager
+        GoralysFileManager $fileManager
     ) {
         $this->logger = $logger;
         $this->repo = $repo;

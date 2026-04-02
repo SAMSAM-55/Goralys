@@ -14,7 +14,7 @@ export default function Page() {
 
                     <div className="flex flex-col">
                         <h1 className="text-xl">Bienvenue chez Goralys !</h1>
-                        <p className="text-xs">Créer votre compte pour retrouver toutes vos questions en un seul endroit.
+                        <p className="text-2xs">Créer votre compte pour retrouver toutes vos questions en un seul endroit.
                             Vous avez déjà un compte ? Rendez vous sur la
                             <Link className="text-sky-600 underline" href="/user/login"> page de connexion</Link></p>
                     </div>
