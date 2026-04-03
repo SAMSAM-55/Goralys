@@ -22,7 +22,7 @@ export default function Home() {
                 </h1>
 
                 <p className="mb-2.5">
-                    L&#39;application de gestion du Grand Oral au lycée Auguste et Jean Renoir.
+                    L&#39;application de gestion du grand oral au lycée Auguste et Jean Renoir.
                 </p>
 
                 <p>
