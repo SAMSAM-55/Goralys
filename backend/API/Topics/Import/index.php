@@ -35,8 +35,17 @@ $kernel->run(function (GoralysKernel $kernel) {
     $kernel->logger->debug(LoggerInitiator::APP, print_r($topics, true));
 
     foreach ($topics as $topic) {
-        $kernel->topics->insert($topic);
+        if (!$kernel->topics->insert($topic)) {
+            $kernel->db->rollback();
+            $kernel->toast->fatalError(
+                500, // Internal Server Error
+                "Une erreur interne est survenue lors de l'insertion des sujets.",
+                "/subject",
+            );
+        }
     }
+
+    $kernel->db->commit();
 
     $usernamesFilePath = $kernel->topics->exportUsernames($topics);
     $kernel->logger->debug(LoggerInitiator::APP, "File: " . $usernamesFilePath);

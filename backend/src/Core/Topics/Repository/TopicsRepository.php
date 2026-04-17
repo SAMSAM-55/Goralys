@@ -33,11 +33,11 @@ class TopicsRepository implements TopicsRepositoryInterface
      * @param int $topicId The unique ID of the topic.
      * @param string $topicCode The unique code for the topic.
      * @param string $topicName The display name of the topic.
-     * @return void
+     * @return bool If the insertion succeded.
      */
-    public function insertTopic(int $topicId, string $topicCode, string $topicName): void
+    public function insertTopic(int $topicId, string $topicCode, string $topicName): bool
     {
-        $this->db->run(
+        return $this->db->run(
             "insert into topics (id, topic_code, name) values (?, ?, ?)",
             "iss",
             $topicId,
@@ -51,11 +51,11 @@ class TopicsRepository implements TopicsRepositoryInterface
      *
      * @param int $topicId The ID of the topic.
      * @param string $teacherUsername The username of the teacher.
-     * @return void
+     * @return bool If the insertion succeded.
      */
-    public function insertTeacher(int $topicId, string $teacherUsername): void
+    public function insertTeacher(int $topicId, string $teacherUsername): bool
     {
-        $this->db->run(
+        return $this->db->run(
             "insert into topic_teachers (topic_id, teacher_id) values (?, ?)",
             "is",
             $topicId,
@@ -68,11 +68,11 @@ class TopicsRepository implements TopicsRepositoryInterface
      *
      * @param int $topicId The ID of the topic.
      * @param string $studentUsername The username of the student.
-     * @return void
+     * @return bool If the insertion succeded.
      */
-    public function insertStudent(int $topicId, string $studentUsername): void
+    public function insertStudent(int $topicId, string $studentUsername): bool
     {
-        $this->db->run(
+        return $this->db->run(
             "insert into student_topics 
                    (student_id, topic_id, subject, last_rejected, teacher_comment, draft_path, subject_status)
                    values (?, ?, null, null, null, null, 0)",
@@ -90,9 +90,7 @@ class TopicsRepository implements TopicsRepositoryInterface
     {
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
         // Nuke the entire db, but this is what we want.
-        $this->db->runNoArgs("delete from student_topics");
-        $this->db->runNoArgs("delete from topic_teachers");
-        $this->db->runNoArgs("delete from topics");
+        $this->db->runNoArgs("truncate table student_topics; truncate table topic_teachers; truncate table topics");
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
 
         return true;

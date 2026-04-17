@@ -30,10 +30,12 @@ $kernel->run(function (GoralysKernel $kernel) {
         );
     }
 
+    $kernel->db->beginTransaction();
     $topicsResult = $kernel->topics->clear();
     $usersResult = $kernel->users->clear();
 
     if (!$topicsResult || !$usersResult) {
+        $kernel->db->rollback();
         $kernel->toast->fatalError(
             500,
             "Les utilisateurs ou les sujets n'ont pas pu être supprimés, veuillez réessayer ultérieurement.",
@@ -41,6 +43,7 @@ $kernel->run(function (GoralysKernel $kernel) {
         );
     }
 
+    $kernel->db->commit();
     $kernel->toast->showToast(
         ToastType::SUCCESS,
         "Suppression des sujets",

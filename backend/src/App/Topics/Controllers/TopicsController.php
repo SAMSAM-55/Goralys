@@ -113,28 +113,43 @@ class TopicsController
      * Inserts a TopicDTO into the database, including its students and teachers.
      *
      * @param TopicDTO $topic The topic data transfer object to insert.
+     * @return bool If the insertion succeded.
      */
-    public function insert(TopicDTO $topic): void
+    public function insert(TopicDTO $topic): bool
     {
-        $this->repo->insertTopic(
-            $topic->id,
-            $topic->code,
-            $topic->name
-        );
+        if (
+            !$this->repo->insertTopic(
+                $topic->id,
+                $topic->code,
+                $topic->name
+            )
+        ) {
+            return false;
+        }
 
         foreach ($topic->teachers as $t) {
-            $this->repo->insertTeacher(
-                $topic->id,
-                $this->generateUsername($t)
-            );
+            if (
+                !$this->repo->insertTeacher(
+                    $topic->id,
+                    $this->generateUsername($t)
+                )
+            ) {
+                return false;
+            }
         }
 
         foreach ($topic->students as $s) {
-            $this->repo->insertStudent(
-                $topic->id,
-                $this->generateUsername($s)
-            );
+            if (
+                !$this->repo->insertStudent(
+                    $topic->id,
+                    $this->generateUsername($s)
+                )
+            ) {
+                return false;
+            }
         }
+
+        return true;
     }
 
     /**

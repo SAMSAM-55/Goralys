@@ -73,6 +73,8 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         );
     }
 
+    $kernel->db->beginTransaction();
+
     $commentResult = $kernel->subjects->updateField(
         $teacherUsername,
         $studentUsername,
@@ -82,6 +84,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     );
 
     if (!$commentResult) {
+        $kernel->db->rollback();
         $kernel->toast->fatalError(
             500, // Internal server error
             "Impossible d'enregistrer votre commentaire."
@@ -97,13 +100,15 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     );
 
     if (!$statusResult) {
+        $kernel->db->rollback();
         $kernel->toast->fatalError(
             500, // Internal server error
-            "Votre commentaire a été enregistré mais la question n'a pas pu être invalidée"
+            "La question n'a pas pu être invalidée"
         );
     }
 
     http_response_code(200); // OK
+    $kernel->db->commit();
     $kernel->toast->showToast(
         ToastType::INFO,
         "Invalidation",

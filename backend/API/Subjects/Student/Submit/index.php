@@ -39,8 +39,8 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     if (!$request->validate("subject", "topic", "teacher-token", "student-token")) {
         $kernel->toast->fatalError(
             400, // Bad request
-            "Une erreur interne est survenue lors de l'enregistrement de votre question, 
-            veuillez réessayer ultérieurement."
+            "Veuillez vérifier que tous les champs requis ont été correctement renseignés et que les données sont 
+            valides."
         );
     }
 
@@ -55,7 +55,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         $kernel->toast->showToast(
             ToastType::WARNING,
             "Fichier",
-            "Ce fichier depasse la taille maximale de 50 KO, veuilez ressayez avec un fichier plus petit.",
+            "Ce fichier dépasse la taille maximale de 50 KO, veuillez ressayez avec un fichier plus petit.",
             ""
         );
         exit();
@@ -66,8 +66,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     if (empty($subject) || trim($subject) === "") {
         $kernel->toast->fatalError(
             400, // Bad request
-            "Une erreur interne est survenue lors de l'enregistrement de votre question, 
-            veuillez réessayer ultérieurement."
+            "Le champ 'sujet' ne peut pas être laissé vide. Veuillez indiquer un sujet pour votre question."
         );
     }
 
@@ -81,6 +80,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         );
     }
 
+    $kernel->db->beginTransaction();
     // Subjects update
 
     $subjectResult = $kernel->subjects->updateField(
@@ -111,9 +111,10 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     );
 
     if (!$statusResult) {
+        $kernel->db->rollback();
         $kernel->toast->fatalError(
             409, // Conflict
-            "Votre question a bien été enregistrée mais elle n'a pas pu être envoyée."
+            "Votre n'a pas pu être envoyée. Veuillez réessayer ultérieurement."
         );
     }
 
@@ -121,14 +122,16 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         $updateResult = $kernel->subjects->draftsManager->update($studentUsername, $teacherUsername, $topic);
 
         if (!$updateResult) {
+            $kernel->db->rollback();
             $kernel->toast->fatalError(
                 500, // Internal server error
-                "Votre question a bien été envoyée, mais votre brouillon n'a pas pu être enregistré. 
+                "Votre question n'a pas pu être envoyée, car votre brouillon n'a pas pu être enregistré. 
                 Veuillez réessayer ultérieurement."
             );
         }
     }
 
+    $kernel->db->commit();
     $kernel->toast->showToast(
         ToastType::INFO,
         "Question",

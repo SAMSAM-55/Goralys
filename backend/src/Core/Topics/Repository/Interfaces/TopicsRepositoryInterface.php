@@ -9,8 +9,8 @@ namespace Goralys\Core\Topics\Repository\Interfaces;
 
 interface TopicsRepositoryInterface
 {
-    public function insertTopic(int $topicId, string $topicCode, string $topicName): void;
-    public function insertTeacher(int $topicId, string $teacherUsername): void;
-    public function insertStudent(int $topicId, string $studentUsername): void;
+    public function insertTopic(int $topicId, string $topicCode, string $topicName): bool;
+    public function insertTeacher(int $topicId, string $teacherUsername): bool;
+    public function insertStudent(int $topicId, string $studentUsername): bool;
     public function clearAll(): bool;
 }
