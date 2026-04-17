@@ -11,6 +11,11 @@ use mysqli_result;
 
 interface DbContainerInterface
 {
+    /* Transactions */
+    public function beginTransaction(): void;
+    public function rollback(): void;
+    public function commit(): void;
+
     public function connect(): bool;
     public function fetch(string $query, string $types, mixed $value1, ...$args): mysqli_result;
     public function fetchNoArgs(string $query): mysqli_result;

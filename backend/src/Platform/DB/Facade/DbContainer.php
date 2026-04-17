@@ -184,4 +184,31 @@ class DbContainer implements DbContainerInterface
             "A DB container was destroyed, connection successfully closed"
         );
     }
+
+    /**
+     * Begins a new database transaction.
+     * @return void
+     */
+    public function beginTransaction(): void
+    {
+        $this->conn->begin_transaction();
+    }
+
+    /**
+     * Rollback all changes for the current transaction.
+     * @return void
+     */
+    public function rollback(): void
+    {
+        $this->conn->rollback();
+    }
+
+    /**
+     * Commits all changes for the curent transaction.
+     * @return void
+     */
+    public function commit(): void
+    {
+        $this->conn->commit();
+    }
 }
