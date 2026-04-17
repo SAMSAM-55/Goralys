@@ -1,9 +1,7 @@
 name: Backend PHP Code Sniffer Tests
 on:
   pull_request:
-    branches: ["main", "develop"]
   push:
-    branches: ["main", "develop"]
 jobs:
   run_phpcs:
     runs-on: ubuntu-latest
