@@ -63,7 +63,7 @@ class RegisterService
         $createData = new UserCreateDTO(
             $data->username,
             $data->fullName,
-            password_hash($data->fullName, PASSWORD_DEFAULT),
+            password_hash($data->password, PASSWORD_DEFAULT),
             $this->roleGetter->getRoleByUsername($data->username)
         );
 
