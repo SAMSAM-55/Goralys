@@ -49,7 +49,7 @@ export function SideNav() {
     ];
 
     return (
-        <div className="min-w-50 w-55 h-auto max-h-screen sticky top-0 flex flex-col m-0 p-2 rounded-xl">
+        <div className="min-w-50 w-55 h-auto min-h-screen fixed top-0 flex flex-col m-0 p-2 rounded-xl">
             <div className="flex rounded-md min-w-full h-25 bg-sky-500 mb-2">
                 <Image src="/logo/goralys-logo.svg" width={150} height={10} alt="Goralys logo" className="ml-1 self-center" />
             </div>
