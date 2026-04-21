@@ -33,7 +33,7 @@ class TopicsRepository implements TopicsRepositoryInterface
      * @param int $topicId The unique ID of the topic.
      * @param string $topicCode The unique code for the topic.
      * @param string $topicName The display name of the topic.
-     * @return bool If the insertion succeded.
+     * @return bool If the insertion succeeded.
      */
     public function insertTopic(int $topicId, string $topicCode, string $topicName): bool
     {
@@ -51,7 +51,7 @@ class TopicsRepository implements TopicsRepositoryInterface
      *
      * @param int $topicId The ID of the topic.
      * @param string $teacherUsername The username of the teacher.
-     * @return bool If the insertion succeded.
+     * @return bool If the insertion succeeded.
      */
     public function insertTeacher(int $topicId, string $teacherUsername): bool
     {
@@ -68,7 +68,7 @@ class TopicsRepository implements TopicsRepositoryInterface
      *
      * @param int $topicId The ID of the topic.
      * @param string $studentUsername The username of the student.
-     * @return bool If the insertion succeded.
+     * @return bool If the insertion succeeded.
      */
     public function insertStudent(int $topicId, string $studentUsername): bool
     {
@@ -88,10 +88,24 @@ class TopicsRepository implements TopicsRepositoryInterface
      */
     public function clearAll(): bool
     {
+        $tables = [
+            "student_topics",
+            "topic_teachers",
+            "topics"
+        ];
+
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
-        // Nuke the entire db, but this is what we want.
-        $this->db->runNoArgs("truncate table student_topics; truncate table topic_teachers; truncate table topics");
-        $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
+
+        try {
+            foreach ($tables as $table) {
+                $this->db->runNoArgs(
+                /** @lang SQL */
+                    "truncate table `$table`"
+                );
+            }
+        } finally {
+            $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
+        }
 
         return true;
     }
