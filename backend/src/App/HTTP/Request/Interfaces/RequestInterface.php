@@ -9,6 +9,6 @@ namespace Goralys\App\HTTP\Request\Interfaces;
 
 interface RequestInterface
 {
-    public function get(string $key): mixed;
+    public function get(string $key): int | float | string | bool | null;
     public function validate(string $key1, string ...$_): bool;
 }
