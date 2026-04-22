@@ -13,7 +13,7 @@ use Goralys\Kernel\GoralysKernel;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 $kernel->requireCSRF("logout");
 
 $kernel->run(function (GoralysKernel $kernel) {

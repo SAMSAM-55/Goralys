@@ -15,7 +15,7 @@ use Goralys\Shared\Exception\GoralysRuntimeException;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 $kernel->requireRole(UserRole::ADMIN, true);
 
 $kernel->requireAuth("export subjects");

@@ -16,7 +16,7 @@ use Goralys\Kernel\GoralysKernel;
 // --------------- Init --------------- //
 
 $kernel = bootKernel(true);
-$request = $kernel->getRequest();
+$request = $kernel->request();
 $kernel->requireCSRF("login", "/user/login");
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {

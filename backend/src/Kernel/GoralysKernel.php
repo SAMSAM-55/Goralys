@@ -26,10 +26,13 @@ use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\App\HTTP\Files\Interface\FileMover;
 use Goralys\App\HTTP\Files\Services\HttpFileExtractor;
 use Goralys\App\HTTP\Files\Services\HttpFileMover;
+use Goralys\App\HTTP\Files\Services\HttpFileResponder;
 use Goralys\App\HTTP\Files\Services\TestFileMover;
 use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
 use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
+use Goralys\App\HTTP\Response\GoralysResponse;
+use Goralys\App\HTTP\Response\Interfaces\ResponseInterface;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
@@ -424,7 +427,7 @@ class GoralysKernel
      * Gets the kernel's current HTTP request
      * @return RequestInterface The request.
      */
-    public function getRequest(): RequestInterface
+    public function request(): RequestInterface
     {
         if (!isset($this->request)) {
             $this->request = new GoralysRequest();
@@ -433,6 +436,11 @@ class GoralysKernel
         return $this->request;
     }
 
+    public function response(): ResponseInterface
+    {
+        $files = new HttpFileResponder();
+        return new GoralysResponse($this->logger, $files);
+    }
 
     /**
      * Runs the provided function and catches any exception to handle it.

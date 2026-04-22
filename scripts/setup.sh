@@ -71,6 +71,7 @@ echo "Creating Assets directory ..."
 mkdir -p ./backend/Assets
 mkdir -p ./backend/Assets/Template
 mkdir -p ./backend/Assets/Template/Exports
+mkdir -p ./backend/Assets/StudentsDrafts
 echo "Directories are ready."
 echo
 

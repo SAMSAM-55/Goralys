@@ -16,7 +16,7 @@ require __DIR__ . "/../../../vendor/autoload.php";
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 $kernel->requireAuth("import topics");
 $kernel->requireRole(UserRole::ADMIN, true);
 $kernel->requireCSRF("import-topics");

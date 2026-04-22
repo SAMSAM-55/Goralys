@@ -15,7 +15,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 
 $kernel->requireAuth("get all subjects");
 $kernel->requireRole(UserRole::ADMIN);

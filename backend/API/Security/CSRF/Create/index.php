@@ -14,7 +14,7 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 
 // -------- Create the token -------- //
 

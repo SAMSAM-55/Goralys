@@ -18,7 +18,7 @@ use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 
 $kernel->requireAuth("save student draft");
 $kernel->requireRole(UserRole::STUDENT, true);

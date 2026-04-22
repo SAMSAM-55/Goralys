@@ -19,7 +19,7 @@ use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 
 $kernel->requireAuth("reject subject");
 $kernel->requireRole(UserRole::TEACHER, true);

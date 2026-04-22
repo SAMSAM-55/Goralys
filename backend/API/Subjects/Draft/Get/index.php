@@ -17,7 +17,7 @@ require __DIR__ . "/../../../../vendor/autoload.php";
 // --------------- Init --------------- //
 
 $kernel = bootKernel(true);
-$request = $kernel->getRequest();
+$request = $kernel->request();
 $kernel->requireAuth("download a student draft");
 $kernel->requireRole(UserRole::TEACHER, true);
 
@@ -55,25 +55,8 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         );
     }
 
-    if (!is_file($path) || !file_exists($path)) {
-        $kernel->flashFatalError(
-            "Le brouillon de l'élève n'a pas pu être retrouvé, veuillez réessayer ulérieurement.",
-            "/subject/"
-        );
-    }
-
-    if (headers_sent($file, $line)) {
-        throw new GoralysRuntimeException("Headers already sent in $file on line $line");
-    }
-
     $extension = pathinfo($path, PATHINFO_EXTENSION);
     $fileName = $request->get("file-name");
 
-    header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename="' . $fileName . "." . $extension . '"');
-    header('Content-Length: ' . filesize($path));
-    header('X-Content-Type-Options: nosniff');
-
-    readfile($path);
-    exit;
+    $kernel->response()->download($path, $fileName . "." . $extension);
 });

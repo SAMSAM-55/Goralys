@@ -14,7 +14,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$request = $kernel->getRequest();
+$request = $kernel->request();
 $kernel->requireRole(UserRole::TEACHER, true);
 
 $kernel->requireAuth("get teacher's subjects");

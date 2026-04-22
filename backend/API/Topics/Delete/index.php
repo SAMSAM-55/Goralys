@@ -15,7 +15,7 @@ require __DIR__ . "/../../../vendor/autoload.php";
 // --------------- Init --------------- //
 
 $kernel = bootKernel();
-$kernel->getRequest(); // Avoid uninitialized property
+$kernel->request(); // Avoid uninitialized property
 $kernel->requireAuth("delete topics");
 $kernel->requireRole(UserRole::ADMIN, true);
 $kernel->requireCSRF("delete-topics");
