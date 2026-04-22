@@ -45,7 +45,9 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                     <FlashToastListener />
                     <div className="flex flex-row min-h-screen">
                         <SideNav />
-                        {children}
+                        <main className="flex ml-55 w-full">
+                            {children}
+                        </main>
                     </div>
                 </ImportTopicsModalProvider>
             </DraftModalProvider>
