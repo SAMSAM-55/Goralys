@@ -20,12 +20,7 @@ $request = $kernel->request();
 $kernel->requireCSRF("login", "/user/login");
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->flashFatalError(
-            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
-            "/user/login"
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 

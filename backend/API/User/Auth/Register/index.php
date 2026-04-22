@@ -20,12 +20,7 @@ $request = $kernel->request();
 $kernel->requireCSRF("register", "/user/register");
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->flashFatalError(
-            "Une erreur interne est survenue lors de la création du compte, veuillez réessayer ultérieurement.",
-            "/user/register"
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 

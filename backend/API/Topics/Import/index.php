@@ -22,12 +22,7 @@ $kernel->requireRole(UserRole::ADMIN, true);
 $kernel->requireCSRF("import-topics");
 
 $kernel->run(function (GoralysKernel $kernel) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
-            "/subject/"
-        );
-    }
+    $kernel->requireDb();
 
     $archive = $kernel->fileManager->get("topics-file");
     $topics = $kernel->topics->makeTopicsFromZip($archive);
@@ -50,14 +45,5 @@ $kernel->run(function (GoralysKernel $kernel) {
     $usernamesFilePath = $kernel->topics->exportUsernames($topics);
     $kernel->logger->debug(LoggerInitiator::APP, "File: " . $usernamesFilePath);
 
-    if (headers_sent($file, $line)) {
-        throw new GoralysRuntimeException("Headers already sent in $file on line $line");
-    }
-
-    header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename="utilisateurs.txt"');
-    header('Content-Length: ' . filesize($usernamesFilePath));
-    header('X-Content-Type-Options: nosniff');
-
-    readfile($usernamesFilePath);
+    $kernel->response()->download($usernamesFilePath, "utilisateurs.txt");
 });

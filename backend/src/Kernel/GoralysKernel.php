@@ -29,6 +29,7 @@ use Goralys\App\HTTP\Files\Services\HttpFileMover;
 use Goralys\App\HTTP\Files\Services\HttpFileResponder;
 use Goralys\App\HTTP\Files\Services\TestFileMover;
 use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
+use Goralys\App\HTTP\JSON\Services\HttpJsonResponder;
 use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\HTTP\Response\GoralysResponse;
@@ -56,7 +57,6 @@ use Goralys\Shared\Exception\GoralysException;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Utils\UtilitiesManager;
 use JetBrains\PhpStorm\NoReturn;
-use JsonSerializable;
 use Throwable;
 
 /**
@@ -355,7 +355,7 @@ class GoralysKernel
      * Connects the kernel to the database.
      * @throws GoralysConnectException Throws an exception if the connection with the database could not be established.
      */
-    public function connect(): bool
+    private function connect(): bool
     {
         if (!isset($this->db)) {
             $this->db = new DbContainer($this->logger);
@@ -468,7 +468,8 @@ class GoralysKernel
     public function response(): ResponseInterface
     {
         $files = new HttpFileResponder();
-        return new GoralysResponse($this->logger, $files);
+        $json = new HttpJsonResponder();
+        return new GoralysResponse($this->logger, $files, $json);
     }
 
     /**
@@ -482,6 +483,30 @@ class GoralysKernel
             $callback($this, $this->request);
         } catch (Throwable $e) {
             $this->exceptionHandler($e);
+        }
+    }
+
+
+    /**
+     * Helper used to centralize db connection logic and failure behavior.
+     * @return void
+     */
+    public function requireDb(): void
+    {
+        try {
+            if (!$this->connect()) {
+                $this->toast->fatalError(
+                    500, // Internal server error
+                    "Une erreur interne est survenue lors de la récupération de vos questions, 
+            veuillez réessayer ultérieurement."
+                );
+            }
+        } catch (Throwable) {
+            $this->toast->fatalError(
+                500, // Internal server error
+                "Une erreur interne est survenue lors de la récupération de vos questions, 
+            veuillez réessayer ultérieurement."
+            );
         }
     }
 
@@ -537,7 +562,7 @@ class GoralysKernel
      * @param string|null $redirect The page to redirect the user to.
      * @return void
      */
-    public function requireCSRF(string $formId, string | null $redirect = null): void
+    public function requireCSRF(string $formId, string|null $redirect = null): void
     {
 
         if (!$this->CSRF->validate($formId, $this->request)) {
@@ -592,19 +617,6 @@ class GoralysKernel
                 "Il semblerait que vous n'ayez pas les permissions nécéssaires."
             );
         }
-    }
-
-    /**
-     * Helper to centralize the way JSON data should be output to the client.
-     * @param array | JsonSerializable $data The data to encode and send to the client.
-     * @param int $responseCode The response code of the request. Default is OK (200)
-     * @return void
-     */
-    public function sendJSON(array | JsonSerializable $data, int $responseCode = 200): void
-    {
-        http_response_code($responseCode);
-        header("Content-Type: application/JSON; charset: utf-8");
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     /**

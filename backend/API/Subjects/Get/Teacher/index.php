@@ -21,23 +21,11 @@ $kernel->requireAuth("get teacher's subjects");
 $kernel->requireCSRF("get-teacher-subjects");
 
 $kernel->run(function (GoralysKernel $kernel) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la récupération de vos questions, 
-            veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // ------- Get the subjects ------- //
 
-    $teacherUsername = $_SESSION['current_username'];
+    $result = $kernel->subjects->getForRole(UserRole::TEACHER);
 
-    $result = $kernel->subjects->getForRole(
-        UserRole::TEACHER,
-        $teacherUsername
-    );
-
-    $kernel->sendJSON($result);
-    exit;
+    $kernel->response()->json($result);
 });

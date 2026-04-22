@@ -24,11 +24,10 @@ try {
     );
     $toast = $kernel->toast->flashService->getToast();
 } catch (GoralysRuntimeException) {
-    $kernel->sendJSON(['success' => false]);
-    exit;
+    $kernel->response()->json(['success' => false]);
 }
 
-$kernel->sendJSON([
+$kernel->response()->json([
     "success" => true,
     "toast" => $toast->toastInfo,
     "action" => $toast->action

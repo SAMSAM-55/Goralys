@@ -26,13 +26,7 @@ $kernel->requireRole(UserRole::STUDENT, true);
 $kernel->requireCSRF("submit-subject");
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de l'enregistrement de votre question, 
-            veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 
@@ -93,6 +87,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     );
 
     if (!$subjectResult) {
+        $kernel->db->rollback();
         $kernel->toast->fatalError(
             500, // Internal server error
             "Une erreur interne est survenue lors de l'enregistrement de votre question, 

@@ -30,12 +30,7 @@ $kernel->requireAuth("download a student draft");
 $kernel->requireRole(UserRole::TEACHER, true);
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->flashFatalError(
-            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
-            "/subject/"
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 

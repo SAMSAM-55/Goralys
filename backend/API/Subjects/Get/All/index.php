@@ -22,18 +22,11 @@ $kernel->requireRole(UserRole::ADMIN);
 $kernel->requireCSRF("get-all-subjects");
 
 $kernel->run(function (GoralysKernel $kernel) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la récupération de vos questions, 
-            veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // ------- Get the subjects ------- //
 
     $result = $kernel->subjects->getForRole(UserRole::ADMIN);
 
-    $kernel->sendJSON($result);
-    exit;
+    $kernel->response()->json($result);
 });

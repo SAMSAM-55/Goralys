@@ -132,13 +132,14 @@ class SubjectsController
     /**
      * Get the subjects for a given user with a given role.
      * @param UserRole $role The role of the user to get the subjects of.
-     * @param string $username The username of the student or teacher to get the subjects for.
      * Let the defaults value ("") for admins as they have access to all subjects.
      * @return SubjectsCollection The list of the retrieved subjects.
      * @throws DateMalformedStringException
      */
-    public function getForRole(UserRole $role, string $username = ""): SubjectsCollection
+    public function getForRole(UserRole $role): SubjectsCollection
     {
+        $username = $_SESSION['current_username'];
+
         unset($_SESSION['username-table']);
 
         return match ($role) {

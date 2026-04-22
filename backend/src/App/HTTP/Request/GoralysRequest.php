@@ -35,9 +35,9 @@ class GoralysRequest implements RequestInterface
      * Reads the inputs of the request and returns the desired value.
      * By default, it falls back to `null` if the input doesn't exit.
      * @param string $key The name of the input to read.
-     * @return int | float | string | bool | null The value of the input.
+     * @return int|float|string|bool|null The value of the input.
      */
-    public function get(string $key): int | float | string | bool | null
+    public function get(string $key): int|float|string|bool|null
     {
         $v = $this->input[$key] ?? null;
         if ((is_scalar($v) || is_bool($v))) {

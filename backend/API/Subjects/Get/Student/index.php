@@ -22,23 +22,11 @@ $kernel->requireRole(UserRole::STUDENT);
 $kernel->requireCSRF("get-student-subjects");
 
 $kernel->run(function (GoralysKernel $kernel) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la récupération de vos questions, 
-            veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // ------- Get the subjects ------- //
 
-    $studentUsername = $_SESSION['current_username'];
+    $result = $kernel->subjects->getForRole(UserRole::STUDENT);
 
-    $result = $kernel->subjects->getForRole(
-        UserRole::STUDENT,
-        $studentUsername
-    );
-
-    $kernel->sendJSON($result);
-    exit;
+    $kernel->response()->json($result);
 });

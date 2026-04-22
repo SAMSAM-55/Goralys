@@ -26,12 +26,7 @@ $kernel->requireRole(UserRole::TEACHER, true);
 
 $kernel->requireCSRF("reject-subject");
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de l'invalidation de la question, veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 

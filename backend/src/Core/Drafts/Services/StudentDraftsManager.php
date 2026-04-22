@@ -45,11 +45,12 @@ class StudentDraftsManager
                     unlink($file->getPathname());
                 }
             }
-        } elseif (!is_dir($teacherDir)) {
-            mkdir($teacherDir);
-            mkdir($fullDir);
-        } elseif (!is_dir($fullDir)) {
-            mkdir($fullDir);
+        }
+        if (!is_dir($teacherDir)) {
+            mkdir($teacherDir, 0777, true);
+        }
+        if (!is_dir($fullDir)) {
+            mkdir($fullDir, 0777, true);
         }
     }
 

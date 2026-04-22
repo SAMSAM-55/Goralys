@@ -25,13 +25,7 @@ $kernel->requireRole(UserRole::STUDENT, true);
 $kernel->requireCSRF("save-draft");
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de l'enregistrement de votre brouillon, 
-            veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 

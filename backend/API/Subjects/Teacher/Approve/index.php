@@ -26,12 +26,7 @@ $kernel->requireRole(UserRole::TEACHER);
 $kernel->requireCSRF("approve-subject");
 
 $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500, // Internal server error
-            "Une erreur interne est survenue lors de la validation de la question, veuillez réessayer ultérieurement."
-        );
-    }
+    $kernel->requireDb();
 
     // --------------- Inputs --------------- //
 

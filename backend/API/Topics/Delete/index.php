@@ -22,13 +22,7 @@ $kernel->requireCSRF("delete-topics");
 
 
 $kernel->run(function (GoralysKernel $kernel) {
-    if (!$kernel->connect()) {
-        $kernel->toast->fatalError(
-            500,
-            "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
-            "/subject/"
-        );
-    }
+    $kernel->requireDb();
 
     $kernel->db->beginTransaction();
     $topicsResult = $kernel->topics->clear();

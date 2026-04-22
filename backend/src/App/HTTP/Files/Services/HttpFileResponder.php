@@ -19,17 +19,24 @@ class HttpFileResponder implements FileResponder
             throw new InvalidFileException("$path is not a valid file and could not be sent");
         }
 
-        $baseDir = realpath(__DIR__ . "/../../../../../Assets/StudentsDrafts");
+        $baseDir = realpath(__DIR__ . "/../../../../../Assets");
         if ($baseDir === false) {
             throw new GoralysRuntimeException("Base directory could not be resolved");
         }
 
-        if (!str_starts_with($realpath, $baseDir . DIRECTORY_SEPARATOR)) {
+        if (
+            !str_starts_with($realpath, $baseDir . DIRECTORY_SEPARATOR)
+            && pathinfo($path, PATHINFO_EXTENSION) !== "tmp"
+        ) {
             throw new GoralysRuntimeException("Unauthorized file access");
         }
 
         if (headers_sent($file, $line)) {
             throw new GoralysRuntimeException("Headers were already sent at $file:$line");
+        }
+
+        while (ob_get_level() > 0) {
+            ob_end_clean();
         }
 
         header('Content-Type: ' . mime_content_type($realpath) ?: "application/octet-stream");
