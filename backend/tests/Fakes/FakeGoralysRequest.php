@@ -20,9 +20,9 @@ class FakeGoralysRequest implements RequestInterface
     /**
      * Reads the inputs of the request and returns the desired value.
      * @param string $key The name of the input to read.
-     * @return mixed The value of the input.
+     * @return bool|float|int|string|null The value of the input.
      */
-    public function get(string $key): mixed
+    public function get(string $key): bool|float|int|null|string
     {
         return $this->input[$key] ?? null;
     }
