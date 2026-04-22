@@ -28,6 +28,12 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
 
         }
 
+        if (! await confirm.showConfirm({
+            title: "Confirmer le rejet",
+            message: "Une fois la question rejetée l'élève devra en soumettre une nouvelle." +
+                " Voulez-vous quand même rejeter cette question ?",
+        })) return;
+
         if (comment?.trim() === subjectData.comment.trim()) {
             const confirmed = await confirm.showConfirm({
                 title: "Confirmer le rejet",
