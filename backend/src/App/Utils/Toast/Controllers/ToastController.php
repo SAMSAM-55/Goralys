@@ -64,7 +64,7 @@ class ToastController
      * A simple macro to send error toasts.
      * @param int $responseCode The HTTP response code to send.
      * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
-     * @param string $redirect The page to redirect the user to (default = "index.html").
+     * @param string $redirect The page to redirect the user to (default = "/").
      * @param bool $flash If the toast is flash or not.
      * @return never
      */
@@ -72,7 +72,7 @@ class ToastController
     public function fatalError(
         int $responseCode,
         string $msg = "Une erreur interne est survenue.",
-        string $redirect = "index.html",
+        string $redirect = "/",
         bool $flash = false
     ): never {
         http_response_code($responseCode);

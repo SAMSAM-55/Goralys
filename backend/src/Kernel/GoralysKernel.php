@@ -43,6 +43,7 @@ use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Kernel\Data\ErrorMessageConfig;
 use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Doc\PDF\DomPdfExporter;
@@ -109,6 +110,9 @@ class GoralysKernel
      */
     private readonly float $sessionLifetimeMultiplier;
     private int $sinceLastActivity;
+
+    /* @var array<class-string<Throwable>, ErrorMessageConfig> */
+    private array $errorMessages = [];
 
     /**
      * Initializes the kernel and all of its members.
@@ -360,6 +364,20 @@ class GoralysKernel
     }
 
     /**
+     * Sets a custom message for the given exception.
+     * This message will then be sent to the user if the exception is thrown.
+     * @param class-string<Throwable> $eClass The class of the targeted exception.
+     * @param string $msg The message to display.
+     * @param int $code The HTTP response code to send along with the message.
+     * @param string $redirect The page to redirect the user to.
+     * @return void
+     */
+    public function setExceptionMessage(string $eClass, string $msg, int $code = 500, string $redirect = "/"): void
+    {
+        $this->errorMessages[$eClass] = new ErrorMessageConfig($msg, $redirect, $code);
+    }
+
+    /**
      * The custom exception handler for the kernel.
      * It handles `GoralysException` and its instances as "normal" errors.
      * Thus for other exceptions, it toasts them as unexpected.
@@ -375,10 +393,17 @@ class GoralysKernel
         );
         $this->logger->debug(
             LoggerInitiator::APP,
-            "Is kernel using flash: " . $this->useFlash
+            "Is kernel using flash: " . ($this->useFlash ? "true" : "false")
         );
 
-        if ($e instanceof GoralysException) {
+        if (isset($this->errorMessages[$e::class])) {
+            $msg = $this->errorMessages[$e::class];
+            if ($this->useFlash) {
+                $this->flashFatalError($msg->message, $msg->redirect, $msg->code);
+            } else {
+                $this->toast->fatalError($msg->code, $msg->message, $msg->redirect);
+            }
+        } elseif ($e instanceof GoralysException) {
             if ($this->useFlash) {
                 $this->flashFatalError();
             } else {
@@ -436,6 +461,10 @@ class GoralysKernel
         return $this->request;
     }
 
+    /**
+     * Generate a new HTTP response.
+     * @return ResponseInterface The response.
+     */
     public function response(): ResponseInterface
     {
         $files = new HttpFileResponder();
@@ -612,12 +641,14 @@ class GoralysKernel
      * A helper to send flash error toasts.
      * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
      * @param string $redirect The page to redirect the user to (default = "index.html").
+     * @param int $code The HTTP response code for the request (default = 500).
      * @return void
      */
     #[NoReturn]
     public function flashFatalError(
         string $msg = "Une erreur interne est survenue.",
-        string $redirect = "/"
+        string $redirect = "/",
+        int $code = 500
     ): void {
         $this->flashToast(
             ToastType::ERROR,
@@ -625,6 +656,6 @@ class GoralysKernel
             $msg,
             $redirect
         );
-        exit;
+        exit($code);
     }
 }
