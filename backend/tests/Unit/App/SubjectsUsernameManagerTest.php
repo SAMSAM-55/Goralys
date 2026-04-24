@@ -3,75 +3,99 @@
 namespace Goralys\Tests\Unit\App;
 
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
-use Goralys\Tests\Fakes\FakeGoralysLogger;
+use Goralys\Tests\Fakes\FakeUserRepository;
+use Goralys\Core\User\Data\UserFullDTO;
+use Goralys\Core\User\Data\Enums\UserRole;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class SubjectsUsernameManagerTest extends TestCase
 {
-    private FakeGoralysLogger $logger;
     private SubjectsUsernameManager $service;
+    private FakeUserRepository $repo;
+
     protected function setUp(): void
     {
-        $_SESSION = [];
-        $this->logger = new FakeGoralysLogger();
-        $this->service = new SubjectsUsernameManager($this->logger);
+        $this->repo = new FakeUserRepository();
+        $this->service = new SubjectsUsernameManager($this->repo);
     }
 
     protected function tearDown(): void
     {
-        $_SESSION = [];
-        unset($this->logger);
         unset($this->service);
+        unset($this->repo);
     }
 
-    public function testStoreReturnsNonEmptyToken(): void
+    public function testCreateReturnsNonEmptyToken(): void
     {
-        $token = $this->service->store("j.doe");
-        self::assertNotEmpty($token, "Expected store() to return a non-empty token");
+        $this->repo->setPublicId("j.doe", "uuid-1");
+
+        $token = $this->service->create("j.doe");
+
+        self::assertNotEmpty($token);
+        self::assertSame("uuid-1", $token);
     }
 
-    public function testStoreWritesUsernameToSession(): void
+    public function testCreateDifferentUsernamesGetDifferentTokens(): void
     {
-        $token = $this->service->store("j.doe");
-        self::assertArrayHasKey(
-            $token,
-            $_SESSION["username-table"],
-            "Expected token to exist in session username-table"
+        $this->repo->setPublicId("j.doe", "uuid-1");
+        $this->repo->setPublicId("a.smith", "uuid-2");
+
+        $token1 = $this->service->create("j.doe");
+        $token2 = $this->service->create("a.smith");
+
+        self::assertNotSame($token1, $token2);
+    }
+
+    public function testGetReturnsUsername(): void
+    {
+        $this->repo->setUser(
+            "uuid-1",
+            new UserFullDTO(1, "e.martin", UserRole::STUDENT, "Emma Martin")
         );
-        self::assertSame(
-            "j.doe",
-            $_SESSION["username-table"][$token],
-            "Expected username to be stored under the token"
+
+        $result = $this->service->get("uuid-1");
+
+        self::assertSame("e.martin", $result);
+    }
+
+    public function testCreateAndGetConsistency(): void
+    {
+        $this->repo->setPublicId("j.doe", "uuid-1");
+        $this->repo->setUser(
+            "uuid-1",
+            new UserFullDTO(1, "j.doe", UserRole::STUDENT, "John Doe")
         );
-    }
 
-    public function testStoreDifferentUsernamesGetDifferentTokens(): void
-    {
-        $token1 = $this->service->store("j.doe");
-        $token2 = $this->service->store("a.smith");
-        self::assertNotSame($token1, $token2, "Expected different tokens for different usernames");
-    }
-
-    public function testGetReturnsStoredUsername(): void
-    {
-        $token = $this->service->store("e.martin");
+        $token = $this->service->create("j.doe");
         $result = $this->service->get($token);
-        self::assertSame("e.martin", $result, "Expected get() to return the username stored under the token");
+
+        self::assertSame("j.doe", $result);
     }
 
-    public function testStoreMultipleUsernamesAllRetrievable(): void
+    public function testMultipleUsersAllRetrievable(): void
     {
-        $usernames = ["j.doe", "a.smith", "e.martin"];
-        $tokens = [];
-        foreach ($usernames as $username) {
-            $tokens[$username] = $this->service->store($username);
+        $users = [
+            "j.doe"   => ["uuid-1", new UserFullDTO(1, "j.doe", UserRole::STUDENT, "John Doe")],
+            "a.smith" => ["uuid-2", new UserFullDTO(2, "a.smith", UserRole::TEACHER, "Alice Smith")],
+            "e.martin" => ["uuid-3", new UserFullDTO(3, "e.martin", UserRole::STUDENT, "Emma Martin")],
+        ];
+
+        foreach ($users as $username => [$uuid, $dto]) {
+            $this->repo->setPublicId($username, $uuid);
+            $this->repo->setUser($uuid, $dto);
         }
-        foreach ($usernames as $username) {
-            self::assertSame(
-                $username,
-                $this->service->get($tokens[$username]),
-                "Expected get() to return '$username' for its token"
-            );
+
+        foreach ($users as $username => [$uuid, $dto]) {
+            self::assertSame($uuid, $this->service->create($username));
+            self::assertSame($username, $this->service->get($uuid));
         }
+    }
+
+    public function testGetThrowsForInvalidPublicId(): void
+    {
+        $this->expectException(RuntimeException::class);
+
+        $this->service->get("invalid-uuid");
     }
 }

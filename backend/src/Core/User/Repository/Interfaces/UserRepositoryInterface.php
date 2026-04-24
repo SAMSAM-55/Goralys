@@ -15,11 +15,14 @@ use Goralys\Core\User\Data\UserLoginDTO;
 interface UserRepositoryInterface
 {
     public function getByUsername(string $username): UserFullDTO;
+    public function getByPublicId(string $uuid): UserFullDTO;
     public function exists(string $username): bool;
     public function isUsernameValid(string $username): bool;
+    public function isPublicIdValid(string $uuid): bool;
     public function save(UserCreateDTO $userData): bool;
     public function getLoginDTO(string $username): ?UserLoginDTO;
     public function getRoleForUsername(string $username): ?UserRole;
     public function getFullNameForUsername(string $username): ?string;
+    public function getPublicIdForUsername(string $username): ?string;
     public function clearAll(): bool;
 }

@@ -73,7 +73,7 @@ class SubjectsController
         $this->repo = new SubjectsRepository($this->db);
         $this->userRepo = new UserRepository($this->logger, $this->db);
         $this->formatter = new UsernameFormatterService();
-        $this->usernameManager = new SubjectsUsernameManager($this->logger);
+        $this->usernameManager = new SubjectsUsernameManager($this->userRepo);
         $this->fileManager = $fileManager;
         $this->draftsManager = new StudentDraftsManager($this->logger, $this->repo, $this->fileManager);
         $this->updateService = new UpdateSubjectService($this->logger, $this->repo);

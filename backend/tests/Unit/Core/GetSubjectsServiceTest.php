@@ -5,9 +5,12 @@ namespace Goralys\Tests\Unit\Core;
 use DateMalformedStringException;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
+use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Tests\Fakes\FakeGoralysLogger;
 use Goralys\Tests\Fakes\FakeSubjectsRepository;
+use Goralys\Tests\Fakes\FakeUserRepository;
 use mysqli_result;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,17 +19,42 @@ class GetSubjectsServiceTest extends TestCase
 {
     private FakeGoralysLogger $logger;
     private FakeSubjectsRepository $repo;
+    private FakeUserRepository $userRepo;
     private UsernameFormatterService $formatter;
     private SubjectsUsernameManager $usernameManager;
     private GetSubjectsService $service;
     private mysqli_result&MockObject $mysqliResult;
 
+    private function seedUsers(): void
+    {
+        $this->userRepo->setPublicId("j.doe1", "u1");
+        $this->userRepo->setUser("u1", new UserFullDTO(1, "j.doe1", UserRole::TEACHER, "DOE J."));
+
+        $this->userRepo->setPublicId("m.smith2", "u2");
+        $this->userRepo->setUser("u2", new UserFullDTO(2, "m.smith2", UserRole::TEACHER, "SMITH M."));
+
+        $this->userRepo->setPublicId("e.doe3", "u3");
+        $this->userRepo->setUser("u3", new UserFullDTO(3, "e.doe3", UserRole::STUDENT, "DOE E."));
+
+        $this->userRepo->setPublicId("l.dupont4", "u4");
+        $this->userRepo->setUser("u4", new UserFullDTO(4, "l.dupont4", UserRole::STUDENT, "DUPONT L."));
+    }
+
+    private function stripTokens(array $data): array
+    {
+        return array_map(function ($s) {
+            unset($s['studentToken'], $s['teacherToken']);
+            return $s;
+        }, $data);
+    }
+
     protected function setUp(): void
     {
         $this->logger = new FakeGoralysLogger();
         $this->repo = new FakeSubjectsRepository();
+        $this->userRepo = new FakeUserRepository();
         $this->formatter = new UsernameFormatterService();
-        $this->usernameManager = new SubjectsUsernameManager($this->logger);
+        $this->usernameManager = new SubjectsUsernameManager($this->userRepo);
         $this->mysqliResult = $this->createMock(mysqli_result::class);
 
         $this->service = new GetSubjectsService(
@@ -35,12 +63,15 @@ class GetSubjectsServiceTest extends TestCase
             $this->formatter,
             $this->usernameManager
         );
+
+        $this->seedUsers();
     }
 
     protected function tearDown(): void
     {
         unset($this->logger);
         unset($this->repo);
+        unset($this->userRepo);
         unset($this->formatter);
         unset($this->usernameManager);
         unset($this->mysqliResult);
@@ -154,13 +185,10 @@ class GetSubjectsServiceTest extends TestCase
         $this->repo->setGetResult($this->mysqliResult);
 
         // Preparing the data
-        $json = json_encode($this->service->getAllSubjects(), JSON_UNESCAPED_UNICODE);
-        $actual = json_decode($json, true);
-
-        foreach ($actual as &$s) {
-            unset($s['studentToken'], $s['teacherToken']);
-        }
-        unset($s);
+        $actual = $this->stripTokens(json_decode(json_encode(
+            $this->service->getAllSubjects(),
+            JSON_UNESCAPED_UNICODE
+        ), true));
 
         self::assertSame($expected, $actual);
     }
@@ -227,13 +255,10 @@ class GetSubjectsServiceTest extends TestCase
         $this->repo->setGetResult($this->mysqliResult);
 
         // Preparing the data
-        $json = json_encode($this->service->getStudentSubjects("e.doe3"), JSON_UNESCAPED_UNICODE);
-        $actual = json_decode($json, true);
-
-        foreach ($actual as &$s) {
-            unset($s['studentToken'], $s['teacherToken']);
-        }
-        unset($s);
+        $actual = $this->stripTokens(json_decode(json_encode(
+            $this->service->getStudentSubjects("e.doe3"),
+            JSON_UNESCAPED_UNICODE
+        ), true));
 
         self::assertSame($expected, $actual);
     }
@@ -301,13 +326,10 @@ class GetSubjectsServiceTest extends TestCase
         $this->repo->setGetResult($this->mysqliResult);
 
         // Preparing the data
-        $json = json_encode($this->service->getTeacherSubjects("j.doe1"), JSON_UNESCAPED_UNICODE);
-        $actual = json_decode($json, true);
-
-        foreach ($actual as &$s) {
-            unset($s['studentToken'], $s['teacherToken']);
-        }
-        unset($s);
+        $actual = $this->stripTokens(json_decode(json_encode(
+            $this->service->getTeacherSubjects("j.doe1"),
+            JSON_UNESCAPED_UNICODE
+        ), true));
 
         self::assertSame($expected, $actual);
     }

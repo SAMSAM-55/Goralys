@@ -44,6 +44,7 @@ use Goralys\App\User\Data\Enums\UserAuthStatus;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Kernel\Data\ErrorMessageConfig;
 use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
@@ -348,7 +349,7 @@ class GoralysKernel
 
     private function initUsernameManager(): void
     {
-        $this->usernameManager = new SubjectsUsernameManager($this->logger);
+        $this->usernameManager = new SubjectsUsernameManager(new UserRepository($this->logger, $this->db));
     }
 
     /**
@@ -481,6 +482,10 @@ class GoralysKernel
     {
         try {
             $callback($this, $this->request);
+
+            if (session_status() == PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
         } catch (Throwable $e) {
             $this->exceptionHandler($e);
         }

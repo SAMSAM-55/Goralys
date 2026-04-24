@@ -7,56 +7,48 @@
 
 namespace Goralys\App\Subjects\Services;
 
-use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
-use Goralys\Platform\Logger\Interfaces\LoggerInterface;
-use Random\RandomException;
+use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
+use RuntimeException;
 
 class SubjectsUsernameManager
 {
-    private LoggerInterface $logger;
+    private UserRepositoryInterface $users;
 
     /**
      * Initializes the logger used by the service.
-     * @param LoggerInterface $logger
+     * @param UserRepositoryInterface $users The injected user repository.
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(UserRepositoryInterface $users)
     {
-        $this->logger = $logger;
+        $this->users = $users;
     }
 
     /**
-     * Creates a new entry in the lookup table for usernames.
-     * This lookup table is used to avoid sending usernames to the frontend.
-     * The keys of the table are randomly generated tokens.
-     * The values of the table are the usernames.
-     * As this table might be generated multiple times, it can contain some duplicates as values.
      * @param string $username The username to append to the lookup table.
      * @return string The token linked to the username.
      */
-    public function store(string $username): string
+    public function create(string $username): string
     {
-        try {
-            $token = bin2hex(random_bytes(4));
+        $publicId = $this->users->getPublicIdForUsername($username);
 
-            $_SESSION["username-table"][$token] = $username;
-            return $token;
-        } catch (RandomException $e) {
-            $this->logger->warning(
-                LoggerInitiator::APP,
-                "Failed to generate user table token.\nError: " . $e->getMessage()
-            );
+        if ($publicId === null) {
+            throw new RuntimeException("Unknown username: $username");
         }
 
-        return "";
+        return $publicId;
     }
 
     /**
      * Retrieves a username from its token inside the usernames lookup table.
-     * @param string $key The token associated with the username.
+     * @param string $id The token associated with the username.
      * @return string The username.
      */
-    public function get(string $key): string
+    public function get(string $id): string
     {
-        return $_SESSION["username-table"][$key];
+        if (!$this->users->isPublicIdValid($id)) {
+            throw new RuntimeException("Invalid user public id: $id");
+        }
+
+        return $this->users->getByPublicId($id)->username;
     }
 }

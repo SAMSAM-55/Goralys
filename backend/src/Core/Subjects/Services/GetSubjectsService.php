@@ -79,7 +79,7 @@ class GetSubjectsService
 
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($studentUsername),
-                $this->usernameManager->store($studentUsername),
+                $this->usernameManager->create($studentUsername),
                 $row['subject'] ?? "",
                 SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
@@ -88,7 +88,7 @@ class GetSubjectsService
                 $row['topic'],
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
-                $this->usernameManager->store($teachers[0]),
+                $this->usernameManager->create($teachers[0]),
                 $row['is_interdisciplinary'],
             );
 
@@ -117,7 +117,7 @@ class GetSubjectsService
         while ($row = $result->fetch_assoc()) {
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
-                $this->usernameManager->store($row['student']),
+                $this->usernameManager->create($row['student']),
                 $row['subject'] ?? "",
                 SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
@@ -126,7 +126,7 @@ class GetSubjectsService
                 $row['topic'],
                 $row['topic_code'] ?? "",
                 $this->formatter->formatUsername($teacherUsername),
-                $this->usernameManager->store($teacherUsername),
+                $this->usernameManager->create($teacherUsername),
                 $row['is_interdisciplinary'],
                 (bool)$row['draftPath']
             );
@@ -164,7 +164,7 @@ class GetSubjectsService
 
             $subject = new SubjectDTO(
                 $this->formatter->formatUsername($row['student']),
-                $this->usernameManager->store($row['student']),
+                $this->usernameManager->create($row['student']),
                 $row['subject'] ?? "",
                 SubjectStatus::from($row['subject_status'] ?? 0),
                 $row['comment'] ?? "",
@@ -173,7 +173,7 @@ class GetSubjectsService
                 $row['topic'],
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
-                $this->usernameManager->store($teachers[0]),
+                $this->usernameManager->create($teachers[0]),
                 $row['is_interdisciplinary']
             );
 

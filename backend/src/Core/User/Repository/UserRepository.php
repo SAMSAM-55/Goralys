@@ -43,25 +43,24 @@ class UserRepository implements UserRepositoryInterface
      * This helper is used to build a user DTO containing all the user's info (full) from a database request's result,
      * it is in charge of the logging process.
      * @param mysqli_result $result The result from the database.
-     * @param string $username The user's username.
      * @return UserFullDTO All the user's info.
      * @throws UserNotFoundException If the user is invalid.
      */
-    private function buildUserFromResult(mysqli_result $result, string $username): UserFullDTO
+    private function buildUserFromResult(mysqli_result $result): UserFullDTO
     {
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to fetch the user's data from the database, invalid username : " . $username
+                "Failed to fetch the user's data from the database."
             );
-            throw new UserNotFoundException("No such user : " . $username);
+            throw new UserNotFoundException("Invalid user provided.");
         }
 
         $row = $result->fetch_assoc();
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "User's data were successfully fetched for user : " . $username
+            "User's data were successfully fetched for user : " . $row['user_id']
         );
         return new UserFullDTO(
             (int) $row['id'],
@@ -85,7 +84,7 @@ class UserRepository implements UserRepositoryInterface
             $username
         );
 
-        return $this->buildUserFromResult($result, $username);
+        return $this->buildUserFromResult($result);
     }
 
     /**
@@ -96,7 +95,7 @@ class UserRepository implements UserRepositoryInterface
     public function save(UserCreateDTO $userData): bool
     {
         return $this->db->run(
-            "insert into users (user_id, full_name, password_hash, role) values (?, ?, ?, ?)",
+            "insert into users (user_id, full_name, password_hash, role, public_id) values (?, ?, ?, ?, uuid())",
             "ssss",
             $userData->username,
             $userData->fullName,
@@ -237,5 +236,43 @@ class UserRepository implements UserRepositoryInterface
             delete from users
             where role <> 'admin'
         ");
+    }
+
+    /**
+     * @param string $uuid
+     * @return UserFullDTO
+     * @throws UserNotFoundException
+     */
+    public function getByPublicId(string $uuid): UserFullDTO
+    {
+        $result = $this->db->fetch(
+            "select id, user_id, role, full_name from users where public_id = ?",
+            "s",
+            $uuid
+        );
+
+        return $this->buildUserFromResult($result);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function isPublicIdValid(string $uuid): bool
+    {
+        return $this->db->fetch("select 0 from users where public_id = ?", "s", $uuid)->num_rows !== 0;
+    }
+
+    /**
+     * @param string $username
+     * @return string|null
+     */
+    public function getPublicIdForUsername(string $username): ?string
+    {
+        return $this->db->fetch(
+            "select public_id from users where user_id = ?",
+            "s",
+            $username
+        )->fetch_assoc()['public_id'] ?? null;
     }
 }

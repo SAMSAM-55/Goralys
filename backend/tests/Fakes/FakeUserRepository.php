@@ -14,6 +14,8 @@ class FakeUserRepository implements UserRepositoryInterface
     private mixed $getResult = null;
     private bool $existsResult = false;
     private bool $usernameValidResult = false;
+    private array $publicIds = [];
+    private array $users = [];
 
     /**
      * Set the result for update/save operations.
@@ -80,6 +82,31 @@ class FakeUserRepository implements UserRepositoryInterface
 
     public function getFullNameForUsername(string $username): ?string
     {
-        return null;
+        return $this->getResult;
+    }
+
+    public function isPublicIdValid(string $uuid): bool
+    {
+        return in_array($uuid, array_keys($this->users), true);
+    }
+
+    public function setPublicId(string $username, string $uuid): void
+    {
+        $this->publicIds[$username] = $uuid;
+    }
+
+    public function setUser(string $uuid, UserFullDTO $user): void
+    {
+        $this->users[$uuid] = $user;
+    }
+
+    public function getPublicIdForUsername(string $username): ?string
+    {
+        return $this->publicIds[$username] ?? null;
+    }
+
+    public function getByPublicId(string $uuid): UserFullDTO
+    {
+        return $this->users[$uuid];
     }
 }

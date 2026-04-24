@@ -40,8 +40,8 @@ class CSRFServiceTest extends TestCase
     {
         $request = new FakeGoralysRequest();
         $request->setInput(['csrf-token' => "foo-xy"]);
-        $_SESSION['csrf-tokens-table']['bar'] = "foo-xy";
-        $_SESSION['csrf-tokens-table']['bar1'] = "foo-xyz";
+        $_SESSION['csrf-tokens-table']['bar'] = ["foo-xy"];
+        $_SESSION['csrf-tokens-table']['bar1'] = ["foo-xyz", "foo-x"];
 
         self::assertTrue(
             $this->service->validate("bar", $request),
@@ -64,7 +64,7 @@ class CSRFServiceTest extends TestCase
 
         $request = new FakeGoralysRequest();
         $request->setInput([]);
-        $_SESSION['csrf-tokens-table']['bar3'] = "foo-xyab";
+        $_SESSION['csrf-tokens-table']['bar3'] = ["foo-xyab"];
 
         self::assertFalse(
             $this->service->validate("bar3", $request),
@@ -74,7 +74,7 @@ class CSRFServiceTest extends TestCase
 
     public function testGetForForm()
     {
-        $_SESSION['csrf-tokens-table']['foo'] = "foo-xy";
+        $_SESSION['csrf-tokens-table']['foo'] = ["foo-xyz", "foo-xy"];
         self::assertSame(
             "foo-xy",
             $this->service->getForForm("foo"),
