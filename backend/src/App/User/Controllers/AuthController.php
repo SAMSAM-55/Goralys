@@ -105,6 +105,9 @@ class AuthController
             $_SESSION['current_username'] = $sessionData->username;
             $_SESSION['current_role'] = $sessionData->role->toString();
 
+            $_SESSION['ua'] = hash("sha256", $_SERVER['HTTP_USER_AGENT']);
+            $_SESSION['regen_time'] = time();
+
             return true;
         } catch (UserNotFoundException) {
             return false;

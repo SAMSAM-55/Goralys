@@ -42,7 +42,6 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
             veuillez réessayer ultérieurement.",
             "/subject/"
         );
-        http_response_code(400); // Bad request
         exit;
     }
 

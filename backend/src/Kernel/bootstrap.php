@@ -14,7 +14,7 @@ function bootstrapAPI(GoralysKernel $kernel): void
     $forwardedOrigin = $_SERVER['HTTP_X_FORWARDED_ORIGIN'] ?? '';
 
     $effectiveOrigin = $origin !== '' ? $origin : $forwardedOrigin;
-    $allowed = explode(",", $kernel->env->getByKey("ALLOWED_DOMAINS"));
+    $allowed = array_map('trim', explode(",", $kernel->env->getByKey("ALLOWED_DOMAINS")));
 
     if (in_array($effectiveOrigin, $allowed)) {
         header("Access-Control-Allow-Origin: $effectiveOrigin");
@@ -30,6 +30,24 @@ function bootstrapAPI(GoralysKernel $kernel): void
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(204); // No content, but OK
         exit;
+    }
+
+    // Check if the user agent from the client is valid
+    if (isset($_SESSION['current_id'])) {
+        $ua = $_SESSION['ua'] ?? null;
+        $uaHash = hash("sha256", $_SERVER['HTTP_USER_AGENT']);
+
+        if (!$ua || $uaHash !== $ua) {
+            session_unset();
+            session_destroy();
+            http_response_code(401); // Unauthorized
+            exit;
+        }
+
+        if (!isset($_SESSION['regen_time']) || time() - $_SESSION['regen_time'] > 900) {
+            session_regenerate_id(true);
+            $_SESSION['regen_time'] = time();
+        }
     }
 }
 

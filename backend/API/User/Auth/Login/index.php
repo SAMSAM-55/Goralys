@@ -16,6 +16,7 @@ use Goralys\Kernel\GoralysKernel;
 // --------------- Init --------------- //
 
 $kernel = bootKernel(true);
+$kernel->requireRateLimit("login", "/user/login", "Trop de tentatives de connexion. Réessayez dans quelques minutes.");
 $request = $kernel->request();
 $kernel->requireCSRF("login", "/user/login");
 
@@ -45,6 +46,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
             "Veuillez remplir tous les champs",
             "/user/login"
         );
+        exit;
     }
 
     $userData = new UserLoginDTO(
@@ -71,5 +73,5 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         "/subject/",
         "login-success"
     );
-    exit;
+    $kernel->response()->http();
 });

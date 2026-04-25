@@ -31,6 +31,7 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
             "Veuillez remplir tous les champs.",
             "/user/login"
         );
+        exit;
     }
 
     $username = $request->get("user-name");
@@ -58,5 +59,5 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         "Votre compte chez Goralys a bien été créé. Vous pouvez maintenant vous connecter.",
         "/user/login"
     );
-    exit;
+    $kernel->response()->http();
 });

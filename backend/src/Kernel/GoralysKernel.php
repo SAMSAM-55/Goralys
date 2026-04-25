@@ -34,6 +34,7 @@ use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\HTTP\Response\GoralysResponse;
 use Goralys\App\HTTP\Response\Interfaces\ResponseInterface;
+use Goralys\App\RateLimiter\RateLimiter;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
 use Goralys\App\Subjects\Services\SubjectsUsernameManager;
@@ -77,6 +78,7 @@ class GoralysKernel
     public TopicsController $topics;
     public ToastController $toast;
     private CSRFService $CSRF;
+    private RateLimiter $rateLimiter;
     /**
      * This variable is used to determine if the kernel handlers should use flash toasts.
      * @var bool
@@ -143,6 +145,7 @@ class GoralysKernel
         $this->initTopics();
         $this->initCSRF();
         $this->initUsernameManager();
+        $this->initRateLimiter();
     }
 
     /**
@@ -352,6 +355,11 @@ class GoralysKernel
         $this->usernameManager = new SubjectsUsernameManager(new UserRepository($this->logger, $this->db));
     }
 
+    private function initRateLimiter(): void
+    {
+        $this->rateLimiter = new RateLimiter($this->logger);
+    }
+
     /**
      * Connects the kernel to the database.
      * @throws GoralysConnectException Throws an exception if the connection with the database could not be established.
@@ -464,13 +472,14 @@ class GoralysKernel
 
     /**
      * Generate a new HTTP response.
+     * @param int $code The response's code (default = 200).
      * @return ResponseInterface The response.
      */
-    public function response(): ResponseInterface
+    public function response(int $code = 200): ResponseInterface
     {
         $files = new HttpFileResponder();
         $json = new HttpJsonResponder();
-        return new GoralysResponse($this->logger, $files, $json);
+        return new GoralysResponse($code, $this->logger, $files, $json);
     }
 
     /**
@@ -515,6 +524,22 @@ class GoralysKernel
         }
     }
 
+    public function requireRateLimit(
+        string $endpoint,
+        string $redirect = "/",
+        string $message = "Vous avez atteint la limite périodique de requêtes. Veuillez réessayer ultérieurement."
+    ) {
+        if (!$this->rateLimiter->forwardRequest($endpoint)) {
+            if ($this->useFlash) {
+                $this->flashToast(ToastType::WARNING, "Limite atteinte", $message, $redirect);
+                exit;
+            }
+
+            $this->toast->showToast(ToastType::WARNING, "Limite atteinte", $message, $redirect);
+            $this->response(429)->http();
+        }
+    }
+
     /**
      * Helper to check if the user is authenticated
      * @param string $context The context the authentification is required in.
@@ -533,9 +558,7 @@ class GoralysKernel
                 );
                 $this->destroySession();
 
-                http_response_code(401); // Unauthorized
-                echo json_encode(["authEvent" => "expired"]);
-                exit;
+                $this->response(401)->json(["authEvent" => "expired"]); // Unauthorized
             case UserAuthStatus::NOT_AUTHENTICATED:
                 $this->destroySession();
                 $this->logger->warning(
@@ -543,9 +566,7 @@ class GoralysKernel
                     "Tried to perform action: $context without authentification"
                 );
 
-                http_response_code(401); // Unauthorized
-                echo json_encode(["authEvent" => "unauthenticated"]);
-                exit;
+                $this->response(401)->json(["authEvent" => "unauthenticated"]); // Unauthorized
             case UserAuthStatus::AUTHENTICATED:
                 break;
         }
@@ -571,7 +592,6 @@ class GoralysKernel
     {
 
         if (!$this->CSRF->validate($formId, $this->request)) {
-            http_response_code(403);
             if ($this->useFlash) {
                 $this->flashToast(
                     ToastType::WARNING,
@@ -587,7 +607,7 @@ class GoralysKernel
                 "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
                 ""
             );
-            exit;
+            $this->response(403)->http(); // Forbidden
         }
     }
 
@@ -602,9 +622,7 @@ class GoralysKernel
         if (!isset($_SESSION['current_role'])) {
             $this->destroySession();
 
-            http_response_code(401); // Unauthorized
-            echo json_encode(["authEvent" => "expired"]);
-            exit;
+            $this->response(401)->json(["authEvent" => "expired"]); // Unauthorized
         }
 
         $currentRole = UserRole::fromString($_SESSION['current_role']);

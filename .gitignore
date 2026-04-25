@@ -44,6 +44,7 @@ next-env.d.ts
 /backend/Assets
 /backend/.phpunit.result.cache
 /backend/vendor
+/backend/RateLimiter
 /.idea
 
 deploy-local.bat

@@ -77,6 +77,5 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         ""
     );
 
-    http_response_code(200); // OK
-    exit;
+    $kernel->response()->http();
 });

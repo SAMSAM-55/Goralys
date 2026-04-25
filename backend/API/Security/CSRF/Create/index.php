@@ -26,11 +26,10 @@ if (empty($formId)) {
 }
 
 if (!$csrfHandler->create($formId)) {
-    http_response_code(500); // Internal server error
-    exit;
+    $kernel->response(500)->http(); // Internal Server Error
 }
 
-http_response_code(200); // OK
-echo json_encode([
+
+$kernel->response()->json([
     "csrf-token" => $csrfHandler->getForForm($formId)
 ]);

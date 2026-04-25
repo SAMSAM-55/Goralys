@@ -13,12 +13,14 @@ use Throwable;
 
 class GoralysResponse implements ResponseInterface
 {
+    private int $code;
+    private LoggerInterface $logger;
     private FileResponder $files;
     private JsonResponder $json;
-    private LoggerInterface $logger;
 
-    public function __construct(LoggerInterface $logger, FileResponder $files, JsonResponder $json)
+    public function __construct(int $code, LoggerInterface $logger, FileResponder $files, JsonResponder $json)
     {
+        $this->code = $code;
         $this->logger = $logger;
         $this->files = $files;
         $this->json = $json;
@@ -44,6 +46,7 @@ class GoralysResponse implements ResponseInterface
                     "Post response callback failed. \n Error: " . $e->getMessage()
                 );
             }
+            http_response_code($this->code);
             exit;
         } catch (Throwable $e) {
             $this->logger->error(LoggerInitiator::APP, "Failed to download file: $path\n Error: " . $e->getMessage());
@@ -73,6 +76,7 @@ class GoralysResponse implements ResponseInterface
                     "Post response callback failed. \n Error: " . $e->getMessage()
                 );
             }
+            http_response_code($this->code);
             exit;
         } catch (Throwable $e) {
             $this->logger->error(
@@ -81,5 +85,15 @@ class GoralysResponse implements ResponseInterface
             );
             throw $e;
         }
+    }
+
+    /**
+     * @return void
+     */
+    #[NoReturn]
+    public function http(): void
+    {
+        http_response_code($this->code);
+        exit;
     }
 }

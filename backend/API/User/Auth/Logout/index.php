@@ -21,5 +21,5 @@ $kernel->run(function (GoralysKernel $kernel) {
     // --------------- Logout --------------- //
 
     $kernel->auth->logout();
-    exit;
+    $kernel->response()->http();
 });

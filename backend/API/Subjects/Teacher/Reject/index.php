@@ -51,14 +51,13 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
 
     $currentStatus = $kernel->subjects->getStatus($teacherUsername, $studentUsername, $topic);
     if ($currentStatus === SubjectStatus::REJECTED) {
-        http_response_code(200);
         $kernel->toast->showToast(
             ToastType::INFO,
             "Invalidation",
             "Cette question est déjà invalidée",
             ""
         );
-        exit;
+        $kernel->response()->http();
     }
 
     if ($currentStatus !== SubjectStatus::SUBMITTED) {
@@ -102,7 +101,6 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         );
     }
 
-    http_response_code(200); // OK
     $kernel->db->commit();
     $kernel->toast->showToast(
         ToastType::INFO,
@@ -110,5 +108,5 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
         "La question a bien été invalidée.",
         ""
     );
-    exit;
+    $kernel->response()->http();
 });

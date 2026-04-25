@@ -11,4 +11,6 @@ class AppConfig
 
     public const int CSRF_TOKENS_SIZE = 8;
     public const int MAX_CSRF_TOKENS = 3;
+
+    public const string BASE_STORAGE_DIR = __DIR__ . "/../../../";
 }

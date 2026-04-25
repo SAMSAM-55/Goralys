@@ -27,8 +27,6 @@ $kernel->run(function (GoralysKernel $kernel) {
     $archive = $kernel->fileManager->get("topics-file");
     $topics = $kernel->topics->makeTopicsFromZip($archive);
 
-    $kernel->logger->debug(LoggerInitiator::APP, print_r($topics, true));
-
     foreach ($topics as $topic) {
         if (!$kernel->topics->insert($topic)) {
             $kernel->db->rollback();
@@ -43,7 +41,6 @@ $kernel->run(function (GoralysKernel $kernel) {
     $kernel->db->commit();
 
     $usernamesFilePath = $kernel->topics->exportUsernames($topics);
-    $kernel->logger->debug(LoggerInitiator::APP, "File: " . $usernamesFilePath);
 
     $kernel->response()->download($usernamesFilePath, "utilisateurs.txt");
 });

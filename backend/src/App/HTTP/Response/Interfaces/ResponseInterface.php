@@ -8,6 +8,8 @@ use JsonSerializable;
 interface ResponseInterface
 {
     #[NoReturn]
+    public function http(): void;
+    #[NoReturn]
     public function download(
         string $path,
         string $name,

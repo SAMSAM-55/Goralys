@@ -32,13 +32,9 @@ $kernel->logger->info(
 
 // --------------- Response --------------- //
 
-header("Content-Type: application/json; charset=utf-8");
-http_response_code(200);
-echo json_encode(
+$kernel->response()->json(
     [
     "success" => true,
     "data" => $data
-    ],
-    JSON_UNESCAPED_UNICODE
+    ]
 );
-exit;

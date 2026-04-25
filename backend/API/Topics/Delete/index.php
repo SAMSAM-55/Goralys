@@ -44,4 +44,5 @@ $kernel->run(function (GoralysKernel $kernel) {
         "Tous les sujets et les utilisateurs ont été supprimés (sauf administrateurs).",
         "/subject/"
     );
+    $kernel->response()->http();
 });
