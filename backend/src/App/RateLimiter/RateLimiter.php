@@ -77,7 +77,7 @@ class RateLimiter
 
         $n = min(
             $rate?->maxLevels ?? 1,
-            $data[$ip]['failures']
+            $data[$ip]['failures'] ?? 0
         );
 
         $timeMethod = $rate?->timeMethod ?? RateLimitTimeMethod::CONSTANT;
