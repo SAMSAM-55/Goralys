@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect } from "react";
+import {useEffect, useRef} from "react";
 import { usePathname } from "next/navigation";
 import { useToast } from "@/app/ui/toast/toast-provider";
 import { goralysFetchClient } from "@/app/lib/fetch/fetch.client";
 import {Toast} from "@/app/lib/types";
 
 export default function FlashToastListener() {
-    const { showToast, cacheToast } = useToast();
+    const { showToast} = useToast();
+    const showToastRef = useRef(showToast);
+    useEffect(() => { showToastRef.current = showToast; }, [showToast]);
     const pathname = usePathname();
 
     useEffect(() => {
@@ -26,25 +28,27 @@ export default function FlashToastListener() {
                 const remaining = parsed.expires - Date.now();
                 if (remaining <= 0) return;
 
-                showToast(parsed, remaining);
+                showToastRef.current(parsed, remaining);
             } catch {}
         };
 
         const run = async () => {
             try {
-                const res = await goralysFetchClient('Toast/Get-Flash/', {
+                const res = await goralysFetchClient('toast/flash', {
+                    method: 'GET',
                     credentials: 'include',
                     cache: 'no-store',
                 });
 
                 const data = await res.json();
 
+
                 if (cancelled) return;
 
                 if (data?.toast) {
-                    // Server returned a toast — clear cache to avoid double-showing
+                     // Server returned a toast — clear cache to avoid double-showing
                     sessionStorage.removeItem('flash_toast');
-                    showToast({
+                    showToastRef.current({
                         type: data.toast.toastType,
                         title: data.toast.toastTitle,
                         message: data.toast.toastMessage,
@@ -61,7 +65,7 @@ export default function FlashToastListener() {
 
         return () => { cancelled = true; };
 
-    }, [pathname, showToast, cacheToast]);
+    }, [pathname]);
 
     return null;
 }

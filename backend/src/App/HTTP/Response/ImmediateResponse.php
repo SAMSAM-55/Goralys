@@ -4,14 +4,14 @@ namespace Goralys\App\HTTP\Response;
 
 use Goralys\App\HTTP\Files\Interface\FileResponder;
 use Goralys\App\HTTP\JSON\Interfaces\JsonResponder;
-use Goralys\App\HTTP\Response\Interfaces\ResponseInterface;
+use Goralys\App\HTTP\Response\Interfaces\ImmediateResponseInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use JetBrains\PhpStorm\NoReturn;
 use JsonSerializable;
 use Throwable;
 
-class GoralysResponse implements ResponseInterface
+class ImmediateResponse implements ImmediateResponseInterface
 {
     private int $code;
     private LoggerInterface $logger;
@@ -33,7 +33,7 @@ class GoralysResponse implements ResponseInterface
      * @throws Throwable
      */
     #[NoReturn]
-    public function download(string $path, string $name, ?callable $after = null): void
+    public function download(string $path, string $name, ?callable $after = null): never
     {
         try {
             $this->files->send($path, $name);
@@ -60,7 +60,7 @@ class GoralysResponse implements ResponseInterface
      * @throws Throwable
      */
     #[NoReturn]
-    public function json(array|JsonSerializable $data, ?callable $after = null): void
+    public function json(array|JsonSerializable $data, ?callable $after = null): never
     {
         try {
             $json = json_encode($data);
@@ -68,6 +68,9 @@ class GoralysResponse implements ResponseInterface
 
             $this->json->send($data);
             $this->logger->info(LoggerInitiator::APP, "Successfully sent JSON (size: $size)");
+            if ($size < 250) {
+                $this->logger->debug(LoggerInitiator::APP, print_r($json, true));
+            }
             try {
                 ($after ?? fn() => null)();
             } catch (Throwable $e) {
@@ -88,10 +91,10 @@ class GoralysResponse implements ResponseInterface
     }
 
     /**
-     * @return void
+     * @return never
      */
     #[NoReturn]
-    public function http(): void
+    public function http(): never
     {
         http_response_code($this->code);
         exit;

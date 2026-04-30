@@ -18,6 +18,7 @@ use Goralys\Core\User\Services\LoginService;
 use Goralys\Core\User\Services\RegisterService;
 use Goralys\Core\User\Services\RegisterValidatorService;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
+use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 
@@ -97,8 +98,9 @@ class AuthController
                 return false;
             }
 
-            session_regenerate_id(true);
+            session_regenerate_id(false);
             $sessionData = $this->repo->getByUsername($userData->username);
+            $this->logger->debug(LoggerInitiator::APP, "Received user data: " . print_r($sessionData, true));
 
             $_SESSION['current_id'] = $sessionData->id;
             $_SESSION['current_full_name'] = $sessionData->fullName;
@@ -107,7 +109,7 @@ class AuthController
 
             $_SESSION['ua'] = hash("sha256", $_SERVER['HTTP_USER_AGENT']);
             $_SESSION['regen_time'] = time();
-
+            $this->logger->debug(LoggerInitiator::APP, "New session: " . print_r($_SESSION, true));
             return true;
         } catch (UserNotFoundException) {
             return false;

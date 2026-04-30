@@ -10,6 +10,8 @@ use Goralys\Kernel\GoralysKernel;
 // ----------- API bootstrap method ---------- //
 function bootstrapAPI(GoralysKernel $kernel): void
 {
+    error_log("BOOTSTRAP - 1: " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI']);
+
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     $forwardedOrigin = $_SERVER['HTTP_X_FORWARDED_ORIGIN'] ?? '';
 
@@ -27,34 +29,44 @@ function bootstrapAPI(GoralysKernel $kernel): void
     header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
     // Preflight requests
+    error_log("BOOTSTRAP - 2: preflight check, method=" . $_SERVER['REQUEST_METHOD']);
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(204); // No content, but OK
         exit;
     }
 
     // Check if the user agent from the client is valid
+    error_log("BOOTSTRAP - 3: UA check, current_id=" . ($_SESSION['current_id'] ?? 'none')
+            . ", UA=" . ($_SERVER['HTTP_USER_AGENT'] ?? 'none'));
     if (isset($_SESSION['current_id'])) {
-        $ua = $_SESSION['ua'] ?? null;
-        $uaHash = hash("sha256", $_SERVER['HTTP_USER_AGENT']);
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
-        if (!$ua || $uaHash !== $ua) {
-            session_unset();
-            session_destroy();
-            http_response_code(401); // Unauthorized
-            exit;
+        if ($userAgent !== null) {
+            $ua = $_SESSION['ua'] ?? null;
+            $uaHash = hash("sha256", $userAgent);
+
+            if (!$ua || $uaHash !== $ua) {
+                session_unset();
+                session_destroy();
+                http_response_code(401);
+                exit;
+            }
         }
-
+        error_log("BOOTSTRAP - 4: Regen check "
+                . (!isset($_SESSION['regen_time']) || time() - $_SESSION['regen_time'] > 900 ? 'true' : 'false'));
         if (!isset($_SESSION['regen_time']) || time() - $_SESSION['regen_time'] > 900) {
             session_regenerate_id(true);
             $_SESSION['regen_time'] = time();
         }
     }
+
+    error_log("BOOTSTRAP - 5: Done");
 }
 
 // --------------- Kernel Init --------------- //
 function bootKernel(bool $useFlash = false, bool $test = false, array $files = []): GoralysKernel
 {
-    $kernel = new GoralysKernel(__DIR__ . "/../../", $useFlash, $test, $files);
+    $kernel = new GoralysKernel(__DIR__ . "/../../", $test, $files);
     $kernel->setHandlers();
     bootstrapAPI($kernel);
     return $kernel;

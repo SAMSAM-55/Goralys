@@ -10,7 +10,7 @@ namespace Goralys\App\Subjects\Services;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use RuntimeException;
 
-class SubjectsUsernameManager
+class UsernameManager
 {
     private UserRepositoryInterface $users;
 
@@ -39,7 +39,7 @@ class SubjectsUsernameManager
     }
 
     /**
-     * Retrieves a username from its token inside the usernames lookup table.
+     * Retrieves a username from its token inside the username lookup table.
      * @param string $id The token associated with the username.
      * @return string The username.
      */

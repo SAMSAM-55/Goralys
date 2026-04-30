@@ -9,7 +9,7 @@ namespace Goralys\Core\Subjects\Services;
 
 use DateMalformedStringException;
 use DateTime;
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\Subjects\Services\UsernameManager;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Data\SubjectDTO;
 use Goralys\Core\Subjects\Data\SubjectsCollection;
@@ -27,7 +27,7 @@ class GetSubjectsService
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
     private UsernameFormatterService $formatter;
-    private SubjectsUsernameManager $usernameManager;
+    private UsernameManager $usernameManager;
 
     /**
      * Initializes the logger, database container and a utility service - the username formatter - used by the service.
@@ -44,7 +44,7 @@ class GetSubjectsService
         LoggerInterface $logger,
         SubjectsRepositoryInterface $repo,
         UsernameFormatterService $formatter,
-        SubjectsUsernameManager $usernameManager,
+        UsernameManager $usernameManager,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;

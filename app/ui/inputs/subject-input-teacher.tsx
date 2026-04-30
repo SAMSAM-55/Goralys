@@ -6,7 +6,7 @@ import Checkbox from "@/app/ui/inputs/checkbox";
 import React, {useState} from "react";
 
 export function SubjectInputTeacher({ id, label, helper, subjectData, onChangeAction}: SubjectInputMultilineProps) {
-    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/Subjects/Draft/Get/`
+    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/subjects/draft`
     helper = subjectData.status === "submitted"
         ? "Cette question est en attente de validation."
         : subjectData.status === "not_submitted" ? "Cette question n'a pas encore été envoyée."

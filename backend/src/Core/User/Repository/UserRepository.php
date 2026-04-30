@@ -60,7 +60,7 @@ class UserRepository implements UserRepositoryInterface
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "User's data were successfully fetched for user : " . $row['user_id']
+            "User's data were successfully fetched for user : " . $row['user_id'] . " - Data:\n" . print_r($row, true)
         );
         return new UserFullDTO(
             (int) $row['id'],

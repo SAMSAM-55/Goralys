@@ -33,7 +33,6 @@ class StudentDraftsManager
     private function emptyDir(string $studentUsername, string $teacherUsername): void
     {
         $fullDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/";
-        $teacherDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/";
 
         if (is_dir($fullDir)) {
             foreach (new DirectoryIterator($fullDir) as $file) {
@@ -45,9 +44,6 @@ class StudentDraftsManager
                     unlink($file->getPathname());
                 }
             }
-        }
-        if (!is_dir($teacherDir)) {
-            mkdir($teacherDir, 0777, true);
         }
         if (!is_dir($fullDir)) {
             mkdir($fullDir, 0777, true);
@@ -62,13 +58,13 @@ class StudentDraftsManager
      */
     public function update(string $studentUsername, string $teacherUsername, string $topicName): bool
     {
-        $uploadDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/";
         $this->emptyDir($studentUsername, $teacherUsername);
+        $uploadDir = realpath(__DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/") ?: "";
 
         $file = $this->fileManager->get("draft-file");
 
         $extension = pathinfo($file->name, PATHINFO_EXTENSION) ?? "";
-        $destination = $uploadDir . "draft." . $extension;
+        $destination = $uploadDir . DIRECTORY_SEPARATOR . "draft." . $extension;
 
         if ($this->fileManager->move('draft-file', $destination)) {
             $this->logger->debug(

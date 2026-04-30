@@ -16,7 +16,9 @@ class RateLimiterConfig
     {
         return [
             'login' => new RateLimit(3, 60, RateLimitTimeMethod::EXPONENTIAL, 5),
-            'register' => new RateLimit(5, 180, RateLimitTimeMethod::LINEAR, 3)
+            'register' => new RateLimit(5, 180, RateLimitTimeMethod::LINEAR, 3),
+            'flash-toast' => new RateLimit(100, 60, RateLimitTimeMethod::CONSTANT),
+            'csrf-create' => new RateLimit(30, 60, RateLimitTimeMethod::CONSTANT)
         ];
     }
 }

@@ -3,7 +3,7 @@
 namespace Goralys\Tests\Unit\Core;
 
 use DateMalformedStringException;
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\Subjects\Services\UsernameManager;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserFullDTO;
@@ -21,7 +21,7 @@ class GetSubjectsServiceTest extends TestCase
     private FakeSubjectsRepository $repo;
     private FakeUserRepository $userRepo;
     private UsernameFormatterService $formatter;
-    private SubjectsUsernameManager $usernameManager;
+    private UsernameManager $usernameManager;
     private GetSubjectsService $service;
     private mysqli_result&MockObject $mysqliResult;
 
@@ -54,7 +54,7 @@ class GetSubjectsServiceTest extends TestCase
         $this->repo = new FakeSubjectsRepository();
         $this->userRepo = new FakeUserRepository();
         $this->formatter = new UsernameFormatterService();
-        $this->usernameManager = new SubjectsUsernameManager($this->userRepo);
+        $this->usernameManager = new UsernameManager($this->userRepo);
         $this->mysqliResult = $this->createMock(mysqli_result::class);
 
         $this->service = new GetSubjectsService(

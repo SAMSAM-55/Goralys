@@ -10,12 +10,12 @@ namespace Goralys\App\Utils\Toast\Data;
 /**
  * The DTO used to transport the data of a toast
  */
-readonly class ToastDTO
+class ToastDTO
 {
     public function __construct(
-        public array $toastInfo,
+        readonly public array $toastInfo,
         public string $redirect,
-        public bool $flash = false
+        readonly public bool $flash = false
     ) {
     }
 }

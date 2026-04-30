@@ -41,9 +41,9 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     // --------------- Register --------------- //
 
     $registerData = new UserRegisterDTO(
-        $username,
-        $fullName,
-        $password,
+        $request->get("user-name"),
+        $request->get("first-name") . " " . $request->get("last-name"),
+        $request->get("password")
     );
 
     if (!$kernel->auth->register($registerData)) {

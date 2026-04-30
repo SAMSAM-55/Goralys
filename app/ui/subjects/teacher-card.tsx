@@ -59,7 +59,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             'csrf-token': csrfToken,
         };
 
-        const res = await goralysFetchClient("Subjects/Teacher/Reject/", {
+        const res = await goralysFetchClient("subjects/reject", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),
@@ -98,7 +98,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             'csrf-token': csrfToken,
         };
 
-        const res = await goralysFetchClient("Subjects/Teacher/Approve/", {
+        const res = await goralysFetchClient("subjects/approve", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),

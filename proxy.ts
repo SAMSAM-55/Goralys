@@ -7,7 +7,7 @@ export async function proxy(request: NextRequest) {
     if (!pathname.startsWith("/subject")) {
         return NextResponse.next();
     }
-
+    console.log("Incoming cookies:", request.headers.get("cookie"));
     const hasSession = request.cookies.has("GORALYSSESSID");
     if (!hasSession) {
         return NextResponse.redirect(new URL("/user/login?reason=unauthenticated", request.url));
@@ -25,10 +25,11 @@ export async function proxy(request: NextRequest) {
 
     let res: Response;
     try {
-        res = await fetch(`${apiUrl}/User/Profile/GetRole/`, {
+        res = await fetch(`${apiUrl}/user/role`, {
             method: "GET",
             headers: {
                 cookie: request.headers.get("cookie") ?? "",
+                "User-Agent": request.headers.get("user-agent") ?? "",
                 "X-Forwarded-Origin": clientOrigin,
                 "Cache-Control": "no-cache, no-store, must-revalidate",
                 "Pragma": "no-cache",
@@ -36,6 +37,7 @@ export async function proxy(request: NextRequest) {
             },
             cache: "no-store",
         });
+        console.log(res)
     } catch (err) {
         console.error("Error calling role API in proxy:", err);
         return NextResponse.redirect(

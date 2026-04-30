@@ -178,6 +178,7 @@ class DbContainer implements DbContainerInterface
     {
         if (isset($this->conn)) {
             $this->conn->close();
+            unset($this->conn);
         }
         $this->logger->info(
             LoggerInitiator::PLATFORM,

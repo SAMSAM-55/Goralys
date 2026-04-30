@@ -1,6 +1,7 @@
 'use client';
+'use no memo';
 
-import {createContext, useContext, useState, ReactNode} from "react";
+import {createContext, useContext, useState, ReactNode, useCallback, useMemo} from "react";
 import ImportTopicsModalElement  from "@/app/ui/modals/import-topics/import-topics-modal-element";
 import {createPortal} from "react-dom";
 
@@ -16,13 +17,13 @@ export function ImportTopicsModalProvider({ children }: { children: ReactNode })
     } | null>(null);
     const [visible, setVisible] = useState(false);
 
-    function showImportTopicsModal(): Promise<File | string | null> {
+    const showImportTopicsModal = useCallback((): Promise<File | string | null> => {
         return new Promise((resolve: (value: File | string | null) => void) => {
             setChosenFile({resolve});
             setVisible(false);
             requestAnimationFrame(() => setVisible(true));
         });
-    }
+    }, []);
 
     function handleImportTopics(file: File | null) {
         setVisible(false);
@@ -48,8 +49,11 @@ export function ImportTopicsModalProvider({ children }: { children: ReactNode })
         }, 500);
     }
 
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
+    const value = useMemo(() => ({ showImportTopicsModal }), [showImportTopicsModal]);
+
     return (
-        <ImportTopicsModalContext.Provider value={{ showImportTopicsModal }}>
+        <ImportTopicsModalContext.Provider value={value}>
             {children}
 
             {fileChosen && typeof document !== "undefined" &&

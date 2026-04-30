@@ -1,4 +1,4 @@
-import {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
+import React, {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
 
 export type UserRole = {
     role: "admin" | "teacher" | "student" | "none",
@@ -125,7 +125,7 @@ export type ImportTopicsModalProps = {
 
 export type SubjectsSearchBarProps = {
     subjects: Subject[] | null,
-    setCurrentSubjects: (v: Subject[]) => void
+    setCurrentSubjects: React.Dispatch<React.SetStateAction<Subject[] | null>>
 }
 
 export type CheckBoxProps = {

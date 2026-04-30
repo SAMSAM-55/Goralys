@@ -16,11 +16,11 @@ use JetBrains\PhpStorm\NoReturn;
 /**
  * The controller that manages the toasts interactions with the frontend.
  */
-class ToastController
+readonly class ToastController
 {
-    private ToastBuilderService $builder;
-    public readonly ToastFlashService $flashService;
-    private ToastResponderService $responder;
+    public ToastBuilderService $builder;
+    public ToastFlashService $flashService;
+    public ToastResponderService $responder;
 
     /**
      * Initializes the toast responder and builder for the controller.

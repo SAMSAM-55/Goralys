@@ -54,12 +54,12 @@ $kernel->run(function (GoralysKernel $kernel, RequestInterface $request) {
     }
 
     $result = $kernel->subjects->updateField(
-        $teacherUsername,
-        $studentUsername,
-        $topic,
+        $kernel->usernameManager->get($request->get('teacher-token')),
+        $kernel->usernameManager->get($request->get('student-token')),
+        $request->get('topic'),
         SubjectFields::SUBJECT,
-        $newSubject,
-        $interdisciplinary
+        $request->get('draft'),
+        (bool)$request->get('interdisciplinary')
     );
 
     if (!$result) {

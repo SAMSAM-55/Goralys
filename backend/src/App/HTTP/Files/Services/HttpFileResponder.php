@@ -5,7 +5,6 @@ namespace Goralys\App\HTTP\Files\Services;
 use Goralys\App\HTTP\Files\Interface\FileResponder;
 use Goralys\Shared\Exception\Files\InvalidFileException;
 use Goralys\Shared\Exception\GoralysRuntimeException;
-use JetBrains\PhpStorm\NoReturn;
 
 class HttpFileResponder implements FileResponder
 {

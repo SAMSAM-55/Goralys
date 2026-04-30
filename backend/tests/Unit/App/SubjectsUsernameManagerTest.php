@@ -2,7 +2,7 @@
 
 namespace Goralys\Tests\Unit\App;
 
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\Subjects\Services\UsernameManager;
 use Goralys\Tests\Fakes\FakeUserRepository;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\Enums\UserRole;
@@ -11,13 +11,13 @@ use RuntimeException;
 
 class SubjectsUsernameManagerTest extends TestCase
 {
-    private SubjectsUsernameManager $service;
+    private UsernameManager $service;
     private FakeUserRepository $repo;
 
     protected function setUp(): void
     {
         $this->repo = new FakeUserRepository();
-        $this->service = new SubjectsUsernameManager($this->repo);
+        $this->service = new UsernameManager($this->repo);
     }
 
     protected function tearDown(): void

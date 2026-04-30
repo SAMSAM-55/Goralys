@@ -29,7 +29,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             'csrf-token': csrfToken,
         };
 
-        const res = await goralysFetchClient("Subjects/Student/SaveDraft/", {
+        const res = await goralysFetchClient("subjects/save-draft", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),
@@ -88,7 +88,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         const res = await goralysFetchClient(
-            "Subjects/Student/Submit/",
+            "subjects/submit",
             {
                 method: "POST",
                 credentials: "include",

@@ -30,6 +30,25 @@ class LoggerService
         LoggerService::$logDirectory = $logDirectory;
     }
 
+    private static function writeLog(
+        $file,
+        LoggerInitiator $initiator,
+        LoggerType $type,
+        string $time,
+        string $message
+    ): void {
+        flock($file, LOCK_EX);
+
+        fwrite(
+            $file,
+            "($initiator->value)[$type->name]{session:" . session_id() . "} at $time : $message" . PHP_EOL
+        );
+
+        fflush($file);
+        flock($file, LOCK_UN);
+        fclose($file);
+    }
+
     /**
      * Functions used to log a message
      * @param LoggerInitiator $initiator The initiator (layer) of the log.
@@ -56,30 +75,12 @@ class LoggerService
 
         // Logs to the layer-specific log file
         if ($file = fopen(LoggerService::$logDirectory . $filename . ".log", "a")) {
-            flock($file, LOCK_EX);
-
-            fwrite(
-                $file,
-                "($initiator->value)[$type->name] at $time : $message" . PHP_EOL
-            );
-
-            fflush($file);
-            flock($file, LOCK_UN);
-            fclose($file);
+            self::writeLog($file, $initiator, $type, $time, $message);
         }
 
         // Logs to the global log file
         if ($file = fopen(LoggerService::$logDirectory . LoggerConfigLoader::getGlobalFile() . ".log", "a")) {
-            flock($file, LOCK_EX);
-
-            fwrite(
-                $file,
-                "($initiator->value)[$type->name] at $time : $message" . PHP_EOL
-            );
-
-            fflush($file);
-            flock($file, LOCK_UN);
-            fclose($file);
+            self::writeLog($file, $initiator, $type, $time, $message);
         }
     }
 }

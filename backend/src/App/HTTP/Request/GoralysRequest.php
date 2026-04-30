@@ -8,6 +8,7 @@
 namespace Goralys\App\HTTP\Request;
 
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
+use Goralys\Shared\Exception\Request\InvalidInputException;
 
 /**
  * A simple class used to easily access an HTTP request's inputs
@@ -40,11 +41,11 @@ class GoralysRequest implements RequestInterface
     public function get(string $key): int|float|string|bool|null
     {
         $v = $this->input[$key] ?? null;
-        if ((is_scalar($v) || is_bool($v))) {
-            return $v;
-        }
         if (is_string($v)) {
             return trim($v);
+        }
+        if ((is_scalar($v) || is_bool($v))) {
+            return $v;
         }
         return $v;
     }
@@ -52,28 +53,43 @@ class GoralysRequest implements RequestInterface
     /**
      * Check if a request's input is valid.
      * An input is considered valid if it is not empty and exists.
-     * @param string $key1 The name of the input to validate.
-     * @param string ...$_ [OPTIONAL] The other inputs to validate.
-     * @return bool
+     * @param array $rules The name of the input to validate.
+     * @return array The validated inputs' data.
+     * @throws InvalidInputException If the input validation fails.
      */
-    public function validate(string $key1, string ...$_): bool
+    public function validate(array $rules): array
     {
-        foreach ([$key1, ...$_] as $k) {
-            if (!array_key_exists($k, $this->input)) {
-                return false;
-            }
+        $validated = [];
 
-            $value = $this->input[$k];
+        foreach ($rules as $k => $constraints) {
+            $value = $this->input[$k] ?? null;
 
-            if (is_string($value)) {
-                if (empty(trim($value))) {
-                    return false;
+            foreach ($constraints as $constraint) {
+                if ($constraint === 'required') {
+                    if (!array_key_exists($k, $this->input)) {
+                        throw new InvalidInputException("$k is required");
+                    }
+
+                    if (is_string($value) && trim($value) === '') {
+                        throw new InvalidInputException("$k cannot be empty");
+                    }
+
+                    if ($value === null) {
+                        throw new InvalidInputException("$k is required");
+                    }
                 }
-            } elseif ($value === null) {
-                return false;
+
+                if (str_starts_with($constraint, 'min')) {
+                    $min = (int) explode(":", $constraint)[1];
+                    if (strlen($value) < $min) {
+                        throw new InvalidInputException("$k is too short (min $min)");
+                    }
+                }
             }
+
+            $validated[$k] = $value;
         }
 
-        return true;
+        return $validated;
     }
 }

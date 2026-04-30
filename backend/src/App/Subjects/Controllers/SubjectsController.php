@@ -11,7 +11,7 @@ use DateMalformedStringException;
 use DateTime;
 use Goralys\App\HTTP\Files\GoralysFileManager;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\Subjects\Services\UsernameManager;
 use Goralys\Core\Drafts\Services\StudentDraftsManager;
 use Goralys\Core\Subjects\Config\SubjectsExportConfig;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
@@ -44,7 +44,7 @@ class SubjectsController
     private SubjectsRepositoryInterface $repo;
     private UpdateSubjectService $updateService;
     private UsernameFormatterService $formatter;
-    private SubjectsUsernameManager $usernameManager;
+    private UsernameManager $usernameManager;
     public StudentDraftsManager $draftsManager;
     private GoralysFileManager $fileManager;
     private GetSubjectsService $getService;
@@ -73,7 +73,7 @@ class SubjectsController
         $this->repo = new SubjectsRepository($this->db);
         $this->userRepo = new UserRepository($this->logger, $this->db);
         $this->formatter = new UsernameFormatterService();
-        $this->usernameManager = new SubjectsUsernameManager($this->userRepo);
+        $this->usernameManager = new UsernameManager($this->userRepo);
         $this->fileManager = $fileManager;
         $this->draftsManager = new StudentDraftsManager($this->logger, $this->repo, $this->fileManager);
         $this->updateService = new UpdateSubjectService($this->logger, $this->repo);
