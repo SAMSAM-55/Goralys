@@ -16,7 +16,7 @@ use Random\RandomException;
 /**
  * Service to manage the CSRF tokens system.
  */
-class CSRFService
+final class CSRFService
 {
     private LoggerInterface $logger;
 
@@ -75,7 +75,7 @@ class CSRFService
     /**
      * Validates a given CSRF token for a specific form.
      * @param string $formId The id of the form to verify the token for.
-     * @param RequestInterface $request The current HTTP request
+     * @param RequestInterface $request The current HTTP request.
      * @return bool If the token is valid or not.
      */
     public function validate(string $formId, RequestInterface $request): bool

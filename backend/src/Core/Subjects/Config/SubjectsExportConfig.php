@@ -10,9 +10,9 @@ namespace Goralys\Core\Subjects\Config;
 use Goralys\Core\Subjects\Data\PathwayDTO;
 
 /**
- * Configuration class for the subjects export process.
+ * Configuration class for the subject export process.
  */
-class SubjectsExportConfig
+final class SubjectsExportConfig
 {
     public const string ASSETS_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
     DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Assets' . DIRECTORY_SEPARATOR .

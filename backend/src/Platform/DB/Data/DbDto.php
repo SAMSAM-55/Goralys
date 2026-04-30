@@ -11,7 +11,7 @@ namespace Goralys\Platform\DB\Data;
  * Main Database DTO.
  * It's internal to the DB layer and contains the credentials to log in to the database.
  */
-readonly class DbDto
+final readonly class DbDto
 {
     public function __construct(
         public string $host,

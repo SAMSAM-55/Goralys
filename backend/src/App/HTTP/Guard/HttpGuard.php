@@ -10,17 +10,31 @@ use Goralys\App\HTTP\Response\Interfaces\DeferredResponseInterface;
 use Goralys\App\Subjects\Services\UsernameManager;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 
-class HttpGuard implements GuardInterface
+/**
+ * HTTP implementation of the guard that validates request fields against the session user.
+ */
+final class HttpGuard implements GuardInterface
 {
     private AppContext $context;
     private UsernameManager $usernameManager;
 
+    /**
+     * @param UsernameManager $usernameManager The injected username manager.
+     * @param AppContext $context The injected application context.
+     */
     public function __construct(UsernameManager $usernameManager, AppContext $context)
     {
         $this->usernameManager = $usernameManager;
         $this->context = $context;
     }
 
+    /**
+     * Returns a 403 deferred response if the request field does not match the session username.
+     * Accepts both the raw username and its public token as valid values.
+     * @param RequestInterface $request The current HTTP request.
+     * @param string $field The request field to compare against the session username.
+     * @return DeferredResponseInterface|null Null on success, a 403 response on mismatch.
+     */
     public function matchCurrentUser(RequestInterface $request, string $field): ?DeferredResponseInterface
     {
         $actual = $_SESSION['current_username'] ?? null;

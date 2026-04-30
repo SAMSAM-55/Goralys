@@ -12,8 +12,14 @@ use Goralys\Core\User\Data\Enums\UserRole;
 /**
  * The DTO used to append a new user to the database
  */
-readonly class UserCreateDTO
+final readonly class UserCreateDTO
 {
+    /**
+     * @param string $username The username of the new user.
+     * @param string $fullName The full name of the new user.
+     * @param string $passwordHash The hashed password of the new user.
+     * @param UserRole $role The role assigned to the new user.
+     */
     public function __construct(
         public string $username,
         public string $fullName,

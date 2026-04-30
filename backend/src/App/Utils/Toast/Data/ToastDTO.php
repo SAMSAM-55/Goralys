@@ -10,8 +10,13 @@ namespace Goralys\App\Utils\Toast\Data;
 /**
  * The DTO used to transport the data of a toast
  */
-class ToastDTO
+final class ToastDTO
 {
+    /**
+     * @param array<string, mixed> $toastInfo The toast notification payload data.
+     * @param string $redirect The URL to redirect to after displaying the toast.
+     * @param bool   $flash Whether the toast should be stored as a flash notification.
+     */
     public function __construct(
         readonly public array $toastInfo,
         public string $redirect,

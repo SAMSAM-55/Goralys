@@ -14,7 +14,7 @@ use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 /**
  * Service used to determine if a user can register or not.
  */
-class RegisterValidatorService implements RegisterValidatorServiceInterface
+final class RegisterValidatorService implements RegisterValidatorServiceInterface
 {
     private UserRepositoryInterface $repo;
 

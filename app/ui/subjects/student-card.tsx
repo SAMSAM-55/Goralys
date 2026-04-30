@@ -135,7 +135,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             {!(subjectData.status === "submitted" || subjectData.status === "approved")
             && <>
                 <Button className="mb-1! mt-1!" text="Envoyer la question" type="button" onClick={sendSubject} />
-                <Button className="mb-1! mt-1!" text="Enregistrer commme brouillon" type="button" onClick={saveDraft} />
+                <Button className="mb-1! mt-1!" text="Enregistrer comme brouillon" type="button" onClick={saveDraft} />
             </>}
         </div>
     );

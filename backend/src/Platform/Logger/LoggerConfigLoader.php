@@ -12,7 +12,7 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 /**
  * A small loader to load the necessary configuration for the logger.
  */
-class LoggerConfigLoader
+final class LoggerConfigLoader
 {
     private static array $loggerFiles;
     /* @var array<string, int> */

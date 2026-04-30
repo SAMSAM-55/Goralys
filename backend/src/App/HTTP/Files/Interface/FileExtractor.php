@@ -16,9 +16,8 @@ interface FileExtractor
 {
     /**
      * Extracts an uploaded file to the specified destination directory.
-     *
      * @param UploadedFileDTO $file The uploaded file metadata.
-     * @param string $dest The absolute path to the destination directory.
+     * @param string $dest The path to the destination directory.
      * @return void
      */
     public function extract(UploadedFileDTO $file, string $dest): void;

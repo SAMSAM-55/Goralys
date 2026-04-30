@@ -8,9 +8,14 @@
 namespace Goralys\App\Subjects\Services;
 
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
+use Goralys\Core\User\Repository\UserRepository;
 use RuntimeException;
 
-class UsernameManager
+/**
+ * Manages the mapping between real usernames and their opaque public tokens,
+ * delegating lookups to the user repository.
+ */
+final class UsernameManager
 {
     private UserRepositoryInterface $users;
 
@@ -24,8 +29,9 @@ class UsernameManager
     }
 
     /**
-     * @param string $username The username to append to the lookup table.
-     * @return string The token linked to the username.
+     * 'Creates' a token by retrieving the public id of the user.
+     * @param string $username The username to get the public id of.
+     * @return string The public id linked to the username.
      */
     public function create(string $username): string
     {
@@ -39,8 +45,8 @@ class UsernameManager
     }
 
     /**
-     * Retrieves a username from its token inside the username lookup table.
-     * @param string $id The token associated with the username.
+     * Retrieves a username from its public id inside the DB using {@see UserRepositoryI::getPublicIdForUsername()}.
+     * @param string $id The public id associated with the username.
      * @return string The username.
      */
     public function get(string $id): string

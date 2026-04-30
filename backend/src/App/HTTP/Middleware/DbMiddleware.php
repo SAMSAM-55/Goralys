@@ -5,18 +5,30 @@ namespace Goralys\App\HTTP\Middleware;
 use Goralys\Kernel\GoralysKernel;
 use Throwable;
 
-class DbMiddleware implements Interface\MiddlewareInterface
+/**
+ * Middleware that opens the database connection before a route handler runs.
+ * Optionally wraps the handler in a database transaction that is committed on success or rolled back on exception.
+ */
+final class DbMiddleware implements Interface\MiddlewareInterface
 {
     private const string TRANSACTION = 'transaction';
     private array $options;
 
+    /**
+     * @param string $route The matched route path.
+     * @param mixed ...$params Accepts the 'transaction' flag to enable transaction wrapping.
+     */
     public function __construct(string $route, ...$params)
     {
         $this->options = $params;
     }
 
     /**
-     * @throws Throwable
+     * Opens the DB connection and wraps the callback in a transaction if the 'transaction' flag was passed.
+     * @param GoralysKernel $kernel The application kernel.
+     * @param callable $next The next handler in the pipeline.
+     * @return mixed
+     * @throws Throwable If the transaction catches any exception.
      */
     public function handle(GoralysKernel $kernel, callable $next): mixed
     {
@@ -41,11 +53,19 @@ class DbMiddleware implements Interface\MiddlewareInterface
         }
     }
 
+    /**
+     * Returns the middleware binding that only opens the database connection.
+     * @return array The middleware descriptor array.
+     */
     public static function require(): array
     {
         return ['db'];
     }
 
+    /**
+     * Returns the middleware binding that opens the database connection and wraps the handler in a transaction.
+     * @return array The middleware descriptor array.
+     */
     public static function transaction(): array
     {
         return ['db', [self::TRANSACTION]];

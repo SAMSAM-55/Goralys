@@ -15,7 +15,7 @@ use mysqli_result;
 /**
  * The repository to fetch and modify subjects inside the database.
  */
-class SubjectsRepository implements SubjectsRepositoryInterface
+final class SubjectsRepository implements SubjectsRepositoryInterface
 {
     private DbContainerInterface $db;
 
@@ -163,11 +163,11 @@ class SubjectsRepository implements SubjectsRepositoryInterface
     /**
      * Update a subject's content inside the database.
      * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
-     * @param string $teacherUsername
-     * @param string $studentUsername
-     * @param string $topic
-     * @param string $newSubject
-     * @param bool $interdisciplinary
+     * @param string $teacherUsername The student's username.
+     * @param string $studentUsername The teacher's username.
+     * @param string $topic The name of the topic.
+     * @param string $newSubject The new subject.
+     * @param bool $interdisciplinary If this new subject is interdiscplinary or not.
      * @return bool If the update was successful or not.
      */
     public function updateSubject(

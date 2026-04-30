@@ -6,10 +6,16 @@ use Goralys\App\HTTP\Files\Interface\FileResponder;
 use Goralys\Shared\Exception\Files\InvalidFileException;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
+/**
+ * The HTTP service used to send files to the frontend.
+ */
 class HttpFileResponder implements FileResponder
 {
     /**
-     * @throws GoralysRuntimeException|InvalidFileException
+     * Sends a given file to the frontend.
+     * @param string $path The path of the file to send.
+     * @param string $name The name of the file when downloaded by the clien.
+     * @throws GoralysRuntimeException|InvalidFileException If the file cannot be sent to the frontend.
      */
     public function send(string $path, string $name): void
     {

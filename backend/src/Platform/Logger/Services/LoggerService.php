@@ -15,7 +15,7 @@ use Goralys\Platform\Logger\Data\Enums\LoggerType;
  * Main logging service.
  * It provides a global `log` method to log to the correct file.
  */
-class LoggerService
+final class LoggerService
 {
     private static string $logDirectory;
 
@@ -30,8 +30,17 @@ class LoggerService
         LoggerService::$logDirectory = $logDirectory;
     }
 
+    /**
+     * Writes a log entry to the specified file.
+     * @param mixed $file The file to write the log into.
+     * @param LoggerInitiator $initiator The inititor of the log.
+     * @param LoggerType $type The log type.
+     * @param string $time The time of the log.
+     * @param string $message The log's message.
+     * @return void
+     */
     private static function writeLog(
-        $file,
+        mixed $file,
         LoggerInitiator $initiator,
         LoggerType $type,
         string $time,

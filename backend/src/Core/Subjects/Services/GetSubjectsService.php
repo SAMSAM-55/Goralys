@@ -20,9 +20,9 @@ use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use mysqli_result;
 
 /**
- * The service used to fetch subjects inside the database via the subjects repository
+ * The service used to fetch subjects inside the database via the subject repository
  */
-class GetSubjectsService
+final class GetSubjectsService
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
@@ -147,7 +147,7 @@ class GetSubjectsService
      * @return SubjectsCollection The array containing all the subjects in a more usable format.
      * The `SubjectsCollection` is also used here as it implements a custom way to transform it into a JSON array and
      * thus make the output process to the frontend more straightforward.
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
      */
     private function formatAllSubjects(mysqli_result $result): SubjectsCollection
     {
@@ -206,8 +206,8 @@ class GetSubjectsService
 
     /**
      * Gets all the subjects for a given teacher.
-     * It uses the subjects repository to communicate with the database.
-     * The subjects are returned using a subjects collection object.
+     * It uses the subject repository to communicate with the database.
+     * The subjects are returned using a subject collection object.
      * @param string $teacherUsername The teacher's username.
      * @return SubjectsCollection The array of all the teacher's subjects.
      * @throws DateMalformedStringException
@@ -226,8 +226,8 @@ class GetSubjectsService
 
     /**
      * Gets all the subjects thus it should only be used for admins.
-     * It uses the subjects repository to communicate with the database.
-     * The subjects are returned using a subjects collection object.
+     * It uses the subject repository to communicate with the database.
+     * The subjects are returned using a subject collection object.
      * @return SubjectsCollection The array of all the subjects inside the database.
      * @throws DateMalformedStringException
      */

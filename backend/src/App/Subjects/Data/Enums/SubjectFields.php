@@ -7,6 +7,9 @@
 
 namespace Goralys\App\Subjects\Data\Enums;
 
+/**
+ * Represents the fields of a subject that can be individually updated.
+ */
 enum SubjectFields: string
 {
     case SUBJECT = "subject";

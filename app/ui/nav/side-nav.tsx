@@ -38,7 +38,7 @@ export function SideNav() {
                 return "Mes Questions"
             case "none":
                 return "Mon Espace";
-            case "teacher": return "Mes Elèves";
+            case "teacher": return "Mes Élèves";
             case "admin": return "Administration";
         }
     }

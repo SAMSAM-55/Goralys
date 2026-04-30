@@ -14,12 +14,20 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
-class StudentDraftsManager
+/**
+ * Manages student draft file uploads: stores files on disk and records their paths in the database.
+ */
+final class StudentDraftsManager
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
     private GoralysFileManager $fileManager;
 
+    /**
+     * @param LoggerInterface $logger The injected logger.
+     * @param SubjectsRepositoryInterface $repo The injected subjects repository.
+     * @param GoralysFileManager $fileManager The injected file manager.
+     */
     public function __construct(
         LoggerInterface $logger,
         SubjectsRepositoryInterface $repo,
@@ -30,6 +38,12 @@ class StudentDraftsManager
         $this->fileManager = $fileManager;
     }
 
+    /**
+     * Clears existing draft files for the given student/teacher pair and ensures the target directory exists.
+     * @param string $studentUsername The student's username.
+     * @param string $teacherUsername The teacher's username.
+     * @return void
+     */
     private function emptyDir(string $studentUsername, string $teacherUsername): void
     {
         $fullDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/";
@@ -51,10 +65,11 @@ class StudentDraftsManager
     }
 
     /**
-     * @param string $studentUsername
-     * @param string $teacherUsername
-     * @param string $topicName
-     * @return bool
+     * Updates a student's draft in the database.
+     * @param string $studentUsername The student's username.
+     * @param string $teacherUsername The teachers's username.
+     * @param string $topicName The topic name.
+     * @return bool If the draft was correctly updated or not.
      */
     public function update(string $studentUsername, string $teacherUsername, string $topicName): bool
     {
@@ -91,11 +106,11 @@ class StudentDraftsManager
 
     /**
      * Retrieves the path to a student's draft
-     * @param string $studentUsername
-     * @param string $teacherUsername
-     * @param string $topicName
-     * @return string
-     * @throws GoralysRuntimeException
+     * @param string $studentUsername The student's username.
+     * @param string $teacherUsername The teachers's username.
+     * @param string $topicName The topic name.
+     * @return string The path to the student's draft file.
+     * @throws GoralysRuntimeException If the draft could not be found.
      */
     public function getPath(string $studentUsername, string $teacherUsername, string $topicName): string
     {

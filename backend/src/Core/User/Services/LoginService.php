@@ -13,7 +13,10 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\User\UserNotFoundException;
 
-class LoginService
+/**
+ * Service responsible for authenticating a user against stored credentials.
+ */
+final class LoginService
 {
     private LoggerInterface $logger;
     private UserRepositoryInterface $repo;

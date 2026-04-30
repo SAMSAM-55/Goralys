@@ -12,8 +12,14 @@ use Goralys\Core\User\Data\Enums\UserRole;
 /**
  * The DTO containing all the information of a user
  */
-readonly class UserFullDTO
+final readonly class UserFullDTO
 {
+    /**
+     * @param int $id The unique database ID of the user.
+     * @param string $username The username of the user.
+     * @param UserRole $role The role of the user.
+     * @param string $fullName The full name of the user.
+     */
     public function __construct(
         public int $id,
         public string $username,

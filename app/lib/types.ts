@@ -147,7 +147,7 @@ export type CookieValue = string | boolean | number | null | undefined
 
 export const searchFields = {
     all: "Tout",
-    student: "Elèves",
+    student: "Élèves",
     teacher: "Professeur",
     topic: "Matière",
 } as const;

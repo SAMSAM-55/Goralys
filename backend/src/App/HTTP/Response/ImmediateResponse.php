@@ -11,13 +11,24 @@ use JetBrains\PhpStorm\NoReturn;
 use JsonSerializable;
 use Throwable;
 
-class ImmediateResponse implements ImmediateResponseInterface
+/**
+ * An immediate HTTP response that supports JSON and file downloading.
+ *
+ * Unlike {@see DeferredResponse} an immediate response is sent immediatly.
+ */
+final class ImmediateResponse implements ImmediateResponseInterface
 {
     private int $code;
     private LoggerInterface $logger;
     private FileResponder $files;
     private JsonResponder $json;
 
+    /**
+     * @param int $code The HTTP code of the response.
+     * @param LoggerInterface $logger The injected logger.
+     * @param FileResponder $files The injected FileResponder service.
+     * @param JsonResponder $json The injected JsonResponder service.
+     */
     public function __construct(int $code, LoggerInterface $logger, FileResponder $files, JsonResponder $json)
     {
         $this->code = $code;
@@ -27,10 +38,11 @@ class ImmediateResponse implements ImmediateResponseInterface
     }
 
     /**
-     * @param string $path
-     * @param string $name
-     * @param callable|null $after
-     * @throws Throwable
+     * Send a downloadable file response to the client.
+     * @param string $path The path of the file to download.
+     * @param string $name The name of the when downloaded by the client.
+     * @param callable|null $after An optionnal callback to run after the download.
+     * @throws Throwable If the download fails.
      */
     #[NoReturn]
     public function download(string $path, string $name, ?callable $after = null): never
@@ -55,9 +67,10 @@ class ImmediateResponse implements ImmediateResponseInterface
     }
 
     /**
-     * @param array|JsonSerializable $data
-     * @param callable|null $after
-     * @throws Throwable
+     * Sends JSON data to the client.
+     * @param array|JsonSerializable $data The data to send to the client.
+     * @param callable|null $after An optionnal callback to run after the data was sent.
+     * @throws Throwable If the JSON data cannot be sent.
      */
     #[NoReturn]
     public function json(array|JsonSerializable $data, ?callable $after = null): never
@@ -91,6 +104,7 @@ class ImmediateResponse implements ImmediateResponseInterface
     }
 
     /**
+     * Send a simple HTTP response to the client.
      * @return never
      */
     #[NoReturn]

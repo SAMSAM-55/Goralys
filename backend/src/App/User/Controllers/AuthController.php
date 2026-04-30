@@ -25,7 +25,7 @@ use Goralys\Shared\Exception\User\UserNotFoundException;
 /**
  * The controller that handles the authentification logic (register, login, and logout).
  */
-class AuthController
+final class AuthController
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;
@@ -98,7 +98,7 @@ class AuthController
                 return false;
             }
 
-            session_regenerate_id(false);
+            session_regenerate_id(true);
             $sessionData = $this->repo->getByUsername($userData->username);
             $this->logger->debug(LoggerInitiator::APP, "Received user data: " . print_r($sessionData, true));
 

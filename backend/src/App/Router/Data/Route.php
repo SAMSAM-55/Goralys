@@ -4,7 +4,10 @@ namespace Goralys\App\Router\Data;
 
 use Closure;
 
-class Route
+/**
+ * Represents a registered route, holding its path, HTTP method, handler, and middleware stack.
+ */
+final class Route
 {
     /** @param list<Middleware> $middlewares */
     public function __construct(
@@ -16,12 +19,23 @@ class Route
     ) {
     }
 
+    /**
+     * Appends single-named middleware (with optional parameters) to the route's stack.
+     * @param string $name The middleware name as registered in the router's middleware map.
+     * @param mixed ...$params Optional parameters to pass to the middleware.
+     * @return self
+     */
     public function middleware(string $name, mixed ...$params): self
     {
         $this->middlewares[] = new Middleware($name, ...$params);
         return $this;
     }
 
+    /**
+     * Appends one or more pre-built Middleware instances to the route's stack.
+     * @param Middleware ...$middlewares The middleware objects to add.
+     * @return self
+     */
     public function middlewares(Middleware ...$middlewares): self
     {
         foreach ($middlewares as $middleware) {

@@ -16,9 +16,9 @@ use mysqli_stmt;
 use mysqli_sql_exception;
 
 /**
- * The service used to prepare statements
+ * The service used to prepare statements.
  */
-class PrepareService
+final class PrepareService
 {
     private LoggerInterface $logger;
     private mysqli $conn;

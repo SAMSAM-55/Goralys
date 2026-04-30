@@ -16,11 +16,12 @@ use Goralys\Platform\Logger\Interfaces\LoggerInterface;
  * The main logger class.
  * Provides four functions to log with different verbosity levels.
  */
-class GoralysLogger implements LoggerInterface
+final class GoralysLogger implements LoggerInterface
 {
     /**
      * Initializes the logger and its sub-services.
-     * The PHP/Logs directory must exist else the logger will fail silently, create it manually or use the setup script.
+     * The backend/Logs directory must exist, else the logger will fail silently,
+     * create it manually or use the setup script.
      */
     public function __construct()
     {

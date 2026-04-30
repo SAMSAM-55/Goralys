@@ -29,8 +29,6 @@ use Goralys\App\HTTP\Files\Interface\FileMover;
 use Goralys\App\HTTP\Files\Services\HttpFileExtractor;
 use Goralys\App\HTTP\Files\Services\HttpFileMover;
 use Goralys\App\HTTP\Files\Services\HttpFileResponder;
-use Goralys\App\HTTP\Files\Services\TestFileMover;
-use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
 use Goralys\App\HTTP\Guard\HttpGuard;
 use Goralys\App\HTTP\Guard\Interface\GuardInterface;
 use Goralys\App\HTTP\JSON\Services\HttpJsonResponder;
@@ -127,8 +125,9 @@ class GoralysKernel
     /**
      * Initializes the kernel and all of its members.
      * @param string $rootPath The path to the .env file and that is considered to be the root path for the kernel.
+     * @param FileMover|null $mover The file mover used by the kernel.
      */
-    public function __construct(string $rootPath, bool $test = false, array $testFiles = [])
+    public function __construct(string $rootPath, ?FileMover $mover = null)
     {
         $this->rootPath = $rootPath;
 
@@ -146,7 +145,7 @@ class GoralysKernel
         $this->initDb();
         $this->initAuth();
         $this->initUser();
-        $this->bootFileSubsystem($test, $testFiles);
+        $this->bootFileSubsystem($mover);
         $this->initExporter();
         $this->initSubjects();
         $this->initTopics();
@@ -275,23 +274,17 @@ class GoralysKernel
 
     /**
      * Initializes the files-related subservices for the kernel.
-     * @param bool $test If the kernel is running in "test mode" or not.
-     * @param array $testFiles The files array, used only in "test mode".
+     * @param FileMover|null $mover The file mover for the kernel.
      * @return void
      */
-    private function bootFileSubsystem(bool $test, array $testFiles): void
+    private function bootFileSubsystem(?FileMover $mover): void
     {
-        if ($test) {
-            $files = $testFiles;
-            $mover = new TestFileMover();
-        } else {
-            $files = FilesNormalizer::fromGlobals($_FILES);
-            $mover = new HttpFileMover();
-        }
+        $resolvedMover = $mover ?? new HttpFileMover();
+
         $extractor = new HttpFileExtractor();
 
         try {
-            $this->initFileManager($mover, $extractor, $files);
+            $this->initFileManager($resolvedMover, $extractor, $resolvedMover->getFiles());
         } catch (GoralysRuntimeException $e) {
             $this->logger->fatal(
                 LoggerInitiator::KERNEL,
@@ -323,7 +316,7 @@ class GoralysKernel
     }
 
     /**
-     * Initializes the subjects controller of the kernel.
+     * Initializes the subject controller of the kernel.
      * @return void
      */
     private function initSubjects(): void
@@ -332,7 +325,7 @@ class GoralysKernel
     }
 
     /**
-     * Initializes the subjects controller of the kernel.
+     * Initializes the topic controller of the kernel.
      * @return void
      */
     private function initTopics(): void
@@ -462,7 +455,7 @@ class GoralysKernel
             "PHP Error (severity $severity) : $message — $file:$line"
         );
 
-        // Ignore non fatal errors
+        // Ignore non-fatal errors
         if (!in_array($severity, [E_ERROR, E_USER_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR])) {
             return;
         }

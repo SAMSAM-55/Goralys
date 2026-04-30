@@ -5,14 +5,18 @@ namespace Goralys\App\HTTP\Middleware;
 use Goralys\App\Router\Data\Middleware;
 use Goralys\Core\User\Data\Enums\UserRole;
 
-class MiddlewareSets
+/**
+ * Factory class providing pre-composed middleware stacks for common route patterns.
+ */
+final class MiddlewareSets
 {
     /**
-     * @param string $action
-     * @param UserRole $role
-     * @param bool $strict
-     * @param bool $transaction
-     * @return list<Middleware>
+     * Middlewares for general subjects routes.
+     * @param string $action The action/endpoint of the route.
+     * @param UserRole $role The role required for this endpoint.
+     * @param bool $strict If the role should be tested strictly or not.
+     * @param bool $transaction If the endpoint uses DB transactions or not.
+     * @return list<Middleware> The pre-composed middlewares list.
      */
     public static function subjectsRoute(
         string $action,
@@ -30,8 +34,9 @@ class MiddlewareSets
     }
 
     /**
-     * @param string $action
-     * @return list<Middleware>
+     * Middlewares for general topics routes.
+     * @param string $action The action/endpoint of the route.
+     * @return list<Middleware> The pre-composed middlewares list.
      */
     public static function topicsRoute(string $action): array
     {

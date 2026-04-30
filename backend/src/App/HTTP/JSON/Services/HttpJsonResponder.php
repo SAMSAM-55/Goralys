@@ -6,10 +6,17 @@ use Goralys\App\HTTP\JSON\Interfaces\JsonResponder;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use JsonSerializable;
 
-class HttpJsonResponder implements JsonResponder
+/**
+ * The HTTP service used to send JSON to the client.
+ */
+final class HttpJsonResponder implements JsonResponder
 {
     /**
-     * @throws GoralysRuntimeException
+     * Send the given data in the shape of a JSON response to the client.
+     * @param array|JsonSerializable $data The data to send.
+     * @param int $responseCode The HTTP code of the response to send.
+     * @return void
+     * @throws GoralysRuntimeException If HTTP headers were already sent.
      */
     public function send(array|JsonSerializable $data, int $responseCode = 200): void
     {

@@ -23,16 +23,15 @@ use mysqli_result;
 
 /**
  * The database wrapper used for this project.
- * It allows for very close behavior to the default `mysqli` implementation in PHP (at least for the basics).
+ * It allows for very close behavior to the default {@see mysqli} implementation in PHP (at least for the basics).
  * It implements:
- * - connection to the database using the `.env` configuration file
- * - statement execution/fetch
+ * - Connection to the database using the `.env` configuration file
+ * - Statement execution/fetch
  */
-class DbContainer implements DbContainerInterface
+final class DbContainer implements DbContainerInterface
 {
     private mysqli $conn;
     private LoggerInterface $logger;
-
 
     /**
      * Initializes the logger of the database container.
@@ -72,13 +71,13 @@ class DbContainer implements DbContainerInterface
      * Note that the preparation of the statement is delegated to a specialized service
      * @param string $query The request to execute.
      * @param string $types The types of the statements arguments.
-     * Uses the same types as the default `mysqli` implementation.
+     * Uses the same types as the default {@see mysql}` implementation.
      * @param mixed $value1 The first required variable to bind.
      * @param mixed ...$args The other variables to bind (optional).
      * @return mysqli_result The result of the request.
      * @throws GoralysPrepareException|GoralysQueryException Thrown if something goes wrong during the fetch.
      */
-    public function fetch(string $query, string $types, mixed $value1, ...$args): mysqli_result
+    public function fetch(string $query, string $types, mixed $value1, mixed ...$args): mysqli_result
     {
         $StmtData = new StmtDto(
             $query,
@@ -124,13 +123,13 @@ class DbContainer implements DbContainerInterface
      * Note that the preparation of the statement is delegated to a specialized service
      * @param string $query The request to execute.
      * @param string $types The types of the statements arguments.
-     * Uses the same types as the default `mysqli` implementation.
+     * Uses the same types as the default {@see mysqli} implementation.
      * @param mixed $value1 The first required variable to bind.
      * @param mixed ...$args The other variables to bind (optional).
      * @return bool `true` if the request execution was successful, `false` elsewise.
      * @throws GoralysPrepareException|GoralysQueryException Thrown if something goes wrong during the execution.
      */
-    public function run(string $query, string $types, mixed $value1, ...$args): bool
+    public function run(string $query, string $types, mixed $value1, mixed ...$args): bool
     {
         $StmtData = new StmtDto(
             $query,
@@ -154,7 +153,7 @@ class DbContainer implements DbContainerInterface
      * It uses prepared statements to avoid SQL injection.
      * Note that the preparation of the statement is delegated to a specialized service
      * @param string $query The request to execute.
-     * Uses the same types as the default `mysqli` implementation.
+     * Uses the same types as the default {@see mysqli} implementation.
      * @return bool `true` if the request execution was successful, `false` elsewise.
      * @throws GoralysPrepareException|GoralysQueryException Thrown if something goes wrong during the execution.
      */
@@ -172,7 +171,7 @@ class DbContainer implements DbContainerInterface
     }
 
     /**
-     * Closes the connection to the database
+     * Closes the connection to the database.
      */
     public function __destruct()
     {
@@ -196,7 +195,7 @@ class DbContainer implements DbContainerInterface
     }
 
     /**
-     * Rollback all changes for the current transaction.
+     * Roll back all changes for the current transaction.
      * @return void
      */
     public function rollback(): void
@@ -205,7 +204,7 @@ class DbContainer implements DbContainerInterface
     }
 
     /**
-     * Commits all changes for the curent transaction.
+     * Commits all changes for the current transaction.
      * @return void
      */
     public function commit(): void

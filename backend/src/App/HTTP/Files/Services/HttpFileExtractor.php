@@ -12,10 +12,16 @@ use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use ZipArchive;
 
-class HttpFileExtractor implements FileExtractor
+/**
+ * The HTTP service used to extract ZIP archives.
+ */
+final class HttpFileExtractor implements FileExtractor
 {
     /**
-     * @throws GoralysRuntimeException
+     * Ensures a given file is a valid ZIP archive.
+     * @param UploadedFileDTO $file The file to validate.
+     * @return void
+     * @throws GoralysRuntimeException If the validation fails.
      */
     private function ensureZip(UploadedFileDTO $file): void
     {

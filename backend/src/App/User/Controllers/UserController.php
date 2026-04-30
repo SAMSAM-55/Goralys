@@ -15,7 +15,7 @@ use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 /**
  * The controller that handles the user logic.
  */
-class UserController
+final class UserController
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;

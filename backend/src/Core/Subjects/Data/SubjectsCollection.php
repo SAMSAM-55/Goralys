@@ -12,7 +12,7 @@ use JsonSerializable;
 /**
  * A special object used to represent an array of subjects.
  */
-class SubjectsCollection implements JsonSerializable
+final class SubjectsCollection implements JsonSerializable
 {
     /* @var SubjectDTO[] */
     private array $subjects = [];
@@ -37,7 +37,7 @@ class SubjectsCollection implements JsonSerializable
     }
 
     /**
-     * Transforms the subjects collection into a JSON array
+     * Transforms the subject collection into a JSON array
      * @return SubjectDTO[]
      */
     public function jsonSerialize(): array

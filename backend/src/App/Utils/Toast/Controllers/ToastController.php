@@ -14,9 +14,9 @@ use Goralys\App\Utils\Toast\Services\ToastResponderService;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
- * The controller that manages the toasts interactions with the frontend.
+ * The controller that manages the toast interactions with the frontend.
  */
-readonly class ToastController
+final readonly class ToastController
 {
     public ToastBuilderService $builder;
     public ToastFlashService $flashService;

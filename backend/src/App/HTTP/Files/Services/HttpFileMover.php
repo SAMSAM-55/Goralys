@@ -7,12 +7,34 @@
 
 namespace Goralys\App\HTTP\Files\Services;
 
+use Goralys\App\HTTP\Files\Data\FileDTO;
 use Goralys\App\HTTP\Files\Interface\FileMover;
+use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
+/**
+ * The HTTP service used to move files inside the backend.
+ */
 final class HttpFileMover implements FileMover
 {
+    /** @var FileDTO[]|null  */
+    private ?array $files = null;
+
     /**
+     * @inheritDoc
+     * @return FileDTO[] The files of the mover.
+     */
+    public function getFiles(): array
+    {
+        if (!$this->files) {
+            $this->files = FilesNormalizer::fromGlobals($_FILES);
+        }
+
+        return $this->files;
+    }
+
+    /**
+     * Moves a given file.
      * @param string $from The original path of the file.
      * @param string $destination The destination of the file.
      * @return bool If the move was successful or not.

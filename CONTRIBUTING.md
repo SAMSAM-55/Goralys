@@ -7,7 +7,7 @@ Thank you for your interest in contributing to Goralys! This document provides g
 ### Pull Requests
 
 1. Fork the repository and create your branch from `develop`
-2. Set up the project: `scripts/setup.bat` or on linux: `scripts/setup.sh`
+2. Set up the project: `scripts/setup.bat` or on Linux: `scripts/setup.sh`
 3. Make your changes following the coding conventions below
 4. Write clear commit messages
 5. Update documentation as needed
@@ -56,7 +56,7 @@ goralys/
 
 - Update README.md for significant changes
 - Keep code comments current
-- Update database schema in `backend/data_structure.sql` if needed; if you do so, please provide a test file (.sql)
+- Update database schema in `backend/data_structure.sql` if needed
 
 ### Testing
 

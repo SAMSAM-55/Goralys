@@ -15,7 +15,10 @@ use Goralys\Core\User\Interfaces\RegisterValidatorServiceInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 
-class RegisterService
+/**
+ * Orchestrates the user registration flow by coordinating validation, role assignment, and persistence.
+ */
+final class RegisterService
 {
     private LoggerInterface $logger;
     private RegisterValidatorServiceInterface $validator;
@@ -26,7 +29,7 @@ class RegisterService
      * Initializes the logger and all the service's sub-services.
      * @param LoggerInterface $logger The injected logger
      * @param RegisterValidatorServiceInterface $validator The injected validator.
-     * It is used to verify that the can register
+     * It is used to verify that the can register.
      * @param GetUserRoleInterface $roleGetter The injected role getter.
      * It is used to retrieve the user's role and assign iot automatically.
      * @param CreateUserInterface $userCreator The injected user creator.

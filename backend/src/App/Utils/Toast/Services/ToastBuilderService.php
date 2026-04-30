@@ -13,7 +13,7 @@ use Goralys\App\Utils\Toast\Data\ToastDTO;
 /**
  * The service used to build a toast DTO from its info.
  */
-class ToastBuilderService
+final class ToastBuilderService
 {
     /**
      * Builds a toast DTO from its type, title, message, redirect, and isJS property.

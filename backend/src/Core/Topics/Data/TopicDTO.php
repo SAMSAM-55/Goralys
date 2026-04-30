@@ -10,7 +10,7 @@ namespace Goralys\Core\Topics\Data;
 /**
  * Data Transfer Object representing a Topic.
  */
-readonly class TopicDTO
+final readonly class TopicDTO
 {
     /**
      * @param int $id The unique ID of the topic.

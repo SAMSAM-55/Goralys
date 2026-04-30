@@ -15,7 +15,7 @@ use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 /**
  * The service used to create users.
  */
-class CreateUserService implements CreateUserInterface
+final class CreateUserService implements CreateUserInterface
 {
     private UserRepositoryInterface $repo;
 

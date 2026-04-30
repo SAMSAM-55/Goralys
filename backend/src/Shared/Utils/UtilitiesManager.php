@@ -9,7 +9,11 @@ namespace Goralys\Shared\Utils;
 
 use Goralys\Shared\Utils\String\StringUtils;
 
-class UtilitiesManager
+/**
+ * Central access point for shared utility services.
+ * Instantiated once by the kernel and passed down to components that need it.
+ */
+final class UtilitiesManager
 {
     public StringUtils $string;
 

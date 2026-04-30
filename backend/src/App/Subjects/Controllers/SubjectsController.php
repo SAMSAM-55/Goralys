@@ -35,9 +35,10 @@ use Goralys\Shared\Exception\GoralysRuntimeException;
 use ZipArchive;
 
 /**
- * The controller used to update/get subjects from the database via the `SubjectsRepository` (and intermediate services)
+ * The controller used to update/get subjects from the database via the {@see SubjectsRepository}
+ * (and intermediate services)
  */
-class SubjectsController
+final class SubjectsController
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;
@@ -95,7 +96,7 @@ class SubjectsController
      * @param string $topic The name of the topic.
      * @param SubjectFields $field The field to update.
      * @param string|SubjectStatus $newValue The new value of the field.
-     * @param bool|null $interdisciplinary [Optional] Only used when updating the subject.
+     * @param bool|null $interdisciplinary Only used when updating the subject.
      * @return bool If the update was successful or not.
      */
     public function updateField(
@@ -134,7 +135,7 @@ class SubjectsController
      * @param UserRole $role The role of the user to get the subjects of.
      * Let the defaults value ("") for admins as they have access to all subjects.
      * @return SubjectsCollection The list of the retrieved subjects.
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
      */
     public function getForRole(UserRole $role): SubjectsCollection
     {
@@ -170,7 +171,7 @@ class SubjectsController
      * Groups the given subjects by students.
      * @param SubjectsCollection $subjects The subjects to group.
      * @return StudentSubjectsDTO[] The students associated with their subjects.
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
      */
     private function groupByStudents(SubjectsCollection $subjects): array
     {
@@ -182,7 +183,6 @@ class SubjectsController
 
         return array_values(array_map(
         /**
-         * @param string $username
          * @param SubjectDTO[] $subjects
          * @return StudentSubjectsDTO
          */
@@ -216,7 +216,7 @@ class SubjectsController
      * @param SubjectsCollection $subjects The subjects to export.
      * @return string The path to the generated zip file.
      * @throws GoralysRuntimeException If the zip export goes wrong.
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
      */
     public function exportAll(SubjectsCollection $subjects): string
     {

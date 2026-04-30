@@ -8,6 +8,12 @@
 use Goralys\Kernel\GoralysKernel;
 
 // ----------- API bootstrap method ---------- //
+/**
+ * Sets CORS headers, handles OPTIONS preflight requests, and validates the session user-agent.
+ * Also triggers session ID regeneration every 15 minutes for active sessions.
+ * @param GoralysKernel $kernel The initialized application kernel.
+ * @return void
+ */
 function bootstrapAPI(GoralysKernel $kernel): void
 {
     error_log("BOOTSTRAP - 1: " . $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI']);
@@ -64,9 +70,13 @@ function bootstrapAPI(GoralysKernel $kernel): void
 }
 
 // --------------- Kernel Init --------------- //
-function bootKernel(bool $useFlash = false, bool $test = false, array $files = []): GoralysKernel
+/**
+ * Creates, configures, and bootstraps the application kernel.
+ * @return GoralysKernel The fully initialized kernel.
+ */
+function bootKernel(): GoralysKernel
 {
-    $kernel = new GoralysKernel(__DIR__ . "/../../", $test, $files);
+    $kernel = new GoralysKernel(__DIR__ . "/../../");
     $kernel->setHandlers();
     bootstrapAPI($kernel);
     return $kernel;

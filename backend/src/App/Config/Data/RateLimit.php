@@ -2,7 +2,10 @@
 
 namespace Goralys\App\Config\Data;
 
-readonly class RateLimit
+/**
+ * DTO holding the configuration for a single rate-limit rule.
+ */
+final readonly class RateLimit
 {
     public function __construct(
         public int $maxRequests,
@@ -10,10 +13,5 @@ readonly class RateLimit
         public RateLimitTimeMethod $timeMethod = RateLimitTimeMethod::CONSTANT,
         public int $maxLevels = 1
     ) {
-    }
-
-    public function getRate(): array
-    {
-        return [$this->maxRequests, $this->timeWindowSeconds];
     }
 }

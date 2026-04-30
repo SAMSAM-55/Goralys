@@ -5,7 +5,11 @@ namespace Goralys\App\Config;
 use Goralys\App\Config\Data\RateLimit;
 use Goralys\App\Config\Data\RateLimitTimeMethod;
 
-class RateLimiterConfig
+/**
+ * Configuration for the rate limiter.
+ * Defines the general fallback limits as well as per-endpoint rules.
+ */
+final class RateLimiterConfig
 {
     public const array GENERAL = [100, 60];
 

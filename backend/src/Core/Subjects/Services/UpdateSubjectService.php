@@ -9,21 +9,22 @@ namespace Goralys\Core\Subjects\Services;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Repository\SubjectsRepository;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 
 /**
- * The service used to update the subjects info inside the database via the subjects repository
+ * The service used to update the subject info inside the database via the {@see SubjectsRepository}.
  */
-class UpdateSubjectService
+final class UpdateSubjectService
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
 
     /**
-     * Initializes the logger and the repository used by the service
-     * @param LoggerInterface $logger The injected logger
-     * @param SubjectsRepositoryInterface $repo The injected repository
+     * Initializes the logger and the repository used by the service.
+     * @param LoggerInterface $logger The injected logger.
+     * @param SubjectsRepositoryInterface $repo The injected repository.
      */
     public function __construct(
         LoggerInterface $logger,

@@ -14,9 +14,9 @@ use Dotenv\Exception\InvalidPathException;
 use Dotenv\Exception\ValidationException;
 
 /**
- * A simple wrapper around `DotEnv` to load the environment variables
+ * A simple wrapper around {@see DotEnv} to load the environment variables
  */
-class EnvService
+final class EnvService
 {
     /**
      * Load the environment variables inside $_ENV

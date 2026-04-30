@@ -23,29 +23,22 @@ use Goralys\Shared\Utils\UtilitiesManager;
 /**
  * Controller for managing topic-related operations, including CSV/ZIP imports and persistence.
  */
-class TopicsController
+final class TopicsController
 {
-    /** @var UtilitiesManager Utility manager for string operations and more. */
     private UtilitiesManager $utils;
-    /** @var DbContainerInterface Database container instance. */
     private DbContainerInterface $db;
-    /** @var TopicsImportConfig Configuration for topic imports. */
     private TopicsImportConfig $config;
-    /** @var TopicsRepositoryInterface Repository for topic database operations. */
     private TopicsRepositoryInterface $repo;
-    /** @var BuildFromCSVService Service to build topics from CSV data. */
     private BuildFromCSVService $CSVBuilder;
-    /** @var GoralysFileManager Manager for file operations. */
     private GoralysFileManager $files;
     /** @var array<string, string> Cache for username mappings (Full Name => username). */
-    private array $usernameTable; // Temporary will be moved soon after the testing phase
-    /** @var int Internal ID generator for topics during import. */
+    private array $usernameTable; // Temporary will be moved to a proper typed object later.
     private int $nextId;
 
     /**
-     * @param DbContainerInterface $db
-     * @param UtilitiesManager $utils
-     * @param GoralysFileManager $files
+     * @param DbContainerInterface $db The injected DB.
+     * @param UtilitiesManager $utils The injected utility manager.
+     * @param GoralysFileManager $files The injected file manager.
      */
     public function __construct(
         DbContainerInterface $db,
@@ -66,12 +59,11 @@ class TopicsController
 
     /**
      * Creates a new TopicDTO instance.
-     *
      * @param string $name The name of the topic.
      * @param string $code The code (ID) of the topic.
      * @param string[] $students A list of student names or usernames.
      * @param string[] $teachers A list of teacher names or usernames.
-     * @return TopicDTO
+     * @return TopicDTO The topic.
      */
     public function makeTopic(string $name, string $code, array $students, array $teachers): TopicDTO
     {
@@ -87,7 +79,6 @@ class TopicsController
 
     /**
      * Generates a unique username based on a person's full name.
-     *
      * @param string $fullName The full name of the student or teacher.
      * @return string The generated username (e.g., 'f.lastname9').
      */
@@ -111,7 +102,6 @@ class TopicsController
 
     /**
      * Inserts a TopicDTO into the database, including its students and teachers.
-     *
      * @param TopicDTO $topic The topic data transfer object to insert.
      * @return bool If the insertion succeded.
      */
@@ -127,34 +117,23 @@ class TopicsController
             return false;
         }
 
-        foreach ($topic->teachers as $t) {
-            if (
-                !$this->repo->insertTeacher(
-                    $topic->id,
-                    $this->generateUsername($t)
-                )
-            ) {
-                return false;
-            }
+        if (
+            array_any($topic->teachers, fn($t) => !$this->repo->insertTeacher(
+                $topic->id,
+                $this->generateUsername($t)
+            ))
+        ) {
+            return false;
         }
 
-        foreach ($topic->students as $s) {
-            if (
-                !$this->repo->insertStudent(
-                    $topic->id,
-                    $this->generateUsername($s)
-                )
-            ) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($topic->students, fn($s) => $this->repo->insertStudent(
+            $topic->id,
+            $this->generateUsername($s)
+        ));
     }
 
     /**
      * Creates a temporary extraction directory for a ZIP file.
-     *
      * @param UploadedFileDTO $file The uploaded file metadata.
      * @return string The absolute path to the temporary directory.
      */
@@ -166,7 +145,6 @@ class TopicsController
 
     /**
      * Loads the group-to-teacher mapping from the 'groupes.csv' file in the extraction directory.
-     *
      * @param string $dir The path to the extraction directory.
      * @return array<string, list<string>> A mapping of group codes to teacher usernames.
      * @throws GoralysRuntimeException If the groups mapping file is missing.
@@ -182,8 +160,7 @@ class TopicsController
     }
 
     /**
-     * Finds all CSV files in the extraction directory that are not the groups mapping file.
-     *
+     * Finds all CSV files in the extraction directory that are not the group mapping file.
      * @param string $dir The extraction directory path.
      * @return string[] List of absolute paths to topic CSV files.
      */
@@ -204,7 +181,6 @@ class TopicsController
     /**
      * Parses a topic CSV filename to extract its code and name.
      * Expected format: CODE_Name.csv
-     *
      * @param string $filePath The full path to the CSV file.
      * @return TopicDescriptorDTO|null The parsed descriptor or null if invalid.
      */
@@ -230,7 +206,6 @@ class TopicsController
 
     /**
      * Processes an uploaded ZIP file and creates TopicDTO objects from its content.
-     *
      * @param UploadedFileDTO $file The ZIP file metadata.
      * @return TopicDTO[] A list of constructed TopicDTO objects.
      * @throws GoralysRuntimeException If no valid topic files are found.
@@ -280,7 +255,7 @@ class TopicsController
                 $out .= "    - " . $teacher . ": " . $this->usernameTable[$teacher] . PHP_EOL;
             }
 
-            $out .= "Elèves:" . PHP_EOL;
+            $out .= "Élèves:" . PHP_EOL;
             foreach ($topic->students as $student) {
                 $out .= "    - " . $student . ": " . $this->usernameTable[$student] . PHP_EOL;
             }

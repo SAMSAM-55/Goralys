@@ -15,7 +15,7 @@ use Goralys\Shared\Exception\User\UserNotFoundException;
 /**
  * Service used to retrieve and automatically assign a user's role.
  */
-class GetUserRoleService implements GetUserRoleInterface
+final class GetUserRoleService implements GetUserRoleInterface
 {
     private UserRepositoryInterface $repo;
 

@@ -6,11 +6,19 @@ use Goralys\App\HTTP\Middleware\Interface\MiddlewareInterface;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 
-class AuthMiddleware implements MiddlewareInterface
+/**
+ * Middleware that enforces authentication before a route handler is executed.
+ * Supports a "weak" mode that only clears the session (user-related fields) on failure instead of destroying it.
+ */
+final class AuthMiddleware implements MiddlewareInterface
 {
     private string $endpoint;
     private array $options;
 
+    /**
+     * @param string $endpoint The matched route path.
+     * @param mixed ...$params Optional mode flags (e.g., 'weak').
+     */
     public function __construct(string $endpoint, mixed ...$params)
     {
         $this->endpoint = $endpoint;
@@ -41,11 +49,19 @@ class AuthMiddleware implements MiddlewareInterface
         return $next($kernel);
     }
 
+    /**
+     * Returns the middleware binding for strict authentication (redirects on failure).
+     * @return array The middleware descriptor array.
+     */
     public static function require(): array
     {
         return ['auth'];
     }
 
+    /**
+     * Returns the middleware binding for weak authentication (clears session on failure, no redirect).
+     * @return array The middleware descriptor array.
+     */
     public static function weak(): array
     {
         return ['auth', ['weak']];

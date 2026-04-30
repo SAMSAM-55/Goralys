@@ -21,7 +21,7 @@ use mysqli_result;
 /**
  * The repository used to get user's info from the database.
  */
-class UserRepository implements UserRepositoryInterface
+final class UserRepository implements UserRepositoryInterface
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;
@@ -88,9 +88,9 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * Saves a new user to the database
-     * @param UserCreateDTO $userData The necessary data to save the user
-     * @return bool If the save was successful or not
+     * Saves a new user to the database.
+     * @param UserCreateDTO $userData The necessary data to save the user.
+     * @return bool If the save was successful or not.
      */
     public function save(UserCreateDTO $userData): bool
     {
@@ -228,7 +228,7 @@ class UserRepository implements UserRepositoryInterface
 
     /**
      * Deletes all users (except admins) from the database.
-     * @return bool If the deletion was successful
+     * @return bool If the deletion was successful.
      */
     public function clearAll(): bool
     {
@@ -239,9 +239,10 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @param string $uuid
-     * @return UserFullDTO
-     * @throws UserNotFoundException
+     * Get a user's info with its public id.
+     * @param string $uuid The public id of the user.
+     * @return UserFullDTO The info of the user.
+     * @throws UserNotFoundException If the user does not exist in the DB.
      */
     public function getByPublicId(string $uuid): UserFullDTO
     {
@@ -255,8 +256,9 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @param string $uuid
-     * @return bool
+     * Get if a public id belongs to a valid user.
+     * @param string $uuid The public id.
+     * @return bool If the pudlic id is valid or not.
      */
     public function isPublicIdValid(string $uuid): bool
     {
@@ -264,8 +266,9 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * @param string $username
-     * @return string|null
+     * Retrieves the public id of a user from its username.
+     * @param string $username The username of the user.
+     * @return string|null The public id on success, `null` on failure.
      */
     public function getPublicIdForUsername(string $username): ?string
     {

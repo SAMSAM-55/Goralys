@@ -18,7 +18,12 @@ use Goralys\Kernel\GoralysKernel;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Shared\Exception\Request\InvalidInputException;
 
-class GoralysRouter
+/**
+ * The HTTP router for the application.
+ * Registers routes per HTTP method and dispatches incoming requests through
+ * a middleware pipeline before invoking the route handler.
+ */
+final class GoralysRouter
 {
     private GoralysKernel $kernel; // router should be the only class with this dependency.
     /** @var array<string, array<string, Route>> */
@@ -38,11 +43,22 @@ class GoralysRouter
         'db' => DbMiddleware::class
     ];
 
+    /**
+     * @param GoralysKernel $kernel The application kernel (sole owner of this dependency).
+     */
     public function __construct(GoralysKernel $kernel)
     {
         $this->kernel = $kernel;
     }
 
+    /**
+     * Registers a route for the given HTTP method.
+     * @param string $method The HTTP method (e.g., 'POST', 'GET').
+     * @param string $route The route path.
+     * @param Closure $handler The route handler.
+     * @param array ...$options Optional middleware and input option arrays.
+     * @return Route The registered route.
+     */
     public function add(string $method, string $route, Closure $handler, array ...$options): Route
     {
         return $this->routes[$method][$route] = new Route(
@@ -53,21 +69,49 @@ class GoralysRouter
         );
     }
 
+    /**
+     * Registers a POST route.
+     * @param string $route The route path.
+     * @param Closure $handler The route handler.
+     * @param array ...$options Optional middleware and input option arrays.
+     * @return Route The registered route.
+     */
     public function post(string $route, Closure $handler, array ...$options): Route
     {
         return $this->add('POST', $route, $handler, ...$options);
     }
 
+    /**
+     * Registers a GET route.
+     * @param string $route The route path.
+     * @param Closure $handler The route handler.
+     * @param array ...$options Optional middleware and input option arrays.
+     * @return Route The registered route.
+     */
     public function get(string $route, Closure $handler, array ...$options): Route
     {
         return $this->add('GET', $route, $handler, ...$options);
     }
 
+    /**
+     * Registers an UPDATE route.
+     * @param string $route The route path.
+     * @param Closure $handler The route handler.
+     * @param array ...$options Optional middleware and input option arrays.
+     * @return Route The registered route.
+     */
     public function update(string $route, Closure $handler, array ...$options): Route
     {
         return $this->add('UPDATE', $route, $handler, ...$options);
     }
 
+    /**
+     * Registers a DELETE route.
+     * @param string $route The route path.
+     * @param Closure $handler The route handler.
+     * @param array ...$options Optional middleware and input option arrays.
+     * @return Route The registered route.
+     */
     public function delete(string $route, Closure $handler, array ...$options): Route
     {
         return $this->add('DELETE', $route, $handler, ...$options);
@@ -89,6 +133,13 @@ class GoralysRouter
         return $p();
     }
 
+    /**
+     * Dispatches the request to the matching route, running its middleware pipeline first.
+     * Responds with 404 if no route matches or 400 if input validation fails.
+     * @param string $method The HTTP method of the incoming request.
+     * @param string $uri The URI path of the incoming request.
+     * @return mixed The value returned by the route handler.
+     */
     public function dispatch(string $method, string $uri): mixed
     {
         $this->kernel->logger->debug(LoggerInitiator::APP, "DISPATCH: $method $uri");

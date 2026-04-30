@@ -13,13 +13,12 @@ use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 /**
  * Repository class for handling database operations related to Topics.
  */
-class TopicsRepository implements TopicsRepositoryInterface
+final class TopicsRepository implements TopicsRepositoryInterface
 {
-    /** @var DbContainerInterface The database container. */
     private DbContainerInterface $db;
 
     /**
-     * @param DbContainerInterface $db
+     * @param DbContainerInterface $db The injected DB.
      */
     public function __construct(
         DbContainerInterface $db
@@ -29,7 +28,6 @@ class TopicsRepository implements TopicsRepositoryInterface
 
     /**
      * Inserts a new topic into the 'topics' table.
-     *
      * @param int $topicId The unique ID of the topic.
      * @param string $topicCode The unique code for the topic.
      * @param string $topicName The display name of the topic.
@@ -48,7 +46,6 @@ class TopicsRepository implements TopicsRepositoryInterface
 
     /**
      * Associates a teacher with a topic in the 'topic_teachers' table.
-     *
      * @param int $topicId The ID of the topic.
      * @param string $teacherUsername The username of the teacher.
      * @return bool If the insertion succeeded.
@@ -65,7 +62,6 @@ class TopicsRepository implements TopicsRepositoryInterface
 
     /**
      * Associates a student with a topic in the 'student_topics' table.
-     *
      * @param int $topicId The ID of the topic.
      * @param string $studentUsername The username of the student.
      * @return bool If the insertion succeeded.

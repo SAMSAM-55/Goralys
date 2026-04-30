@@ -2,7 +2,10 @@
 
 namespace Goralys\App\Router\Options;
 
-class RouterOptions
+/**
+ * Entry point for accessing route option builder classes.
+ */
+final class RouterOptions
 {
     public static string $INPUT = InputOptions::class;
 }

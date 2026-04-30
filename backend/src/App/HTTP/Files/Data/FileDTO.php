@@ -9,8 +9,18 @@ namespace Goralys\App\HTTP\Files\Data;
 
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
+/**
+ * Raw DTO representing a single file entry from a PHP file upload (mirrors `$_FILES` structure).
+ */
 readonly class FileDTO
 {
+    /**
+     * @param string $name The original name of the file.
+     * @param string $type The MIME type of the file.
+     * @param string $tmpPath The temporary server path where the file is stored.
+     * @param int $size The size of the file in bytes.
+     * @param int $error The PHP upload error code (one of the UPLOAD_ERR_* constants).
+     */
     public function __construct(
         public string $name,
         public string $type,
@@ -22,7 +32,7 @@ readonly class FileDTO
 
     /**
      * Validates a FileDTO object and turns it into an UploadedFileDTO if the validation pass.
-     * @throws GoralysRuntimeException
+     * @throws GoralysRuntimeException If the validation fails.
      */
     public function toUploadedFile(): UploadedFileDTO
     {

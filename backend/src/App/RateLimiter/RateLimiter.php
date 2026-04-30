@@ -8,16 +8,29 @@ use Goralys\App\Config\RateLimiterConfig;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 
-class RateLimiter
+/**
+ * File-based rate limiter that tracks request counts per IP address.
+ * Supports constant, linear, and exponential back-off penalty windows.
+ */
+final class RateLimiter
 {
     private const string ALGO = "sha256";
     private LoggerInterface $logger;
 
+    /**
+     * @param LoggerInterface $logger The injected logger.
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * Atomically writes `$data` to the file, truncating any previous content, then releases the lock.
+     * @param resource $f The locked file handle.
+     * @param string $data The serialized data to persist.
+     * @return void
+     */
     private function finalWrite($f, string $data): void
     {
         rewind($f);
@@ -27,6 +40,14 @@ class RateLimiter
         fclose($f);
     }
 
+    /**
+     * Checks whether the current request from the client's IP is within the rate limit for the given endpoint.
+     * Increments the counter and updates the penalty window on each call.
+     * Falls back to the general limit defined in {@see RateLimiterConfig::GENERAL} if no per-endpoint rule exists.
+     * @param string $endpoint The name of the endpoint to check
+     * (must match a key in {@see RateLimiterConfig::getRateLimits()}).
+     * @return bool True if the request is allowed, false if the rate limit has been exceeded.
+     */
     public function forwardRequest(string $endpoint): bool
     {
         $rate = RateLimiterConfig::getRateLimits()[$endpoint] ?? null;

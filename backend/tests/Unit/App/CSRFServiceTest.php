@@ -64,7 +64,7 @@ class CSRFServiceTest extends TestCase
 
         $request = new FakeGoralysRequest();
         $request->setInput([]);
-        $_SESSION['csrf-tokens-table']['bar3'] = ["foo-xyab"];
+        $_SESSION['csrf-tokens-table']['bar3'] = ["foo-xya"];
 
         self::assertFalse(
             $this->service->validate("bar3", $request),

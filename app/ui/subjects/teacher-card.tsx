@@ -84,7 +84,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
     async function approveSubject() {
         if (!await confirm.showConfirm({
             title: "Validation de la question",
-            message: "Etes-vous sûr de vouloir valider cette question de manière définitive. Une fois la question " +
+            message: "Êtes-vous sûr de vouloir valider cette question de manière définitive. Une fois la question " +
                 "validée, toute modification devient impossible."
         })) return;
 

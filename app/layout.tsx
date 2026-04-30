@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {SideNav} from "@/app/ui/nav/side-nav";
-import {lusitana} from "@/app/lib/fonts";
+import {Lusitania} from "@/app/lib/fonts";
 import {ToastProvider} from "@/app/ui/toast/toast-provider";
 import {ConfirmProvider} from "@/app/ui/modals/confirm/confirm-provider";
 import React from "react";
@@ -23,7 +23,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
         <title>Goralys</title>
     </head>
 
-    <body className={`${lusitana.className} antialiased text-gray-900 bg-gray-50 lg:overflow-auto overflow-hidden`}>
+    <body className={`${Lusitania.className} antialiased text-gray-900 bg-gray-50 lg:overflow-auto overflow-hidden`}>
 
     {/* <div className="z-50 absolute h-screen w-screen lg:hidden bg-gray-200 flex items-center justify-center p-6 overflow-hidden">
         <h1 className="font-bold text-center text-2xl">

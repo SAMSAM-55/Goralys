@@ -15,9 +15,9 @@ use mysqli;
 use mysqli_sql_exception;
 
 /**
- * Service used to connect to the database
+ * Service used to connect to the database.
  */
-class ConnectService
+final class ConnectService
 {
     private LoggerInterface $logger;
 
@@ -30,7 +30,7 @@ class ConnectService
      * Creates and returns a connection to the database.
      * @param DbDto $credentials The necessary credentials to connect to the database.
      * @return mysqli The connection to the database.
-     * @throws GoralysConnectException If the connection fails
+     * @throws GoralysConnectException If the connection fails.
      */
     public function connectToDatabase(DbDto $credentials): mysqli
     {

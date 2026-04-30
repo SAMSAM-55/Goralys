@@ -15,8 +15,23 @@ use JsonSerializable;
  * The DTO used to transport the data of a subject.
  * It is used inside the App and Core layers to get the subjects from the database.
  */
-readonly class SubjectDTO implements JsonSerializable
+final readonly class SubjectDTO implements JsonSerializable
 {
+    /**
+     * @param string $studentUsername The username of the student.
+     * @param string $studentUsernameToken The display token for the student's username.
+     * @param string $subject The subject title or proposal content.
+     * @param SubjectStatus $status The current validation status of the subject.
+     * @param string $comment The teacher's comment on the subject.
+     * @param string $lastRejected The rejection reason from the last review cycle.
+     * @param DateTime|null $lastUpdatedAt The date and time of the last status update.
+     * @param string $topic The name of the topic associated with this subject.
+     * @param string $topicCode The code of the topic associated with this subject.
+     * @param string $teacherUsername The username of the assigned teacher.
+     * @param string $teacherUsernameToken The display token for the teacher's username.
+     * @param bool $interdisciplinary Whether this subject is interdisciplinary.
+     * @param bool $hasDraft Whether the student has a pending draft for this subject.
+     */
     public function __construct(
         public string $studentUsername,
         public string $studentUsernameToken,

@@ -13,7 +13,7 @@ use Goralys\Shared\Exception\Request\InvalidInputException;
 /**
  * A simple class used to easily access an HTTP request's inputs
  */
-class GoralysRequest implements RequestInterface
+final class GoralysRequest implements RequestInterface
 {
     private array $input;
 
@@ -52,8 +52,7 @@ class GoralysRequest implements RequestInterface
 
     /**
      * Check if a request's input is valid.
-     * An input is considered valid if it is not empty and exists.
-     * @param array $rules The name of the input to validate.
+     * @param array $rules The rules to apply for the validation.
      * @return array The validated inputs' data.
      * @throws InvalidInputException If the input validation fails.
      */

@@ -76,8 +76,8 @@ class UsernameFormatterServiceTest extends TestCase
     public function testFormatUsernameNoDotReturnsOriginal(): void
     {
         self::assertSame(
-            "jdoe",
-            $this->service->formatUsername("jdoe"),
+            "doe",
+            $this->service->formatUsername("doe"),
             "Expected username without dot to be returned as-is"
         );
     }

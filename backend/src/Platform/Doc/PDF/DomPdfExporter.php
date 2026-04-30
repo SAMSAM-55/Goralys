@@ -12,7 +12,10 @@ use Dompdf\Options;
 use Goralys\Platform\Doc\PDF\Data\PdfSourceDTO;
 use Goralys\Platform\Doc\PDF\Interfaces\PdfExporterInterface;
 
-class DomPdfExporter implements PdfExporterInterface
+/**
+ * Wrapper around the base {@see Dompdf} implementation used to export HTML documents to PDF.
+ */
+final class DomPdfExporter implements PdfExporterInterface
 {
     /**
      * Exports an HTML template to a PDF file.

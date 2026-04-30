@@ -1,22 +1,23 @@
 <?php
 
-/*
- * Copyright (C) 2026 Sami Saubion
- * SPDX-License-Identifier: AGPL-3.0-or-later
- */
+namespace Goralys\Tests\Fakes;
 
-namespace Goralys\App\HTTP\Files\Services;
-
+use Goralys\App\HTTP\Files\Data\FileDTO;
 use Goralys\App\HTTP\Files\Interface\FileMover;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
 class TestFileMover implements FileMover
 {
+    /** @var FileDTO[] */
+    private array $files;
+
+    public function __construct(array $files)
+    {
+        $this->files = $files;
+    }
+
     /**
-     * @param string $from The original path of the file.
-     * @param string $destination The destination of the file.
-     * @return bool If the move was successful or not.
-     * @throws GoralysRuntimeException If the file is invalid.
+     * @throws GoralysRuntimeException
      */
     public function move(string $from, string $destination): bool
     {
@@ -36,5 +37,10 @@ class TestFileMover implements FileMover
         }
 
         return true;
+    }
+
+    public function getFiles(): array
+    {
+        return $this->files ?? [];
     }
 }
