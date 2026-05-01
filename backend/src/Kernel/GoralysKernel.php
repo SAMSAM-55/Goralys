@@ -21,6 +21,7 @@
 namespace Goralys\Kernel;
 
 use ErrorException;
+use Goralys\App\Config\RateLimiterConfig;
 use Goralys\App\Context\AppContext;
 use Goralys\App\Context\Data\ToastMode;
 use Goralys\App\HTTP\Files\GoralysFileManager;
@@ -41,11 +42,11 @@ use Goralys\App\HTTP\Response\Interfaces\ImmediateResponseInterface;
 use Goralys\App\RateLimiter\RateLimiter;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
-use Goralys\App\Subjects\Services\UsernameManager;
 use Goralys\App\Topics\Controllers\TopicsController;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\User\Controllers\UserController;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
+use Goralys\App\User\Services\UsernameManager;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
@@ -360,11 +361,19 @@ class GoralysKernel
         $this->csrf = new CSRFService($this->logger);
     }
 
+    /**
+     * Initializes the kernel's username manager.
+     * @return void
+     */
     private function initUsernameManager(): void
     {
         $this->usernameManager = new UsernameManager(new UserRepository($this->logger, $this->db));
     }
 
+    /**
+     * Initializes the kernel's rate limiter.
+     * @return void
+     */
     private function initRateLimiter(): void
     {
         $this->rateLimiter = new RateLimiter($this->logger);
@@ -540,6 +549,14 @@ class GoralysKernel
         }
     }
 
+    /**
+     * Helper to require a rate limit for a given endpoint/action.
+     * @param string $endpoint The endpoint to require rate limiting on (refer to {@see RateLimiterConfig} for endpoint
+     * specific rates).
+     * @param string $redirect The url to redirect the user to on failure.
+     * @param string $message The message to display on failure (vie toast notificaation).
+     * @return void
+     */
     public function requireRateLimit(
         string $endpoint,
         string $redirect = "/",
@@ -645,60 +662,12 @@ class GoralysKernel
         }
     }
 
+    /**
+     * Switch the {@see AppContext::mode} to flash toast.
+     * @return void
+     */
     public function useFlash(): void
     {
         $this->context->mode = ToastMode::FLASH;
-    }
-
-    /**
-     * Helper to easily send flash toasts to the frontend for form requests.
-     * @param ToastType $type The type of the toast.
-     * @param string $title The title of the toast.
-     * @param string $message The message of the toast.
-     * @param string $redirect The page to redirect the user to.
-     * @param string $action The action to perform when the frontend receives the toast.
-     * Refer to the frontend root layout to know which actions are currently supported and to add your own ones.
-     * @return void
-     */
-    public function flashToast(
-        ToastType $type,
-        string $title,
-        string $message,
-        string $redirect = "/",
-        string $action = ""
-    ): void {
-        http_response_code(302); // Temporary redirect
-        $destination = $this->env->getByKey("ORIGIN_DOMAIN") . $redirect;
-        $this->toast->showToast(
-            $type,
-            $title,
-            $message,
-            $destination,
-            true,
-            $action
-        );
-        header("Location: $destination");
-    }
-
-    /**
-     * A helper to send flash error toasts.
-     * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
-     * @param string $redirect The page to redirect the user to (default = "index.html").
-     * @param int $code The HTTP response code for the request (default = 500).
-     * @return void
-     */
-    #[NoReturn]
-    public function flashFatalError(
-        string $msg = "Une erreur interne est survenue.",
-        string $redirect = "/",
-        int $code = 500
-    ): void {
-        $this->flashToast(
-            ToastType::ERROR,
-            "Erreur",
-            $msg,
-            $redirect
-        );
-        exit($code);
     }
 }

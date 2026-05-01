@@ -54,6 +54,9 @@ final class GoralysRequestTest extends TestCase
 
     // validate() — happy path
 
+    /**
+     * @throws InvalidInputException
+     */
     public function testValidateReturnsValidatedData(): void
     {
         $this->request->setInput(['username' => 'john']);
@@ -61,6 +64,9 @@ final class GoralysRequestTest extends TestCase
         $this->assertSame(['username' => 'john'], $result);
     }
 
+    /**
+     * @throws InvalidInputException
+     */
     public function testValidatePassesWithMultipleFields(): void
     {
         $this->request->setInput(['username' => 'john', 'password' => 'secret']);
@@ -71,6 +77,9 @@ final class GoralysRequestTest extends TestCase
         $this->assertSame(['username' => 'john', 'password' => 'secret'], $result);
     }
 
+    /**
+     * @throws InvalidInputException
+     */
     public function testValidatePassesMinConstraint(): void
     {
         $this->request->setInput(['password' => 'strongpass']);
@@ -78,6 +87,9 @@ final class GoralysRequestTest extends TestCase
         $this->assertSame(['password' => 'strongpass'], $result);
     }
 
+    /**
+     * @throws InvalidInputException
+     */
     public function testValidateIncludesOptionalFieldWhenPresent(): void
     {
         $this->request->setInput(['note' => 'hello']);
@@ -85,6 +97,9 @@ final class GoralysRequestTest extends TestCase
         $this->assertSame(['note' => 'hello'], $result);
     }
 
+    /**
+     * @throws InvalidInputException
+     */
     public function testValidateIncludesOptionalFieldAsNullWhenAbsent(): void
     {
         $this->request->setInput([]);
