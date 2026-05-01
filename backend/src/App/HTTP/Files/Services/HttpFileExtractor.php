@@ -30,13 +30,13 @@ final class HttpFileExtractor implements FileExtractor
 
         if (!is_file($path)) {
             throw new GoralysRuntimeException(
-                "Uploaded file not found at path: $path"
+                "Uploaded file not found at path: $path",
             );
         }
 
         if (strtolower(pathinfo($originalName, PATHINFO_EXTENSION)) !== 'zip') {
             throw new GoralysRuntimeException(
-                "The uploaded file must have a .zip extension."
+                "The uploaded file must have a .zip extension.",
             );
         }
 
@@ -45,7 +45,7 @@ final class HttpFileExtractor implements FileExtractor
 
         if ($result !== true) {
             throw new GoralysRuntimeException(
-                "The provided file is not a valid zip archive."
+                "The provided file is not a valid zip archive.",
             );
         }
 
@@ -63,7 +63,7 @@ final class HttpFileExtractor implements FileExtractor
     {
         $this->ensureZip($file);
 
-        if (!is_dir($dest) && !mkdir($dest, 0777, true)) {
+        if (!is_dir($dest) && !mkdir($dest, 0o777, true)) {
             throw new GoralysRuntimeException("Could not create extraction directory: $dest");
         }
 

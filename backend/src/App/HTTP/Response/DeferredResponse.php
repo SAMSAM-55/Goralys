@@ -53,7 +53,7 @@ final class DeferredResponse implements Interfaces\DeferredResponseInterface
             $title,
             $message,
             "/",
-            $this->context->mode === ToastMode::FLASH
+            $this->context->mode === ToastMode::FLASH,
         );
         return $this;
     }
@@ -70,7 +70,7 @@ final class DeferredResponse implements Interfaces\DeferredResponseInterface
             "Erreur",
             $message,
             "/",
-            $this->context->mode === ToastMode::FLASH
+            $this->context->mode === ToastMode::FLASH,
         );
         return $this;
     }

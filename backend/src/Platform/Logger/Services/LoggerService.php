@@ -25,7 +25,7 @@ final class LoggerService
      * @return void
      */
     final public static function init(
-        string $logDirectory
+        string $logDirectory,
     ): void {
         LoggerService::$logDirectory = $logDirectory;
     }
@@ -44,13 +44,13 @@ final class LoggerService
         LoggerInitiator $initiator,
         LoggerType $type,
         string $time,
-        string $message
+        string $message,
     ): void {
         flock($file, LOCK_EX);
 
         fwrite(
             $file,
-            "($initiator->value)[$type->name]{session:" . session_id() . "} at $time : $message" . PHP_EOL
+            "($initiator->value)[$type->name]{session:" . session_id() . "} at $time : $message" . PHP_EOL,
         );
 
         fflush($file);
@@ -73,7 +73,7 @@ final class LoggerService
     final public static function log(
         LoggerInitiator $initiator,
         LoggerType $type,
-        string $message
+        string $message,
     ): void {
         if ($type === LoggerType::Debug && LoggerConfigLoader::getGoralysEnv() !== 'dev') {
             return;

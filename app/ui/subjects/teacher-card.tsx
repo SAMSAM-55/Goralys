@@ -76,7 +76,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         if (data.toastType === 'info' && res.ok) {
-            cookies.set('subjects-synced-teacher', false);
+            cookies.set('subjects-synced-teacher', false, { path: '/' });
             onUpdateAction();
         }
     }
@@ -114,7 +114,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             });
 
             if (data.toastType === 'info' && res.ok) {
-                cookies.set('subjects-synced-teacher', false);
+                cookies.set('subjects-synced-teacher', false, { path: '/' });
                 onUpdateAction();
             }
         }

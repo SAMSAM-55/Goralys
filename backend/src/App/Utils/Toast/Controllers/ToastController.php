@@ -54,7 +54,7 @@ final readonly class ToastController
         string $toastMessage,
         string $redirect,
         bool $flash = false,
-        string $action = ""
+        string $action = "",
     ): void {
         $toastData = $this->builder->buildToast($toastType, $toastTitle, $toastMessage, $redirect, $flash);
         $this->responder->sendToast($toastData, $action);
@@ -73,7 +73,7 @@ final readonly class ToastController
         int $responseCode,
         string $msg = "Une erreur interne est survenue.",
         string $redirect = "/",
-        bool $flash = false
+        bool $flash = false,
     ): never {
         http_response_code($responseCode);
         $this->showToast(
@@ -81,7 +81,7 @@ final readonly class ToastController
             "Erreur",
             $msg,
             $redirect,
-            $flash
+            $flash,
         );
         exit;
     }

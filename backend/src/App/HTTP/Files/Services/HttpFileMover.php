@@ -48,7 +48,7 @@ final class HttpFileMover implements FileMover
 
         if (!move_uploaded_file($from, $destination)) {
             throw new GoralysRuntimeException(
-                sprintf('Failed to move uploaded file from "%s" to "%s"', $from, $destination)
+                sprintf('Failed to move uploaded file from "%s" to "%s"', $from, $destination),
             );
         }
 

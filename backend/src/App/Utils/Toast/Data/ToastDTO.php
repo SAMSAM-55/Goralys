@@ -18,9 +18,8 @@ final class ToastDTO
      * @param bool   $flash Whether the toast should be stored as a flash notification.
      */
     public function __construct(
-        readonly public array $toastInfo,
+        public readonly array $toastInfo,
         public string $redirect,
-        readonly public bool $flash = false
-    ) {
-    }
+        public readonly bool $flash = false,
+    ) {}
 }

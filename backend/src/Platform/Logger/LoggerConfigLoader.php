@@ -21,7 +21,7 @@ final class LoggerConfigLoader
         "CORE" => 14,
         "PLATFORM" => 20,
         "KERNEL" => 14,
-        "GLOBAL" => 30
+        "GLOBAL" => 30,
     ];
     private static string $goralysEnv;
     private static string $baseDir = __DIR__ . "/../../../Logs/";
@@ -35,11 +35,11 @@ final class LoggerConfigLoader
     {
         if (!self::$isInitialized) {
             self::$loggerFiles = [
-                    "APP" => $_ENV["LOGGER_APP_FILENAME"] ?? "Goralys_App",
-                    "CORE" => $_ENV["LOGGER_CORE_FILENAME"] ?? "Goralys_Core",
-                    "PLATFORM" => $_ENV["LOGGER_PLATFORM_FILENAME"] ?? "Goralys_Platform",
-                    "KERNEL" => $_ENV["LOGGER_KERNEL_FILENAME"] ?? "Goralys_Kernel",
-                    "GLOBAL" => $_ENV["LOGGER_GLOBAL_FILENAME"] ?? "Goralys_Global"
+                "APP" => $_ENV["LOGGER_APP_FILENAME"] ?? "Goralys_App",
+                "CORE" => $_ENV["LOGGER_CORE_FILENAME"] ?? "Goralys_Core",
+                "PLATFORM" => $_ENV["LOGGER_PLATFORM_FILENAME"] ?? "Goralys_Platform",
+                "KERNEL" => $_ENV["LOGGER_KERNEL_FILENAME"] ?? "Goralys_Kernel",
+                "GLOBAL" => $_ENV["LOGGER_GLOBAL_FILENAME"] ?? "Goralys_Global",
             ];
             self::$goralysEnv = $_ENV['GORALYS_ENVIRONMENT'];
             self::$isInitialized = true;

@@ -23,7 +23,7 @@ final class RegisterValidatorService implements RegisterValidatorServiceInterfac
      * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        UserRepositoryInterface $repo
+        UserRepositoryInterface $repo,
     ) {
         $this->repo = $repo;
     }

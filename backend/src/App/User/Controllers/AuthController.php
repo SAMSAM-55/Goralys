@@ -48,7 +48,7 @@ final class AuthController
         LoggerInterface $logger,
         DbContainerInterface $db,
         int $sessionLifetime,
-        float $sessionLifetimeMultiplier
+        float $sessionLifetimeMultiplier,
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -68,7 +68,7 @@ final class AuthController
         $userData = new UserRegisterDTO(
             $userData->username,
             $userData->fullName,
-            $userData->password
+            $userData->password,
         );
 
         $validator = new RegisterValidatorService($this->repo);
@@ -79,7 +79,7 @@ final class AuthController
             $this->logger,
             $validator,
             $roleGetter,
-            $userCreator
+            $userCreator,
         );
         return $service->register($userData);
     }

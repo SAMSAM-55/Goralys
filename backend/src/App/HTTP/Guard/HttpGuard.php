@@ -46,7 +46,7 @@ final class HttpGuard implements GuardInterface
         return new DeferredResponse($this->context, 403)->toast( // Unauthorized
             ToastType::WARNING,
             "Mauvais utilisateur",
-            "Il semblerait que vous ne soyez pas le bon utilisateur"
+            "Il semblerait que vous ne soyez pas le bon utilisateur",
         );
     }
 }

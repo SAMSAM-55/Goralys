@@ -28,7 +28,7 @@ final class UpdateSubjectService
      */
     public function __construct(
         LoggerInterface $logger,
-        SubjectsRepositoryInterface $repo
+        SubjectsRepositoryInterface $repo,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
@@ -50,14 +50,14 @@ final class UpdateSubjectService
         if (!$result) {
             $this->logger->warning(
                 LoggerInitiator::CORE,
-                "Failed to update $field for (teacher, student) : $pair"
+                "Failed to update $field for (teacher, student) : $pair",
             );
             return;
         }
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "Updated $field for (student, teacher) : $pair"
+            "Updated $field for (student, teacher) : $pair",
         );
     }
 
@@ -75,14 +75,14 @@ final class UpdateSubjectService
         string $studentUsername,
         string $topic,
         string $newSubject,
-        bool $interdisciplinary
+        bool $interdisciplinary,
     ): bool {
         $result = $this->repo->updateSubject(
             $teacherUsername,
             $studentUsername,
             $topic,
             $newSubject,
-            $interdisciplinary
+            $interdisciplinary,
         );
 
         $this->handleResult($result, $teacherUsername, $studentUsername, "subject");
@@ -102,7 +102,7 @@ final class UpdateSubjectService
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newComment
+        string $newComment,
     ): bool {
         $result = $this->repo->updateComment($teacherUsername, $studentUsername, $topic, $newComment);
 
@@ -122,7 +122,7 @@ final class UpdateSubjectService
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        SubjectStatus $newStatus
+        SubjectStatus $newStatus,
     ): bool {
         $result = $this->repo->updateStatus($teacherUsername, $studentUsername, $topic, $newStatus);
 

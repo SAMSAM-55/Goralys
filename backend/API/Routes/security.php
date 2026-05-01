@@ -20,7 +20,7 @@ function createSecurityRoutes(GoralysRouter $router): void
 
 
         $kernel->response()->json([
-            "csrf-token" => $kernel->csrf->getForForm($formId)
+            "csrf-token" => $kernel->csrf->getForForm($formId),
         ]);
     }, ...RouterOptions::$INPUT::require('form-id'))
             ->middleware(...RateLimitMiddleware::for('csrf-create'));

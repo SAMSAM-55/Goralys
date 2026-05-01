@@ -39,7 +39,7 @@ final class RegisterService
         LoggerInterface $logger,
         RegisterValidatorServiceInterface $validator,
         GetUserRoleInterface $roleGetter,
-        CreateUserInterface $userCreator
+        CreateUserInterface $userCreator,
     ) {
         $this->logger = $logger;
 
@@ -58,7 +58,7 @@ final class RegisterService
         if (!$this->validator->canRegister($data)) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to register user with user name : " . $data->username
+                "Failed to register user with user name : " . $data->username,
             );
             return false;
         }
@@ -67,20 +67,20 @@ final class RegisterService
             $data->username,
             $data->fullName,
             password_hash($data->password, PASSWORD_DEFAULT),
-            $this->roleGetter->getRoleByUsername($data->username)
+            $this->roleGetter->getRoleByUsername($data->username),
         );
 
         if (!$this->userCreator->createUser($createData)) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to create user with user name : " . $data->username
+                "Failed to create user with user name : " . $data->username,
             );
             return false;
         }
         $this->logger->info(
             LoggerInitiator::CORE,
             "Successfully registered a new user with username : "
-            . $data->username . "(" . $createData->role->toString() . ")"
+            . $data->username . "(" . $createData->role->toString() . ")",
         );
         return true;
     }

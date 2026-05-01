@@ -52,7 +52,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             where st.student_id = ?
             group by st.student_id, st.topic_id",
             "s",
-            $studentUsername
+            $studentUsername,
         );
     }
 
@@ -82,7 +82,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             where tt.teacher_id = ?
             group by st.student_id, st.topic_id",
             "s",
-            $teacherUsername
+            $teacherUsername,
         );
     }
 
@@ -108,7 +108,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             from topics t
             join topic_teachers tt on t.id = tt.topic_id
             join student_topics st on t.id = st.topic_id
-            group by st.student_id, st.topic_id"
+            group by st.student_id, st.topic_id",
         );
     }
 
@@ -132,7 +132,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             "sss",
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -156,7 +156,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             "sss",
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -175,7 +175,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
         string $studentUsername,
         string $topic,
         string $newSubject,
-        bool $interdisciplinary
+        bool $interdisciplinary,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -191,7 +191,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             $interdisciplinary,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -208,7 +208,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        SubjectStatus $newStatus
+        SubjectStatus $newStatus,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -224,7 +224,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             $newStatus->value,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -242,7 +242,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newComment
+        string $newComment,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -256,7 +256,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             $newComment,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -274,7 +274,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newPath
+        string $newPath,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -288,7 +288,7 @@ final class SubjectsRepository implements SubjectsRepositoryInterface
             $newPath,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 }

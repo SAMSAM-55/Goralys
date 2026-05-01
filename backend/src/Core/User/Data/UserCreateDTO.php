@@ -24,7 +24,6 @@ final readonly class UserCreateDTO
         public string $username,
         public string $fullName,
         public string $passwordHash,
-        public UserRole $role
-    ) {
-    }
+        public UserRole $role,
+    ) {}
 }

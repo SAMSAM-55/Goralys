@@ -7,6 +7,4 @@
 
 namespace Goralys\Shared\Exception\User;
 
-class UserNotFoundException extends GoralysUserException
-{
-}
+class UserNotFoundException extends GoralysUserException {}

@@ -24,9 +24,9 @@ final class GetUserRoleService implements GetUserRoleInterface
      * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        UserRepositoryInterface $repo
+        UserRepositoryInterface $repo,
     ) {
-            $this->repo = $repo;
+        $this->repo = $repo;
     }
 
     /**

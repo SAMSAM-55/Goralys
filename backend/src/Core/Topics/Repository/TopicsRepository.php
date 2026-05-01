@@ -21,7 +21,7 @@ final class TopicsRepository implements TopicsRepositoryInterface
      * @param DbContainerInterface $db The injected DB.
      */
     public function __construct(
-        DbContainerInterface $db
+        DbContainerInterface $db,
     ) {
         $this->db = $db;
     }
@@ -40,7 +40,7 @@ final class TopicsRepository implements TopicsRepositoryInterface
             "iss",
             $topicId,
             $topicCode,
-            $topicName
+            $topicName,
         );
     }
 
@@ -56,11 +56,11 @@ final class TopicsRepository implements TopicsRepositoryInterface
             "insert into topic_teachers (topic_id, teacher_id) values (?, ?)",
             "is",
             $topicId,
-            $teacherUsername
+            $teacherUsername,
         ) && $this->db->run(
             "insert ignore into public_ids (user_id, public_id) values (?, uuid());",
             "s",
-            $teacherUsername
+            $teacherUsername,
         );
     }
 
@@ -78,11 +78,11 @@ final class TopicsRepository implements TopicsRepositoryInterface
                    values (?, ?, null, null, null, null, 0)",
             "si",
             $studentUsername,
-            $topicId
+            $topicId,
         ) && $this->db->run(
             "insert ignore into public_ids (user_id, public_id) values (?, uuid());",
             "s",
-            $studentUsername
+            $studentUsername,
         );
     }
 
@@ -95,7 +95,7 @@ final class TopicsRepository implements TopicsRepositoryInterface
         $tables = [
             "student_topics",
             "topic_teachers",
-            "topics"
+            "topics",
         ];
 
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
@@ -103,8 +103,8 @@ final class TopicsRepository implements TopicsRepositoryInterface
         try {
             foreach ($tables as $table) {
                 $this->db->runNoArgs(
-                /** @lang SQL */
-                    "truncate table `$table`"
+                    /** @lang SQL */
+                    "truncate table `$table`",
                 );
             }
         } finally {

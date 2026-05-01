@@ -24,7 +24,7 @@ final class CreateUserService implements CreateUserInterface
      * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        UserRepositoryInterface $repo
+        UserRepositoryInterface $repo,
     ) {
         $this->repo = $repo;
     }

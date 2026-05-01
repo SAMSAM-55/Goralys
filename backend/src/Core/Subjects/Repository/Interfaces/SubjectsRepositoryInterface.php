@@ -64,7 +64,7 @@ interface SubjectsRepositoryInterface
         string $studentUsername,
         string $topic,
         string $newSubject,
-        bool $interdisciplinary
+        bool $interdisciplinary,
     ): bool;
 
     /**
@@ -78,7 +78,7 @@ interface SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        SubjectStatus $newStatus
+        SubjectStatus $newStatus,
     ): bool;
 
     /**
@@ -92,7 +92,7 @@ interface SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newComment
+        string $newComment,
     ): bool;
 
     /**
@@ -106,6 +106,6 @@ interface SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newPath
+        string $newPath,
     ): bool;
 }

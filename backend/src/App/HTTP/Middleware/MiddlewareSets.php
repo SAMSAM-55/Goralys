@@ -22,14 +22,14 @@ final class MiddlewareSets
         string $action,
         UserRole $role,
         bool $strict = true,
-        bool $transaction = false
+        bool $transaction = false,
     ): array {
         return [
-                new Middleware(...RateLimitMiddleware::for($action, '/subject')),
-                new Middleware(...CSRFMiddleware::form($action, '/subject')),
-                new Middleware(...AuthMiddleware::require()),
-                new Middleware(...RoleMiddleware::require($role, $strict)),
-                new Middleware(...($transaction ? DbMiddleware::transaction() : DbMiddleware::require())),
+            new Middleware(...RateLimitMiddleware::for($action, '/subject')),
+            new Middleware(...CSRFMiddleware::form($action, '/subject')),
+            new Middleware(...AuthMiddleware::require()),
+            new Middleware(...RoleMiddleware::require($role, $strict)),
+            new Middleware(...($transaction ? DbMiddleware::transaction() : DbMiddleware::require())),
         ];
     }
 
@@ -41,11 +41,11 @@ final class MiddlewareSets
     public static function topicsRoute(string $action): array
     {
         return [
-                new Middleware(...RateLimitMiddleware::for($action, '/subject')),
-                new Middleware(...CSRFMiddleware::form($action, '/subject')),
-                new Middleware(...AuthMiddleware::require()),
-                new Middleware(...RoleMiddleware::require(UserRole::ADMIN, true)),
-                new Middleware(...DbMiddleware::transaction()),
+            new Middleware(...RateLimitMiddleware::for($action, '/subject')),
+            new Middleware(...CSRFMiddleware::form($action, '/subject')),
+            new Middleware(...AuthMiddleware::require()),
+            new Middleware(...RoleMiddleware::require(UserRole::ADMIN, true)),
+            new Middleware(...DbMiddleware::transaction()),
         ];
     }
 }

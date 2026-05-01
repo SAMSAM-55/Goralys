@@ -21,7 +21,7 @@ class UpdateSubjectServiceTest extends TestCase
 
         $this->service = new UpdateSubjectService(
             $this->logger,
-            $this->repo
+            $this->repo,
         );
     }
 
@@ -40,7 +40,7 @@ class UpdateSubjectServiceTest extends TestCase
             "j.doe1",
             "e.doe3",
             "Maths",
-            SubjectStatus::APPROVED
+            SubjectStatus::APPROVED,
         ));
 
         $this->repo->setUpdateResult(true);
@@ -48,7 +48,7 @@ class UpdateSubjectServiceTest extends TestCase
             "j.doe1",
             "e.doe3",
             "Maths",
-            SubjectStatus::SUBMITTED
+            SubjectStatus::SUBMITTED,
         ));
     }
 
@@ -59,7 +59,7 @@ class UpdateSubjectServiceTest extends TestCase
             "j.doe1",
             "e.doe3",
             "Maths",
-            "foo"
+            "foo",
         ));
 
         $this->repo->setUpdateResult(true);
@@ -67,7 +67,7 @@ class UpdateSubjectServiceTest extends TestCase
             "j.doe1",
             "e.doe3",
             "Maths",
-            "bar"
+            "bar",
         ));
     }
 
@@ -79,7 +79,7 @@ class UpdateSubjectServiceTest extends TestCase
             "e.doe3",
             "Maths",
             "foo",
-            false
+            false,
         ));
 
         $this->repo->setUpdateResult(true);
@@ -88,7 +88,7 @@ class UpdateSubjectServiceTest extends TestCase
             "e.doe3",
             "Maths",
             "bar",
-            true
+            true,
         ));
     }
 }

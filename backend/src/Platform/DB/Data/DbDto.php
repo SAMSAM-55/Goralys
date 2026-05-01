@@ -17,7 +17,6 @@ final readonly class DbDto
         public string $host,
         public string $name,
         public string $username,
-        public string $password
-    ) {
-    }
+        public string $password,
+    ) {}
 }

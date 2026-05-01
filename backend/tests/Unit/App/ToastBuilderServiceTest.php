@@ -29,7 +29,7 @@ class ToastBuilderServiceTest extends TestCase
         self::assertSame(
             "Operation completed",
             $info['toastMessage'],
-            "Expected toastMessage to be 'Operation completed'"
+            "Expected toastMessage to be 'Operation completed'",
         );
         self::assertSame("/home", $info['redirect'], "Expected redirect to be '/home'");
     }
@@ -59,7 +59,7 @@ class ToastBuilderServiceTest extends TestCase
             self::assertSame(
                 $type->value,
                 $toast->toastInfo['toastType'],
-                "Expected toastType to match for type $type->name"
+                "Expected toastType to match for type $type->name",
             );
         }
     }

@@ -30,7 +30,7 @@ class RegisterServiceTest extends TestCase
             $this->logger,
             $this->validator,
             $this->roleGetter,
-            $this->userCreator
+            $this->userCreator,
         );
     }
 
@@ -46,32 +46,32 @@ class RegisterServiceTest extends TestCase
     public function testRegisterInvalidUsername()
     {
         $this->validator->setCanRegister(false);
-        $this->roleGetter->setRole(UserRole::STUDENT);
-        $this->userCreator->setSuccess(true);
+        $this->roleGetter->role = UserRole::STUDENT;
+        $this->userCreator->success = true;
         self::assertFalse($this->service->register(new UserRegisterDTO("j.doe1", "John Doe", "foo")));
     }
 
     public function testRegisterInvalidRole()
     {
         $this->validator->setCanRegister(true);
-        $this->roleGetter->setRole(UserRole::UNKNOWN);
-        $this->userCreator->setSuccess(false);
+        $this->roleGetter->role = UserRole::UNKNOWN;
+        $this->userCreator->success = false;
         self::assertFalse($this->service->register(new UserRegisterDTO("j.doe1", "John Doe", "foo")));
     }
 
     public function testRegisterCannotCreateAccount()
     {
         $this->validator->setCanRegister(true);
-        $this->roleGetter->setRole(UserRole::STUDENT);
-        $this->userCreator->setSuccess(false);
+        $this->roleGetter->role = UserRole::STUDENT;
+        $this->userCreator->success = false;
         self::assertFalse($this->service->register(new UserRegisterDTO("j.doe1", "John Doe", "foo")));
     }
 
     public function testRegisterWorks()
     {
         $this->validator->setCanRegister(true);
-        $this->roleGetter->setRole(UserRole::STUDENT);
-        $this->userCreator->setSuccess(true);
+        $this->roleGetter->role = UserRole::STUDENT;
+        $this->userCreator->success = true;
         self::assertTrue($this->service->register(new UserRegisterDTO("j.doe1", "John Doe", "foo")));
     }
 }

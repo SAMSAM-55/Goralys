@@ -31,7 +31,7 @@ final class StudentDraftsManager
     public function __construct(
         LoggerInterface $logger,
         SubjectsRepositoryInterface $repo,
-        GoralysFileManager $fileManager
+        GoralysFileManager $fileManager,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
@@ -60,7 +60,7 @@ final class StudentDraftsManager
             }
         }
         if (!is_dir($fullDir)) {
-            mkdir($fullDir, 0777, true);
+            mkdir($fullDir, 0o777, true);
         }
     }
 
@@ -84,21 +84,21 @@ final class StudentDraftsManager
         if ($this->fileManager->move('draft-file', $destination)) {
             $this->logger->debug(
                 LoggerInitiator::CORE,
-                "Successfully moved uploaded draft for student: " . $studentUsername . ", with topic: " . $topicName
+                "Successfully moved uploaded draft for student: " . $studentUsername . ", with topic: " . $topicName,
             );
 
             return $this->repo->updateDraftPath(
                 $teacherUsername,
                 $studentUsername,
                 $topicName,
-                $destination
+                $destination,
             );
         }
 
         $this->logger->debug(
             LoggerInitiator::CORE,
             "Failed to move uploaded draft for student: " . $studentUsername . ", with topic: " . $topicName
-                . " from: " . $file->tmpPath . ", to: " . $destination
+                . " from: " . $file->tmpPath . ", to: " . $destination,
         );
 
         return false;

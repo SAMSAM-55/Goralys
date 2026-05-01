@@ -52,7 +52,7 @@ class FakeUserRepository implements UserRepositoryInterface
 
     public function save(UserCreateDTO $userData): bool
     {
-        return (bool)$this->updateResult;
+        return (bool) $this->updateResult;
     }
 
     public function getLoginDTO(string $username): ?UserLoginDTO
@@ -108,5 +108,13 @@ class FakeUserRepository implements UserRepositoryInterface
     public function getByPublicId(string $uuid): UserFullDTO
     {
         return $this->users[$uuid];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll(): array
+    {
+        return [];
     }
 }

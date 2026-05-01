@@ -28,7 +28,7 @@ interface ImmediateResponseInterface
     public function download(
         string $path,
         string $name,
-        ?callable $after = null
+        ?callable $after = null,
     ): never;
 
     /**

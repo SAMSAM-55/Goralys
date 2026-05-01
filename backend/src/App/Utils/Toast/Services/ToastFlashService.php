@@ -29,7 +29,7 @@ final class ToastFlashService
             "toastInfo" => $toastData->toastInfo,
             "redirect" => $toastData->redirect,
             "flash" => true,
-            "action" => $action
+            "action" => $action,
         ];
     }
 

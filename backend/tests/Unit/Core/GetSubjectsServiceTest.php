@@ -61,7 +61,7 @@ class GetSubjectsServiceTest extends TestCase
             $this->logger,
             $this->repo,
             $this->formatter,
-            $this->usernameManager
+            $this->usernameManager,
         );
 
         $this->seedUsers();
@@ -84,99 +84,99 @@ class GetSubjectsServiceTest extends TestCase
     public function testGetAllSubjects()
     {
         $subjects = [
-                [
-                        'teachers'        => 'j.doe1',
-                        'student'         => 'e.doe3',
-                        'topic'           => 'Maths',
-                        'subject'         => 'Étude des fonctions',
-                        'last_rejected'   => null,
-                        'subject_status'  => 3,
-                        'draftPath'       => "/path/to/draft",
-                        'last_updated_at' => '2026-03-29 10:15:00',
-                        'is_interdisciplinary' => true,
-                ],
-                [
-                        'teachers'        => 'm.smith2',
-                        'student'         => 'e.doe3',
-                        'topic'           => 'Physique',
-                        'subject'         => 'Ondes et interférences',
-                        'last_rejected'   => null,
-                        'subject_status'  => 1,
-                        'draftPath'       => null,
-                        'last_updated_at' => '2026-03-29 10:15:00',
-                        'is_interdisciplinary' => false,
-                ],
-                [
-                        'teachers'        => 'j.doe1',
-                        'student'         => 'l.dupont4',
-                        'topic'           => 'Informatique',
-                        'comment'         => "foo",
-                        'subject'         => 'Algorithmes de tri',
-                        'last_rejected'   => 'Algorithmes de tri',
-                        'subject_status'  => 2,
-                        'draftPath'       => null,
-                        'last_updated_at' => '2026-03-29 10:15:00',
-                        'is_interdisciplinary' => false,
-                ],
-                [
-                        'teachers'        => 'm.smith2',
-                        'student'         => 'l.dupont4',
-                        'topic'           => 'Sciences',
-                        'subject'         => 'Intelligence artificielle',
-                        'last_rejected'   => null,
-                        'subject_status'  => 3,
-                        'draftPath'       => null,
-                        'last_updated_at' => '2026-03-29 10:15:00',
-                        'is_interdisciplinary' => false,
-                ],
-                null
+            [
+                'teachers'        => 'j.doe1',
+                'student'         => 'e.doe3',
+                'topic'           => 'Maths',
+                'subject'         => 'Étude des fonctions',
+                'last_rejected'   => null,
+                'subject_status'  => 3,
+                'draftPath'       => "/path/to/draft",
+                'last_updated_at' => '2026-03-29 10:15:00',
+                'is_interdisciplinary' => true,
+            ],
+            [
+                'teachers'        => 'm.smith2',
+                'student'         => 'e.doe3',
+                'topic'           => 'Physique',
+                'subject'         => 'Ondes et interférences',
+                'last_rejected'   => null,
+                'subject_status'  => 1,
+                'draftPath'       => null,
+                'last_updated_at' => '2026-03-29 10:15:00',
+                'is_interdisciplinary' => false,
+            ],
+            [
+                'teachers'        => 'j.doe1',
+                'student'         => 'l.dupont4',
+                'topic'           => 'Informatique',
+                'comment'         => "foo",
+                'subject'         => 'Algorithmes de tri',
+                'last_rejected'   => 'Algorithmes de tri',
+                'subject_status'  => 2,
+                'draftPath'       => null,
+                'last_updated_at' => '2026-03-29 10:15:00',
+                'is_interdisciplinary' => false,
+            ],
+            [
+                'teachers'        => 'm.smith2',
+                'student'         => 'l.dupont4',
+                'topic'           => 'Sciences',
+                'subject'         => 'Intelligence artificielle',
+                'last_rejected'   => null,
+                'subject_status'  => 3,
+                'draftPath'       => null,
+                'last_updated_at' => '2026-03-29 10:15:00',
+                'is_interdisciplinary' => false,
+            ],
+            null,
         ];
 
         $expected = [
-                [
-                        'student'        => 'DOE E.',
-                        'subject'        => 'Étude des fonctions',
-                        'status'         => 'approved',
-                        'comment'        => "",
-                        'lastRejected'   => "",
-                        'topic'          => 'Maths',
-                        'teacher'        => 'DOE J.',
-                        'hasDraft'       => false,
-                        'interdisciplinary' => true,
-                ],
-                [
-                        'student'        => 'DOE E.',
-                        'subject'        => 'Ondes et interférences',
-                        'status'         => 'submitted',
-                        'comment'        => "",
-                        'lastRejected'   => "",
-                        'topic'          => 'Physique',
-                        'teacher'        => 'SMITH M.',
-                        'hasDraft'       => false,
-                        'interdisciplinary' => false,
-                ],
-                [
-                        'student'        => 'DUPONT L.',
-                        'subject'        => 'Algorithmes de tri',
-                        'status'         => 'rejected',
-                        'comment'        => "foo",
-                        'lastRejected'   => 'Algorithmes de tri',
-                        'topic'          => 'Informatique',
-                        'teacher'        => "DOE J.",
-                        'hasDraft'       => false,
-                        'interdisciplinary' => false,
-                ],
-                [
-                        'student'        => 'DUPONT L.',
-                        'subject'        => 'Intelligence artificielle',
-                        'status'         => 'approved',
-                        'comment'        => "",
-                        'lastRejected'   => "",
-                        'topic'          => 'Sciences',
-                        'teacher'        => 'SMITH M.',
-                        'hasDraft'       => false,
-                        'interdisciplinary' => false,
-                ],
+            [
+                'student'        => 'DOE E.',
+                'subject'        => 'Étude des fonctions',
+                'status'         => 'approved',
+                'comment'        => "",
+                'lastRejected'   => "",
+                'topic'          => 'Maths',
+                'teacher'        => 'DOE J.',
+                'hasDraft'       => false,
+                'interdisciplinary' => true,
+            ],
+            [
+                'student'        => 'DOE E.',
+                'subject'        => 'Ondes et interférences',
+                'status'         => 'submitted',
+                'comment'        => "",
+                'lastRejected'   => "",
+                'topic'          => 'Physique',
+                'teacher'        => 'SMITH M.',
+                'hasDraft'       => false,
+                'interdisciplinary' => false,
+            ],
+            [
+                'student'        => 'DUPONT L.',
+                'subject'        => 'Algorithmes de tri',
+                'status'         => 'rejected',
+                'comment'        => "foo",
+                'lastRejected'   => 'Algorithmes de tri',
+                'topic'          => 'Informatique',
+                'teacher'        => "DOE J.",
+                'hasDraft'       => false,
+                'interdisciplinary' => false,
+            ],
+            [
+                'student'        => 'DUPONT L.',
+                'subject'        => 'Intelligence artificielle',
+                'status'         => 'approved',
+                'comment'        => "",
+                'lastRejected'   => "",
+                'topic'          => 'Sciences',
+                'teacher'        => 'SMITH M.',
+                'hasDraft'       => false,
+                'interdisciplinary' => false,
+            ],
         ];
 
         $this->mysqliResult->expects($this->atLeastOnce())
@@ -185,10 +185,9 @@ class GetSubjectsServiceTest extends TestCase
         $this->repo->setGetResult($this->mysqliResult);
 
         // Preparing the data
-        $actual = $this->stripTokens(json_decode(json_encode(
-            $this->service->getAllSubjects(),
-            JSON_UNESCAPED_UNICODE
-        ), true));
+        $actual = json_encode($this->service->getAllSubjects(), JSON_UNESCAPED_UNICODE, )
+            |> (fn($x) => json_decode($x, true))
+            |> $this->stripTokens(...);
 
         self::assertSame($expected, $actual);
     }
@@ -199,54 +198,54 @@ class GetSubjectsServiceTest extends TestCase
     public function testGetStudentSubjects()
     {
         $subjects = [
-                [
-                        'teachers'        => 'j.doe1',
-                        'student'         => 'e.doe3',
-                        'topic'           => 'Maths',
-                        'subject'         => 'Étude des fonctions',
-                        'last_rejected'   => null,
-                        'subject_status'  => 3,
-                        'draftPath'       => "/path/to/draft",
-                        'last_updated_at' => '2026-03-26 11:15:00',
-                        'is_interdisciplinary' => false
-                ],
-                [
-                        'teachers'        => 'm.smith2',
-                        'student'         => 'e.doe3',
-                        'topic'           => 'Physique',
-                        'subject'         => 'Ondes et interférences',
-                        'last_rejected'   => null,
-                        'subject_status'  => 1,
-                        'draftPath'       => null,
-                        'last_updated_at' => '2026-03-26 11:15:00',
-                        'is_interdisciplinary' => true
-                ],
-                null
+            [
+                'teachers'        => 'j.doe1',
+                'student'         => 'e.doe3',
+                'topic'           => 'Maths',
+                'subject'         => 'Étude des fonctions',
+                'last_rejected'   => null,
+                'subject_status'  => 3,
+                'draftPath'       => "/path/to/draft",
+                'last_updated_at' => '2026-03-26 11:15:00',
+                'is_interdisciplinary' => false,
+            ],
+            [
+                'teachers'        => 'm.smith2',
+                'student'         => 'e.doe3',
+                'topic'           => 'Physique',
+                'subject'         => 'Ondes et interférences',
+                'last_rejected'   => null,
+                'subject_status'  => 1,
+                'draftPath'       => null,
+                'last_updated_at' => '2026-03-26 11:15:00',
+                'is_interdisciplinary' => true,
+            ],
+            null,
         ];
 
         $expected = [
-                [
-                        'student'        => 'DOE E.',
-                        'subject'        => 'Étude des fonctions',
-                        'status'         => 'approved',
-                        'comment'        => "",
-                        'lastRejected'   => "",
-                        'topic'          => 'Maths',
-                        'teacher'        => 'DOE J.',
-                        'hasDraft'       => false,
-                        'interdisciplinary' => false,
-                ],
-                [
-                        'student'        => 'DOE E.',
-                        'subject'        => 'Ondes et interférences',
-                        'status'         => 'submitted',
-                        'comment'        => "",
-                        'lastRejected'   => "",
-                        'topic'          => 'Physique',
-                        'teacher'        => 'SMITH M.',
-                        'hasDraft'       => false,
-                        'interdisciplinary' => true,
-                ],
+            [
+                'student'        => 'DOE E.',
+                'subject'        => 'Étude des fonctions',
+                'status'         => 'approved',
+                'comment'        => "",
+                'lastRejected'   => "",
+                'topic'          => 'Maths',
+                'teacher'        => 'DOE J.',
+                'hasDraft'       => false,
+                'interdisciplinary' => false,
+            ],
+            [
+                'student'        => 'DOE E.',
+                'subject'        => 'Ondes et interférences',
+                'status'         => 'submitted',
+                'comment'        => "",
+                'lastRejected'   => "",
+                'topic'          => 'Physique',
+                'teacher'        => 'SMITH M.',
+                'hasDraft'       => false,
+                'interdisciplinary' => true,
+            ],
         ];
 
         $this->mysqliResult->expects($this->atLeastOnce())
@@ -257,7 +256,7 @@ class GetSubjectsServiceTest extends TestCase
         // Preparing the data
         $actual = $this->stripTokens(json_decode(json_encode(
             $this->service->getStudentSubjects("e.doe3"),
-            JSON_UNESCAPED_UNICODE
+            JSON_UNESCAPED_UNICODE,
         ), true));
 
         self::assertSame($expected, $actual);
@@ -269,55 +268,55 @@ class GetSubjectsServiceTest extends TestCase
     public function testGetTeacherSubjects()
     {
         $subjects = [
-                [
-                        'teachers'        => 'j.doe1',
-                        'student'         => 'e.doe3',
-                        'topic'           => 'Maths',
-                        'subject'         => 'Étude des fonctions',
-                        'last_rejected'   => null,
-                        'subject_status'  => 3,
-                        'draftPath'       => "/path/to/draft",
-                        'last_updated_at' => '2026-02-26 11:45:00',
-                        'is_interdisciplinary' => false
-                ],
-                [
-                        'teachers'        => 'j.doe1',
-                        'student'         => 'l.dupont4',
-                        'topic'           => 'Informatique',
-                        'comment'         => "foo",
-                        'subject'         => 'Algorithmes de tri',
-                        'last_rejected'   => 'Algorithmes de tri',
-                        'subject_status'  => 2,
-                        'draftPath'       => null,
-                        'last_updated_at' => '2026-03-26 11:15:00',
-                        'is_interdisciplinary' => true
-                ],
-                null
+            [
+                'teachers'        => 'j.doe1',
+                'student'         => 'e.doe3',
+                'topic'           => 'Maths',
+                'subject'         => 'Étude des fonctions',
+                'last_rejected'   => null,
+                'subject_status'  => 3,
+                'draftPath'       => "/path/to/draft",
+                'last_updated_at' => '2026-02-26 11:45:00',
+                'is_interdisciplinary' => false,
+            ],
+            [
+                'teachers'        => 'j.doe1',
+                'student'         => 'l.dupont4',
+                'topic'           => 'Informatique',
+                'comment'         => "foo",
+                'subject'         => 'Algorithmes de tri',
+                'last_rejected'   => 'Algorithmes de tri',
+                'subject_status'  => 2,
+                'draftPath'       => null,
+                'last_updated_at' => '2026-03-26 11:15:00',
+                'is_interdisciplinary' => true,
+            ],
+            null,
         ];
 
         $expected = [
-                [
-                        'student'        => 'DOE E.',
-                        'subject'        => 'Étude des fonctions',
-                        'status'         => 'approved',
-                        'comment'        => "",
-                        'lastRejected'   => "",
-                        'topic'          => 'Maths',
-                        'teacher'        => 'DOE J.',
-                        'hasDraft'       => true,
-                        'interdisciplinary' => false,
-                ],
-                [
-                        'student'        => 'DUPONT L.',
-                        'subject'        => 'Algorithmes de tri',
-                        'status'         => 'rejected',
-                        'comment'        => "foo",
-                        'lastRejected'   => 'Algorithmes de tri',
-                        'topic'          => 'Informatique',
-                        'teacher'        => "DOE J.",
-                        'hasDraft'       => false,
-                        'interdisciplinary' => true,
-                ],
+            [
+                'student'        => 'DOE E.',
+                'subject'        => 'Étude des fonctions',
+                'status'         => 'approved',
+                'comment'        => "",
+                'lastRejected'   => "",
+                'topic'          => 'Maths',
+                'teacher'        => 'DOE J.',
+                'hasDraft'       => true,
+                'interdisciplinary' => false,
+            ],
+            [
+                'student'        => 'DUPONT L.',
+                'subject'        => 'Algorithmes de tri',
+                'status'         => 'rejected',
+                'comment'        => "foo",
+                'lastRejected'   => 'Algorithmes de tri',
+                'topic'          => 'Informatique',
+                'teacher'        => "DOE J.",
+                'hasDraft'       => false,
+                'interdisciplinary' => true,
+            ],
         ];
 
         $this->mysqliResult->expects($this->atLeastOnce())
@@ -328,7 +327,7 @@ class GetSubjectsServiceTest extends TestCase
         // Preparing the data
         $actual = $this->stripTokens(json_decode(json_encode(
             $this->service->getTeacherSubjects("j.doe1"),
-            JSON_UNESCAPED_UNICODE
+            JSON_UNESCAPED_UNICODE,
         ), true));
 
         self::assertSame($expected, $actual);

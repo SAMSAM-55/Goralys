@@ -43,7 +43,7 @@ function createTopicsRoutes(GoralysRouter $router): void
         $kernel->deferredResponse()->toast(
             ToastType::SUCCESS,
             "Suppression des sujets",
-            "Tous les sujets et les utilisateurs ont été supprimés (sauf administrateurs)."
+            "Tous les sujets et les utilisateurs ont été supprimés (sauf administrateurs).",
         )
         ->redirect("/subject/")
         ->send();

@@ -59,7 +59,7 @@ final class DbContainer implements DbContainerInterface
             $env->getByKey("DATABASE_HOST"),
             $env->getByKey("DATABASE_NAME"),
             $env->getByKey("DATABASE_ID"),
-            $env->getByKey("DATABASE_PASSWORD")
+            $env->getByKey("DATABASE_PASSWORD"),
         ));
 
         return true;
@@ -83,7 +83,7 @@ final class DbContainer implements DbContainerInterface
             $query,
             $types,
             $value1,
-            ...$args
+            ...$args,
         );
         $service = new PrepareService($this->logger, $this->conn);
 
@@ -135,7 +135,7 @@ final class DbContainer implements DbContainerInterface
             $query,
             $types,
             $value1,
-            ...$args
+            ...$args,
         );
         $service = new PrepareService($this->logger, $this->conn);
 
@@ -181,7 +181,7 @@ final class DbContainer implements DbContainerInterface
         }
         $this->logger->info(
             LoggerInitiator::PLATFORM,
-            "A DB container was destroyed, connection successfully closed"
+            "A DB container was destroyed, connection successfully closed",
         );
     }
 

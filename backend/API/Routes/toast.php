@@ -15,22 +15,22 @@ function createToastRoutes(GoralysRouter $router): void
         try {
             $kernel->logger->debug(
                 LoggerInitiator::APP,
-                "Attempting to retrieve the flash toast, current session: " . print_r($_SESSION, true)
+                "Attempting to retrieve the flash toast, current session: " . print_r($_SESSION, true),
             );
             $toast = $kernel->toast->flashService->getToast();
             $kernel->logger->debug(
                 LoggerInitiator::APP,
-                "Successfully retrieved the flash toast."
+                "Successfully retrieved the flash toast.",
             );
             $kernel->response()->json([
                 "success" => true,
                 "toast" => $toast->toastInfo,
-                "action" => $toast->action
+                "action" => $toast->action,
             ]);
         } catch (GoralysRuntimeException) {
             $kernel->logger->debug(
                 LoggerInitiator::APP,
-                "Failed to retrieved the flash toast."
+                "Failed to retrieved the flash toast.",
             );
             $kernel->response()->json(['success' => false]);
         }

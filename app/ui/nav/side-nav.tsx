@@ -4,7 +4,7 @@ import { NavLink } from "@/app/ui/nav/nav-link";
 import {UserNav} from "@/app/ui/nav/user-nav";
 import Cookies from "universal-cookie";
 import {useEffect, useState} from "react";
-import {UserRole, USER_ROLES} from "@/app/lib/types";
+import {UserRole, USER_ROLES, buildArray} from "@/app/lib/types";
 import Image from "next/image";
 
 export function SideNav() {
@@ -43,10 +43,11 @@ export function SideNav() {
         }
     }
 
-    const links: { name: string; url: string }[] = [
+    const links: { name: string; url: string }[] = buildArray(
         { name: "Accueil", url: "/" },
         { name: getSubjectLinkText(), url: "/subject" },
-    ];
+        role == "admin" && { name: "Utilisateurs", url: "/admin/user" }
+    );
 
     return (
         <div className="min-w-50 w-55 h-auto min-h-screen fixed top-0 flex flex-col m-0 p-2 rounded-xl">

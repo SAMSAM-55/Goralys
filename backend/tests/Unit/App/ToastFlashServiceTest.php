@@ -42,12 +42,12 @@ class ToastFlashServiceTest extends TestCase
         self::assertSame(
             "/second",
             $_SESSION["flash-toast"]["redirect"],
-            "Expected second toast to overwrite the first"
+            "Expected second toast to overwrite the first",
         );
         self::assertSame(
             "action2",
             $_SESSION["flash-toast"]["action"],
-            "Expected second action to overwrite the first"
+            "Expected second action to overwrite the first",
         );
     }
 
@@ -75,7 +75,7 @@ class ToastFlashServiceTest extends TestCase
         self::assertArrayNotHasKey(
             "flash-toast",
             $_SESSION,
-            "Expected flash-toast to be removed from session after retrieval"
+            "Expected flash-toast to be removed from session after retrieval",
         );
     }
 
@@ -93,7 +93,7 @@ class ToastFlashServiceTest extends TestCase
         self::assertSame(
             "",
             $_SESSION["flash-toast"]["action"],
-            "Expected action to be empty string when not provided"
+            "Expected action to be empty string when not provided",
         );
     }
 }

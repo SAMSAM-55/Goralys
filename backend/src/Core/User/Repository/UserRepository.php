@@ -33,10 +33,30 @@ final class UserRepository implements UserRepositoryInterface
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainerInterface $db
+        DbContainerInterface $db,
     ) {
         $this->logger = $logger;
         $this->db = $db;
+    }
+
+    /**
+     * This helper is used to build a user DTO containing all the user's info (full) from a database row.
+     * It is in charge of the logging process.
+     * @param array $row The row from the database result.
+     * @return UserFullDTO All the user's info.
+     */
+    private function buildUserFromRow(array $row): UserFullDTO
+    {
+        $this->logger->info(
+            LoggerInitiator::CORE,
+            "User's data were successfully fetched for user : " . $row['user_id'] . " - Data:\n" . print_r($row, true),
+        );
+        return new UserFullDTO(
+            (int) $row['id'],
+            $row['user_id'],
+            UserRole::fromString($row['role']),
+            $row['full_name'],
+        );
     }
 
     /**
@@ -51,23 +71,27 @@ final class UserRepository implements UserRepositoryInterface
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to fetch the user's data from the database."
+                "Failed to fetch the user's data from the database.",
             );
             throw new UserNotFoundException("Invalid user provided.");
         }
 
-        $row = $result->fetch_assoc();
+        return $this->buildUserFromRow($result->fetch_assoc());
+    }
 
-        $this->logger->info(
-            LoggerInitiator::CORE,
-            "User's data were successfully fetched for user : " . $row['user_id'] . " - Data:\n" . print_r($row, true)
-        );
-        return new UserFullDTO(
-            (int) $row['id'],
-            $row['user_id'],
-            UserRole::fromString($row['role']),
-            $row['full_name']
-        );
+    /**
+     * This helper is used to build multiple users DTO containing all the users' info (full) from a database request's
+     * result, it is in charge of the logging process.
+     * @param mysqli_result $result The result from the database.
+     * @return UserFullDTO[] All the users' info.
+     */
+    private function buildUsersFromResult(mysqli_result $result): array
+    {
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $this->buildUserFromRow($row);
+        }
+        return $users;
     }
 
     /**
@@ -81,7 +105,7 @@ final class UserRepository implements UserRepositoryInterface
         $result = $this->db->fetch(
             "select id, user_id, role, full_name from users where user_id = ?",
             "s",
-            $username
+            $username,
         );
 
         return $this->buildUserFromResult($result);
@@ -100,7 +124,7 @@ final class UserRepository implements UserRepositoryInterface
             $userData->username,
             $userData->fullName,
             $userData->passwordHash,
-            $userData->role->toString()
+            $userData->role->toString(),
         );
     }
 
@@ -114,7 +138,7 @@ final class UserRepository implements UserRepositoryInterface
         return $this->db->fetch(
             "select 1 from users where user_id = ? limit 1",
             "s",
-            $username
+            $username,
         )->num_rows != 0;
     }
 
@@ -134,7 +158,7 @@ final class UserRepository implements UserRepositoryInterface
             "sss",
             $username,
             $username,
-            $username
+            $username,
         )->num_rows != 0;
     }
 
@@ -149,13 +173,13 @@ final class UserRepository implements UserRepositoryInterface
         $result = $this->db->fetch(
             "select password_hash from users where user_id = ?",
             "s",
-            $username
+            $username,
         );
 
         if ($result->num_rows === 0) {
             $this->logger->warning(
                 LoggerInitiator::CORE,
-                "Failed to connect user, invalid username : " . $username
+                "Failed to connect user, invalid username : " . $username,
             );
             return null;
         }
@@ -186,13 +210,13 @@ final class UserRepository implements UserRepositoryInterface
             where user_id = ?
             limit 1",
             "s",
-            $username
+            $username,
         );
 
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "No such user : " . $username
+                "No such user : " . $username,
             );
             return null;
         }
@@ -212,13 +236,13 @@ final class UserRepository implements UserRepositoryInterface
             "select full_name from users where user_id = ?
             limit 1",
             "s",
-            $username
+            $username,
         );
 
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "No such user : " . $username
+                "No such user : " . $username,
             );
             return null;
         }
@@ -252,7 +276,7 @@ final class UserRepository implements UserRepositoryInterface
                    join public_ids pi on u.user_id = pi.user_id
                    where pi.public_id = ?",
             "s",
-            $uuid
+            $uuid,
         );
 
         return $this->buildUserFromResult($result);
@@ -268,7 +292,7 @@ final class UserRepository implements UserRepositoryInterface
         return $this->db->fetch(
             "select 0 from public_ids where public_id = ?",
             "s",
-            $uuid
+            $uuid,
         )->num_rows !== 0;
     }
 
@@ -282,7 +306,17 @@ final class UserRepository implements UserRepositoryInterface
         return $this->db->fetch(
             "select public_id from public_ids where user_id = ?",
             "s",
-            $username
+            $username,
         )->fetch_assoc()['public_id'] ?? null;
+    }
+
+    /**
+     * Returns all the users inside the database.
+     * @return UserFullDTO[] The users.
+     */
+    public function getAll(): array
+    {
+        $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role != 'admin'");
+        return $this->buildUsersFromResult($result);
     }
 }

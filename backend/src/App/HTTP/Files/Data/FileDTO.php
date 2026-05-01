@@ -26,9 +26,8 @@ readonly class FileDTO
         public string $type,
         public string $tmpPath,
         public int $size,
-        public int $error
-    ) {
-    }
+        public int $error,
+    ) {}
 
     /**
      * Validates a FileDTO object and turns it into an UploadedFileDTO if the validation pass.
@@ -44,7 +43,7 @@ readonly class FileDTO
             $this->name,
             $this->type,
             $this->tmpPath,
-            $this->size
+            $this->size,
         );
     }
 }

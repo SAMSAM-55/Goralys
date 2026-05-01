@@ -16,7 +16,6 @@ final readonly class PdfSourceDTO
      */
     public function __construct(
         public string $HTML = "",
-        public string $CSS = ""
-    ) {
-    }
+        public string $CSS = "",
+    ) {}
 }

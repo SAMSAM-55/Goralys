@@ -17,6 +17,7 @@ use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
+use Goralys\Shared\Exception\GoralysRuntimeException;
 use mysqli_result;
 
 /**
@@ -62,7 +63,7 @@ final class GetSubjectsService
      * @return SubjectsCollection The array containing all the subjects in a more usable format.
      * The `SubjectsCollection` is also used here as it implements a custom way to transform it into a JSON array and
      * thus make the output process ot the frontend more straightforward.
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException|GoralysRuntimeException
      */
     private function formatStudentSubjects(mysqli_result $result, string $studentUsername): SubjectsCollection
     {
@@ -74,7 +75,7 @@ final class GetSubjectsService
                 function ($name) {
                     return $this->formatter->formatUsername($name);
                 },
-                $teachers
+                $teachers,
             );
 
             $subject = new SubjectDTO(
@@ -128,7 +129,7 @@ final class GetSubjectsService
                 $this->formatter->formatUsername($teacherUsername),
                 $this->usernameManager->create($teacherUsername),
                 $row['is_interdisciplinary'],
-                (bool)$row['draftPath']
+                (bool) $row['draftPath'],
             );
 
             $subjects->addSubject($subject);
@@ -159,7 +160,7 @@ final class GetSubjectsService
                 function ($name) {
                     return $this->formatter->formatUsername($name);
                 },
-                $teachers
+                $teachers,
             );
 
             $subject = new SubjectDTO(
@@ -174,7 +175,7 @@ final class GetSubjectsService
                 $row['topic_code'] ?? "",
                 implode(", ", $formattedNames),
                 $this->usernameManager->create($teachers[0]),
-                $row['is_interdisciplinary']
+                $row['is_interdisciplinary'],
             );
 
             $subjects->addSubject($subject);
@@ -198,7 +199,7 @@ final class GetSubjectsService
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "Successfully fetched the subjects for student : " . $studentUsername
+            "Successfully fetched the subjects for student : " . $studentUsername,
         );
 
         return $this->formatStudentSubjects($result, $studentUsername);
@@ -218,7 +219,7 @@ final class GetSubjectsService
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "Successfully fetched the subjects for teacher : " . $teacherUsername
+            "Successfully fetched the subjects for teacher : " . $teacherUsername,
         );
 
         return $this->formatTeacherSubjects($result, $teacherUsername);
@@ -237,7 +238,7 @@ final class GetSubjectsService
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "Granted access to all subjects for user : " . ($_SESSION['current_username'] ?? "")
+            "Granted access to all subjects for user : " . ($_SESSION['current_username'] ?? ""),
         );
 
         return $this->formatAllSubjects($result);

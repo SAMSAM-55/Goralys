@@ -11,13 +11,12 @@ final class Route
 {
     /** @param list<Middleware> $middlewares */
     public function __construct(
-        readonly public string $route,
-        readonly public string $method,
-        readonly public Closure $handler,
-        readonly public array $options,
-        public array $middlewares = []
-    ) {
-    }
+        public readonly string $route,
+        public readonly string $method,
+        public readonly Closure $handler,
+        public readonly array $options,
+        public array $middlewares = [],
+    ) {}
 
     /**
      * Appends single-named middleware (with optional parameters) to the route's stack.

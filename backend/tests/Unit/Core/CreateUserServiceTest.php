@@ -18,7 +18,7 @@ class CreateUserServiceTest extends TestCase
         $this->repo = new FakeUserRepository();
 
         $this->service = new CreateUserService(
-            $this->repo
+            $this->repo,
         );
     }
 
@@ -34,7 +34,7 @@ class CreateUserServiceTest extends TestCase
             "j.doe1",
             "John Doe",
             "foo",
-            UserRole::UNKNOWN
+            UserRole::UNKNOWN,
         )));
     }
 
@@ -46,7 +46,7 @@ class CreateUserServiceTest extends TestCase
             "j.doe1",
             "John Doe",
             "foo",
-            UserRole::STUDENT
+            UserRole::STUDENT,
         )));
     }
 
@@ -58,7 +58,7 @@ class CreateUserServiceTest extends TestCase
             "j.doe1",
             "John Doe",
             "foo",
-            UserRole::STUDENT
+            UserRole::STUDENT,
         )));
     }
 }

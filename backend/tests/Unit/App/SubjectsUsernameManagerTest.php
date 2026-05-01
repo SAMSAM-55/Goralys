@@ -51,7 +51,7 @@ class SubjectsUsernameManagerTest extends TestCase
     {
         $this->repo->setUser(
             "uuid-1",
-            new UserFullDTO(1, "e.martin", UserRole::STUDENT, "Emma Martin")
+            new UserFullDTO(1, "e.martin", UserRole::STUDENT, "Emma Martin"),
         );
 
         $result = $this->service->get("uuid-1");
@@ -64,7 +64,7 @@ class SubjectsUsernameManagerTest extends TestCase
         $this->repo->setPublicId("j.doe", "uuid-1");
         $this->repo->setUser(
             "uuid-1",
-            new UserFullDTO(1, "j.doe", UserRole::STUDENT, "John Doe")
+            new UserFullDTO(1, "j.doe", UserRole::STUDENT, "John Doe"),
         );
 
         $token = $this->service->create("j.doe");

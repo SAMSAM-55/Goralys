@@ -62,7 +62,7 @@ export default function Page() {
             a.download = "utilisateurs.txt";
             a.click();
             URL.revokeObjectURL(url);
-            cookies.set(syncKey, "0");
+            cookies.set(syncKey, "0", { path: '/' });
             await refetch();
             setCurrentSubjects(subjects || []);
             return;
@@ -108,7 +108,7 @@ export default function Page() {
         }
 
         if (res.ok) {
-            cookies.set(syncKey, "0");
+            cookies.set(syncKey, "0", { path: '/' });
             await refetch();
             setCurrentSubjects(subjects || []);
         }

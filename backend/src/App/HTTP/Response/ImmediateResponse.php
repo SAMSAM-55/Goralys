@@ -55,7 +55,7 @@ final class ImmediateResponse implements ImmediateResponseInterface
             } catch (Throwable $e) {
                 $this->logger->warning(
                     LoggerInitiator::APP,
-                    "Post response callback failed. \n Error: " . $e->getMessage()
+                    "Post response callback failed. \n Error: " . $e->getMessage(),
                 );
             }
             http_response_code($this->code);
@@ -89,7 +89,7 @@ final class ImmediateResponse implements ImmediateResponseInterface
             } catch (Throwable $e) {
                 $this->logger->warning(
                     LoggerInitiator::APP,
-                    "Post response callback failed. \n Error: " . $e->getMessage()
+                    "Post response callback failed. \n Error: " . $e->getMessage(),
                 );
             }
             http_response_code($this->code);
@@ -97,7 +97,7 @@ final class ImmediateResponse implements ImmediateResponseInterface
         } catch (Throwable $e) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "Failed to send JSON (size: $size)\n Error: " . $e->getMessage()
+                "Failed to send JSON (size: $size)\n Error: " . $e->getMessage(),
             );
             throw $e;
         }

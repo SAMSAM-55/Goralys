@@ -1,5 +1,9 @@
 import React, {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
 
+export function buildArray<T>(...items: (T | false | null | undefined)[]): T[] {
+    return items.filter((item): item is T => Boolean(item));
+}
+
 export type UserRole = {
     role: "admin" | "teacher" | "student" | "none",
 };

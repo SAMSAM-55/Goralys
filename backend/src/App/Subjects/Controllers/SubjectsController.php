@@ -66,7 +66,7 @@ final class SubjectsController
         LoggerInterface $logger,
         DbContainerInterface $db,
         GoralysFileManager $fileManager,
-        PdfExporterInterface $exporter
+        PdfExporterInterface $exporter,
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -82,7 +82,7 @@ final class SubjectsController
             $this->logger,
             $this->repo,
             $this->formatter,
-            $this->usernameManager
+            $this->usernameManager,
         );
         $this->exportConfig = new SubjectsExportConfig();
         $this->exporter = $exporter;
@@ -105,7 +105,7 @@ final class SubjectsController
         string $topic,
         SubjectFields $field,
         string|SubjectStatus $newValue,
-        bool|null $interdisciplinary = null
+        ?bool $interdisciplinary = null,
     ): bool {
         return match ($field) {
             SubjectFields::SUBJECT => $this->updateService->updateSubject(
@@ -113,20 +113,20 @@ final class SubjectsController
                 $studentUsername,
                 $topic,
                 $newValue,
-                $interdisciplinary
+                $interdisciplinary,
             ),
             SubjectFields::STATUS => $this->updateService->updateSubjectStatus(
                 $teacherUsername,
                 $studentUsername,
                 $topic,
-                $newValue
+                $newValue,
             ),
             SubjectFields::COMMENT => $this->updateService->updateComment(
                 $teacherUsername,
                 $studentUsername,
                 $topic,
-                $newValue
-            )
+                $newValue,
+            ),
         };
     }
 
@@ -147,7 +147,7 @@ final class SubjectsController
             UserRole::STUDENT => $this->getService->getStudentSubjects($username),
             UserRole::TEACHER => $this->getService->getTeacherSubjects($username),
             UserRole::ADMIN => $this->getService->getAllSubjects(),
-            UserRole::UNKNOWN => new SubjectsCollection()
+            UserRole::UNKNOWN => new SubjectsCollection(),
         };
     }
 
@@ -171,44 +171,46 @@ final class SubjectsController
      * Groups the given subjects by students.
      * @param SubjectsCollection $subjects The subjects to group.
      * @return StudentSubjectsDTO[] The students associated with their subjects.
-     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
+     * @throws GoralysRuntimeException If the username resolution fails.
      */
     private function groupByStudents(SubjectsCollection $subjects): array
     {
         /** @var SubjectDTO[][] $grouped */
         $grouped = [];
-        foreach ($subjects->getSubjects() as $subject) {
+        foreach ($subjects->subjects as $subject) {
             $grouped[$this->usernameManager->get($subject->studentUsernameToken)][] = $subject;
         }
 
-        return array_values(array_map(
-        /**
-         * @param SubjectDTO[] $subjects
-         * @return StudentSubjectsDTO
-         */
-            function (string $username, array $subjects) {
-                $specialities = [];
-                foreach ($subjects as $subject) {
-                    $specialities[] = new SpecialityDTO(
-                        $this->userRepo->getFullNameForUsername(
-                            $this->usernameManager->get($subject->teacherUsernameToken)
-                        ),
-                        $subject->topic,
-                        $subject->topicCode,
-                        $subject->subject,
-                        $subject->lastUpdatedAt ?? new DateTime(),
-                        $subject->interdisciplinary
-                    );
-                }
-
-                return new StudentSubjectsDTO(
-                    $this->userRepo->getFullNameForUsername($username),
-                    $specialities
-                );
-            },
-            array_keys($grouped),
-            $grouped
-        ));
+        return $grouped
+                    |> array_keys(...)
+                    |> (fn($x) => array_map(
+                        /**
+                         * @param SubjectDTO[] $subjects * @return StudentSubjectsDTO
+                         * @throws GoralysRuntimeException
+                         */
+                        function (string $username, array $subjects) {
+                            $specialities = [];
+                            foreach ($subjects as $subject) {
+                                $specialities[] = new SpecialityDTO(
+                                    $this->userRepo->getFullNameForUsername(
+                                        $this->usernameManager->get($subject->teacherUsernameToken),
+                                    ),
+                                    $subject->topic,
+                                    $subject->topicCode,
+                                    $subject->subject,
+                                    $subject->lastUpdatedAt ?? new DateTime(),
+                                    $subject->interdisciplinary,
+                                );
+                            }
+                            return new StudentSubjectsDTO(
+                                $this->userRepo->getFullNameForUsername($username),
+                                $specialities,
+                            );
+                        },
+                        $x,
+                        $grouped,
+                    ))
+                    |> array_values(...);
     }
 
     /**
@@ -216,7 +218,6 @@ final class SubjectsController
      * @param SubjectsCollection $subjects The subjects to export.
      * @return string The path to the generated zip file.
      * @throws GoralysRuntimeException If the zip export goes wrong.
-     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
      */
     public function exportAll(SubjectsCollection $subjects): string
     {
@@ -231,7 +232,7 @@ final class SubjectsController
             $this->exporter->export(
                 $pdf,
                 $filePath,
-                $this->exportConfig::ASSETS_PATH
+                $this->exportConfig::ASSETS_PATH,
             );
 
             $exportedPaths[] = $filePath;

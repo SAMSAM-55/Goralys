@@ -20,7 +20,6 @@ final readonly class UserRegisterDTO
     public function __construct(
         public string $username,
         public string $fullName,
-        public string $password
-    ) {
-    }
+        public string $password,
+    ) {}
 }

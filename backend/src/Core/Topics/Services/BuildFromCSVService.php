@@ -42,7 +42,7 @@ final class BuildFromCSVService
     {
         if (!is_file($path) || strtolower(pathinfo($path, PATHINFO_EXTENSION)) !== 'csv') {
             throw new GoralysRuntimeException(
-                "The provided file ($path) is not a valid CSV file."
+                "The provided file ($path) is not a valid CSV file.",
             );
         }
 
@@ -50,9 +50,9 @@ final class BuildFromCSVService
             $file = new SplFileObject($path, 'r');
 
             $file->setFlags(
-                SplFileObject::READ_CSV |
-                SplFileObject::SKIP_EMPTY |
-                SplFileObject::DROP_NEW_LINE
+                SplFileObject::READ_CSV
+                | SplFileObject::SKIP_EMPTY
+                | SplFileObject::DROP_NEW_LINE,
             );
 
             $file->setCsvControl(escape: '');
@@ -61,7 +61,7 @@ final class BuildFromCSVService
         } catch (RuntimeException $e) {
             throw new GoralysRuntimeException(
                 "Could not open CSV file ($path).",
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -85,7 +85,7 @@ final class BuildFromCSVService
 
             if (count($row) !== 2) {
                 throw new GoralysRuntimeException(
-                    "CSV format error at line " . ($i + 1) . ": expected 2 columns."
+                    "CSV format error at line " . ($i + 1) . ": expected 2 columns.",
                 );
             }
 
@@ -132,13 +132,13 @@ final class BuildFromCSVService
 
         $normalized = array_map(
             fn($v) => $this->utils->string->sanitize((string) $v, StringCase::LOWER),
-            $firstRow
+            $firstRow,
         );
 
         $accepted = ['élève', 'student', 'étudiant', 'nom'];
         $accepted = array_map(
             fn($v) => $this->utils->string->sanitize((string) $v, StringCase::LOWER),
-            $accepted
+            $accepted,
         );
 
         $studentCol = null;

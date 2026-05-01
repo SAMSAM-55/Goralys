@@ -18,7 +18,7 @@ class GoralysLoggerTest extends TestCase
     public function testInfoLogsCorrectly(): void
     {
         $this->logger->info(LoggerInitiator::APP, "Info message");
-        $logs = $this->logger->getLogs();
+        $logs = $this->logger->logs;
         self::assertCount(1, $logs);
         self::assertSame('INFO', $logs[0]['level']);
         self::assertSame(LoggerInitiator::APP, $logs[0]['initiator']);
@@ -28,7 +28,7 @@ class GoralysLoggerTest extends TestCase
     public function testDebugLogsCorrectly(): void
     {
         $this->logger->debug(LoggerInitiator::CORE, "Debug message");
-        $logs = $this->logger->getLogs();
+        $logs = $this->logger->logs;
         self::assertCount(1, $logs);
         self::assertSame('DEBUG', $logs[0]['level']);
     }
@@ -36,7 +36,7 @@ class GoralysLoggerTest extends TestCase
     public function testWarningLogsCorrectly(): void
     {
         $this->logger->warning(LoggerInitiator::PLATFORM, "Warning message");
-        $logs = $this->logger->getLogs();
+        $logs = $this->logger->logs;
         self::assertCount(1, $logs);
         self::assertSame('WARNING', $logs[0]['level']);
     }
@@ -44,7 +44,7 @@ class GoralysLoggerTest extends TestCase
     public function testErrorLogsCorrectly(): void
     {
         $this->logger->error(LoggerInitiator::KERNEL, "Error message");
-        $logs = $this->logger->getLogs();
+        $logs = $this->logger->logs;
         self::assertCount(1, $logs);
         self::assertSame('ERROR', $logs[0]['level']);
     }
@@ -52,7 +52,7 @@ class GoralysLoggerTest extends TestCase
     public function testFatalLogsCorrectly(): void
     {
         $this->logger->fatal(LoggerInitiator::APP, "Fatal message");
-        $logs = $this->logger->getLogs();
+        $logs = $this->logger->logs;
         self::assertCount(1, $logs);
         self::assertSame('FATAL', $logs[0]['level']);
     }
@@ -61,13 +61,13 @@ class GoralysLoggerTest extends TestCase
     {
         $this->logger->info(LoggerInitiator::APP, "Message");
         $this->logger->reset();
-        self::assertEmpty($this->logger->getLogs());
+        self::assertEmpty($this->logger);
     }
 
     public function testRotateDoesNothing(): void
     {
         // Should not throw or do anything
         $this->logger->rotate();
-        self::assertEmpty($this->logger->getLogs());
+        self::assertEmpty($this->logger);
     }
 }

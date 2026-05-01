@@ -39,7 +39,7 @@ enum UserRole: int
             "admin" => UserRole::ADMIN,
             "teacher" => UserRole::TEACHER,
             "student" => UserRole::STUDENT,
-            default => UserRole::UNKNOWN
+            default => UserRole::UNKNOWN,
         };
     }
 

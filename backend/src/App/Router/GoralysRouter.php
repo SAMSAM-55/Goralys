@@ -31,7 +31,7 @@ final class GoralysRouter
         'POST' => [],
         'GET' => [],
         'UPDATE' => [],
-        'DELETE' => []
+        'DELETE' => [],
     ];
     /** @var array<string, class-string<MiddlewareInterface>>  */
     private array $middlewaresMap = [
@@ -40,7 +40,7 @@ final class GoralysRouter
         'role' => RoleMiddleware::class,
         'rate-limit' => RateLimitMiddleware::class,
         'csrf' => CSRFMiddleware::class,
-        'db' => DbMiddleware::class
+        'db' => DbMiddleware::class,
     ];
 
     /**
@@ -65,7 +65,7 @@ final class GoralysRouter
             $route,
             $method,
             $handler,
-            empty($options) ? [] : array_merge_recursive(...array_values($options))
+            empty($options) ? [] : array_merge_recursive(...array_values($options)),
         );
     }
 
@@ -148,7 +148,7 @@ final class GoralysRouter
         if (!array_key_exists($method, $this->routes) || !array_key_exists($path, $this->routes[$method])) {
             $this->kernel->logger->error(
                 LoggerInitiator::APP,
-                "Unknow route $path, known:\n" . print_r($this->routes, true)
+                "Unknow route $path, known:\n" . print_r($this->routes, true),
             );
             $this->kernel->response(404)->http();
         }
@@ -158,14 +158,14 @@ final class GoralysRouter
         $resolved = [];
         $this->kernel->logger->debug(
             LoggerInitiator::APP,
-            "Middlewares raw for $path: " . print_r($route->middlewares, true)
+            "Middlewares raw for $path: " . print_r($route->middlewares, true),
         );
         foreach ($route->middlewares as $middleware) {
             $class = $this->middlewaresMap[$middleware->name] ?? null;
             if ($class === null) {
                 $this->kernel->logger->error(
                     LoggerInitiator::APP,
-                    "Unknown middleware: " . $middleware->name
+                    "Unknown middleware: " . $middleware->name,
                 );
                 continue;
             }
@@ -179,7 +179,7 @@ final class GoralysRouter
                 $this->kernel->deferredResponse(400)->toast( // Bad Request
                     ToastType::WARNING,
                     "Champs invalides",
-                    $route->options['input'][InputOptions::FAIL_MESSAGE_KEY] ?? "Veuillez remplir tous les champs."
+                    $route->options['input'][InputOptions::FAIL_MESSAGE_KEY] ?? "Veuillez remplir tous les champs.",
                 )
                         ->redirect($route->options['input'][InputOptions::FAIL_MESSAGE_KEY] ?? "/")
                         ->send();

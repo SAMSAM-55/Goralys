@@ -22,7 +22,7 @@ class LoginServiceTest extends TestCase
 
         $this->service = new LoginService(
             $this->logger,
-            $this->repo
+            $this->repo,
         );
     }
 

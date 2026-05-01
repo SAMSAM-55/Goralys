@@ -18,7 +18,6 @@ final readonly class StudentSubjectsDTO
      */
     public function __construct(
         public string $studentName,
-        public array $subjects = []
-    ) {
-    }
+        public array $subjects = [],
+    ) {}
 }

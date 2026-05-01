@@ -25,7 +25,7 @@ final class CSRFService
      * @param LoggerInterface $logger The injected logger.
      */
     public function __construct(
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->logger = $logger;
     }
@@ -59,14 +59,14 @@ final class CSRFService
 
             $this->logger->debug(
                 LoggerInitiator::APP,
-                "Successfully created new token for form " . $formId . ", token : " . $token .
-                ". New session : " . print_r($_SESSION, true)
+                "Successfully created new token for form " . $formId . ", token : " . $token
+                . ". New session : " . print_r($_SESSION, true),
             );
             return true;
         } catch (RandomException $e) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "An error occurred while generating a CSRF token for form : " . $formId . "\nError:" . $e->getMessage()
+                "An error occurred while generating a CSRF token for form : " . $formId . "\nError:" . $e->getMessage(),
             );
             return false;
         }
@@ -85,11 +85,11 @@ final class CSRFService
         if (!isset($_SESSION["csrf-tokens-table"][$formId])) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "Foreign token form id encountered : " . $formId
+                "Foreign token form id encountered : " . $formId,
             );
             $this->logger->debug(
                 LoggerInitiator::APP,
-                "Current session : " . print_r($_SESSION, true)
+                "Current session : " . print_r($_SESSION, true),
             );
             return false;
         }
@@ -97,7 +97,7 @@ final class CSRFService
         if (!in_array($token, $_SESSION["csrf-tokens-table"][$formId])) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "Failed to validate token for form : " . $formId . "(" . $token . ")"
+                "Failed to validate token for form : " . $formId . "(" . $token . ")",
             );
             return false;
         }

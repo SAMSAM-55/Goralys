@@ -258,7 +258,7 @@ class GoralysKernel
             $this->logger,
             $this->db,
             $this->sessionLifetime,
-            $this->sessionLifetimeMultiplier
+            $this->sessionLifetimeMultiplier,
         );
     }
 
@@ -270,7 +270,7 @@ class GoralysKernel
     {
         $this->users = new UserController(
             $this->logger,
-            $this->db
+            $this->db,
         );
     }
 
@@ -290,7 +290,7 @@ class GoralysKernel
         } catch (GoralysRuntimeException $e) {
             $this->logger->fatal(
                 LoggerInitiator::KERNEL,
-                "A GoralysRuntimeException occurred while initializing the kernel: " . $e->getMessage()
+                "A GoralysRuntimeException occurred while initializing the kernel: " . $e->getMessage(),
             );
         }
     }
@@ -336,7 +336,7 @@ class GoralysKernel
             $this->db,
             new UsernameTable($this->utils),
             $this->utils,
-            $this->fileManager
+            $this->fileManager,
         );
     }
 
@@ -423,25 +423,25 @@ class GoralysKernel
     {
         $this->logger->error(
             LoggerInitiator::APP,
-            "Uncaught exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine()
+            "Uncaught exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine(),
         );
 
         if (isset($this->errorMessages[$e::class])) {
             $msg = $this->errorMessages[$e::class];
             $this->deferredResponse($msg->code)->error(
-                $msg->message
+                $msg->message,
             )
                 ->redirect($msg->redirect)
                 ->send();
         } elseif ($e instanceof GoralysException) {
             $this->deferredResponse(500)->error( // Internal Server Error
-                "Une erreur interne est survenue"
+                "Une erreur interne est survenue",
             )
                 ->redirect("/")
                 ->send();
         } else {
             $this->deferredResponse(500)->error( // Internal Server Error
-                "Une erreur inattendue s'est produite"
+                "Une erreur inattendue s'est produite",
             )
                 ->redirect("/")
                 ->send();
@@ -467,7 +467,7 @@ class GoralysKernel
     {
         $this->logger->warning(
             LoggerInitiator::APP,
-            "PHP Error (severity $severity) : $message — $file:$line"
+            "PHP Error (severity $severity) : $message — $file:$line",
         );
 
         // Ignore non-fatal errors
@@ -508,7 +508,7 @@ class GoralysKernel
         $this->logger->debug(
             LoggerInitiator::KERNEL,
             "Sending deferred response with context:\n"
-            . print_r($this->context, true)
+            . print_r($this->context, true),
         );
         return new DeferredResponse($this->context, $code);
     }
@@ -541,14 +541,14 @@ class GoralysKernel
         try {
             if (!$this->connect()) {
                 $this->deferredResponse(500)->error( // Internal server error
-                    "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement."
+                    "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
                 )
                     ->redirect("/")
                     ->send();
             }
         } catch (Throwable) {
             $this->deferredResponse(500)->error( // Internal server error
-                "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement."
+                "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
             )
                 ->redirect("/")
                 ->send();
@@ -566,7 +566,7 @@ class GoralysKernel
     public function requireRateLimit(
         string $endpoint,
         string $redirect = "/",
-        string $message = "Vous avez atteint la limite périodique de requêtes. Veuillez réessayer ultérieurement."
+        string $message = "Vous avez atteint la limite périodique de requêtes. Veuillez réessayer ultérieurement.",
     ): void {
         if (!$this->rateLimiter->forwardRequest($endpoint)) {
             $this->deferredResponse(429)->toast(ToastType::WARNING, "Limite atteinte", $message)
@@ -589,19 +589,21 @@ class GoralysKernel
             case UserAuthStatus::SESSION_EXPIRED:
                 $this->logger->warning(
                     LoggerInitiator::CORE,
-                    "Tried to perform action: $endpoint without authentification"
+                    "Tried to perform action: $endpoint without authentification",
                 );
                 $this->destroySession();
 
                 $this->response(401)->json(["authEvent" => "expired"]); // Unauthorized
+                // no break
             case UserAuthStatus::NOT_AUTHENTICATED:
                 $this->destroySession();
                 $this->logger->warning(
                     LoggerInitiator::CORE,
-                    "Tried to perform action: $endpoint without authentification"
+                    "Tried to perform action: $endpoint without authentification",
                 );
 
                 $this->response(401)->json(["authEvent" => "unauthenticated"]); // Unauthorized
+                // no break
             case UserAuthStatus::AUTHENTICATED:
                 break;
         }
@@ -623,7 +625,7 @@ class GoralysKernel
      * @param string|null $redirect The page to redirect the user to.
      * @return void
      */
-    public function requireCSRF(string $formId, string|null $redirect = null): void
+    public function requireCSRF(string $formId, ?string $redirect = null): void
     {
 
         if (!$this->csrf->validate($formId, $this->request)) {
@@ -655,14 +657,14 @@ class GoralysKernel
 
         if ($strict && $currentRole !== $role) {
             $this->deferredResponse(403)->error( // Forbidden
-                "Il semblerait que vous n'ayez pas les permissions nécéssaires."
+                "Il semblerait que vous n'ayez pas les permissions nécéssaires.",
             )
                 ->send();
         }
 
         if (!$currentRole->isAtLeast($role)) {
             $this->deferredResponse(403)->error( // Forbidden
-                "Il semblerait que vous n'ayez pas les permissions nécéssaires."
+                "Il semblerait que vous n'ayez pas les permissions nécéssaires.",
             )
                 ->send();
         }

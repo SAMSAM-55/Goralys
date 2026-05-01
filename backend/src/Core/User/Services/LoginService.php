@@ -28,7 +28,7 @@ final class LoginService
      */
     public function __construct(
         LoggerInterface $logger,
-        UserRepositoryInterface $repo
+        UserRepositoryInterface $repo,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
@@ -53,14 +53,14 @@ final class LoginService
         if (!password_verify($userData->password, $passwordHash)) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to connect user, invalid password " . " for user : " . $userData->username
+                "Failed to connect user, invalid password " . " for user : " . $userData->username,
             );
             return false;
         }
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "New user logged in : " . $userData->username
+            "New user logged in : " . $userData->username,
         );
         return true;
     }

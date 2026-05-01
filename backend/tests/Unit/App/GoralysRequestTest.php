@@ -71,8 +71,8 @@ final class GoralysRequestTest extends TestCase
     {
         $this->request->setInput(['username' => 'john', 'password' => 'secret']);
         $result = $this->request->validate([
-                'username' => ['required'],
-                'password' => ['required'],
+            'username' => ['required'],
+            'password' => ['required'],
         ]);
         $this->assertSame(['username' => 'john', 'password' => 'secret'], $result);
     }

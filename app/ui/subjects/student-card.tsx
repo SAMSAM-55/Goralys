@@ -46,7 +46,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         if (data.toastType === 'info' && res.ok) {
-            cookies.set('subjects-synced-student', false);
+            cookies.set('subjects-synced-student', "0", { path: '/' });
             onUpdateAction();
         }
     }
@@ -106,7 +106,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             });
 
             if (data.toastType === 'info' && res.ok) {
-                cookies.set('subjects-synced-student', false);
+                cookies.set('subjects-synced-student', "0", { path: '/' });
                 onUpdateAction();
             }
         }

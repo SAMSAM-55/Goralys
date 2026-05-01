@@ -47,7 +47,7 @@ final class SubjectsTemplateRenderer
                 }
                 return $value ? $ifTrue : $ifFalse;
             },
-            $html
+            $html,
         );
     }
 
@@ -63,7 +63,7 @@ final class SubjectsTemplateRenderer
         if (count($student->subjects) < 2) {
             throw new InvalidArgumentException(
                 "Student $student->studentName must have at least 2 subjects. Got: "
-                . print_r($student->subjects, true)
+                . print_r($student->subjects, true),
             );
         }
 
@@ -117,10 +117,10 @@ final class SubjectsTemplateRenderer
             ";
 
         $vars = [
-                'nom'    => $lastname,
-                'prenom' => $firstname,
-                'série'  => $pathway,
-                'year'   => date("Y"),
+            'nom'    => $lastname,
+            'prenom' => $firstname,
+            'série'  => $pathway,
+            'year'   => date("Y"),
         ];
 
         foreach ($student->subjects as $i => $subject) {
@@ -134,10 +134,10 @@ final class SubjectsTemplateRenderer
 
         $html = $this->resolveConditionals($html, $vars);
 
-         // Simple replacements
+        // Simple replacements
         $replacements = array_combine(
             array_map(fn($k) => "{{{$k}}}", array_keys($vars)),
-            array_values($vars)
+            array_values($vars),
         );
         $html = strtr($html, $replacements);
 

@@ -7,6 +7,8 @@
 
 namespace Goralys\App\User\Controllers;
 
+use Goralys\App\User\Data\UserCollection;
+use Goralys\App\User\Data\UserGetDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
@@ -43,5 +45,23 @@ final class UserController
     public function clear(): bool
     {
         return $this->repo->clearAll();
+    }
+
+    /**
+     * Returns all non-admin users from the database.
+     * @return UserCollection The users (teachers and students).
+     */
+    public function getAll(): UserCollection
+    {
+        $result = new UserCollection();
+        foreach ($this->repo->getAll() as $user) {
+            $result->addUser(
+                UserGetDTO::fromFull(
+                    $user,
+                    $this->repo->getPublicIdForUsername($user->username),
+                ),
+            );
+        }
+        return $result;
     }
 }

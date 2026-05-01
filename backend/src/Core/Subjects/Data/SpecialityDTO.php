@@ -28,7 +28,6 @@ final readonly class SpecialityDTO
         public string $topicCode,
         public string $subject,
         public DateTime $validatedAt,
-        public bool $interdisciplinary
-    ) {
-    }
+        public bool $interdisciplinary,
+    ) {}
 }

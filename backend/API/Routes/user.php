@@ -4,11 +4,13 @@ use Goralys\App\HTTP\Middleware\AuthMiddleware;
 use Goralys\App\HTTP\Middleware\CSRFMiddleware;
 use Goralys\App\HTTP\Middleware\DbMiddleware;
 use Goralys\App\HTTP\Middleware\RateLimitMiddleware;
+use Goralys\App\HTTP\Middleware\RoleMiddleware;
 use Goralys\App\HTTP\Middleware\ToastMiddleware;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Router\GoralysRouter;
 use Goralys\App\Router\Options\RouterOptions;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
+use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Kernel\GoralysKernel;
@@ -23,19 +25,19 @@ function createUserRoutes(GoralysRouter $router): void
         $data = [
             "username"   => trim($_SESSION["current_username"]),
             "full_name"  => trim($_SESSION["current_full_name"]),
-            "role"       => trim($_SESSION["current_role"])
+            "role"       => trim($_SESSION["current_role"]),
         ];
 
         $kernel->logger->info(
             LoggerInitiator::APP,
-            "Accessed data of user: " . $data["username"]
+            "Accessed data of user: " . $data["username"],
         );
 
         $kernel->response()->json(
             [
                 "success" => true,
-                "data" => $data
-            ]
+                "data" => $data,
+            ],
         );
     })
         ->middleware(...RateLimitMiddleware::for("get-profile"))
@@ -44,15 +46,15 @@ function createUserRoutes(GoralysRouter $router): void
     $router->get('user/role', function (GoralysKernel $kernel) {
         $kernel->logger->info(
             LoggerInitiator::APP,
-            "Accessed data of user: " . $_SESSION["current_username"]
+            "Accessed data of user: " . $_SESSION["current_username"],
         );
 
 
         $kernel->response()->json(
             [
                 "success" => true,
-                "role" => trim($_SESSION["current_role"])
-            ]
+                "role" => trim($_SESSION["current_role"]),
+            ],
         );
     })
         ->middleware(...RateLimitMiddleware::for("get-role"))
@@ -65,7 +67,7 @@ function createUserRoutes(GoralysRouter $router): void
         $registerData = new UserRegisterDTO(
             $request->get("user-name"),
             $request->get("first-name") . " " . $request->get("last-name"),
-            $request->get("password")
+            $request->get("password"),
         );
 
         if (!$kernel->auth->register($registerData)) {
@@ -83,7 +85,7 @@ function createUserRoutes(GoralysRouter $router): void
         )
             ->redirect("/user/login")
             ->send();
-    }, ...RouterOptions::$INPUT::require("username", "password", "first-name", "last-name"))
+    }, ...RouterOptions::$INPUT::require("user-name", "password", "first-name", "last-name"))
         ->middleware(...CSRFMiddleware::form('register', '/user/register'))
         ->middleware(...DbMiddleware::require())
         ->middleware(...ToastMiddleware::flash());
@@ -91,14 +93,14 @@ function createUserRoutes(GoralysRouter $router): void
     $router->post('user/login', function (GoralysKernel $kernel, RequestInterface $request) {
         $userData = new UserLoginDTO(
             $request->get("username"),
-            $request->get("password")
+            $request->get("password"),
         );
 
         if (!$kernel->auth->login($userData)) {
             $kernel->deferredResponse(401)->toast(
                 ToastType::ERROR,
                 "Connexion",
-                "Mot de passe ou identifiant incorrect."
+                "Mot de passe ou identifiant incorrect.",
             )
                 ->redirect("/user/login")
                 ->send();
@@ -107,7 +109,7 @@ function createUserRoutes(GoralysRouter $router): void
         $kernel->deferredResponse()->toast(
             ToastType::SUCCESS,
             "Connexion",
-            "Vous avez bien été connecté à votre compte."
+            "Vous avez bien été connecté à votre compte.",
         )
             ->redirect("/subject")
             ->action("login-success")
@@ -116,7 +118,7 @@ function createUserRoutes(GoralysRouter $router): void
         ->middleware(...RateLimitMiddleware::for(
             'login',
             '/user/login',
-            "Tentatives de connexion trop nombreuses, veuillez réessayer dans quelques minutes"
+            "Tentatives de connexion trop nombreuses, veuillez réessayer dans quelques minutes",
         ))
         ->middleware(...CSRFMiddleware::form('login', '/user/login'))
         ->middleware(...DbMiddleware::require())
@@ -128,5 +130,16 @@ function createUserRoutes(GoralysRouter $router): void
     })
         ->middleware(...RateLimitMiddleware::for('logout'))
         ->middleware(...CSRFMiddleware::form('logout'))
+        ->middleware(...DbMiddleware::require());
+
+    // ================================================
+    // [SECTION] Getter
+    // ================================================
+    $router->post('users/all', function (GoralysKernel $kernel) {
+        $kernel->response()->json($kernel->users->getAll());
+    })
+        ->middleware(...RateLimitMiddleware::for('get-all-users'))
+        ->middleware(...CSRFMiddleware::form('get-all-users'))
+        ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
         ->middleware(...DbMiddleware::require());
 }

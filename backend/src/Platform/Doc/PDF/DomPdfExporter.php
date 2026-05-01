@@ -29,7 +29,7 @@ final class DomPdfExporter implements PdfExporterInterface
         $finalSource = str_replace(
             '</head>',
             "<style>\n$pdf->CSS\n</style>\n</head>",
-            $pdf->HTML
+            $pdf->HTML,
         );
 
         // --- Dompdf options ---

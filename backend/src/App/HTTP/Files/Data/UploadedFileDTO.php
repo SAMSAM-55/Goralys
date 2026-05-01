@@ -22,7 +22,6 @@ readonly class UploadedFileDTO
         public string $name,
         public string $type,
         public string $tmpPath,
-        public int $size
-    ) {
-    }
+        public int $size,
+    ) {}
 }

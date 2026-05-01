@@ -17,7 +17,7 @@ class RegisterValidatorServiceTest extends TestCase
         $this->repo = new FakeUserRepository();
 
         $this->service = new RegisterValidatorService(
-            $this->repo
+            $this->repo,
         );
     }
 

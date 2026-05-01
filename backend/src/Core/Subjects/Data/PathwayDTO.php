@@ -18,7 +18,6 @@ final readonly class PathwayDTO
      */
     public function __construct(
         public string $full,
-        public string $detectPattern
-    ) {
-    }
+        public string $detectPattern,
+    ) {}
 }

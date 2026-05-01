@@ -12,7 +12,7 @@ export default function Page() {
     const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects || null);
     const cookies = new Cookies();
     const updateSubjects = async () => {
-        cookies.set(syncKey, "0");
+        cookies.set(syncKey, "0", { path: '/' });
         await refetch();
     }
 

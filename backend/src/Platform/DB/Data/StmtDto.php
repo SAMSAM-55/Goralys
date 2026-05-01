@@ -19,7 +19,7 @@ final readonly class StmtDto
         public string $query,
         public string $types,
         mixed $value1,
-        mixed ...$_
+        mixed ...$_,
     ) {
         $this->args = [$value1, ...$_];
     }

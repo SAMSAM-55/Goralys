@@ -8,7 +8,7 @@ export default function Page() {
     const {subjects, refetch, syncKey} = useSubjects("student");
     const cookies = new Cookies();
     const updateSubjects = async () => {
-        cookies.set(syncKey, "0");
+        cookies.set(syncKey, "0", { path: '/' });
         await refetch();
     }
 

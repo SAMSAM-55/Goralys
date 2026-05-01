@@ -58,7 +58,7 @@ final class RateLimiter
             . ".txt";
 
         if (!is_dir(dirname($filename))) {
-            mkdir(dirname($filename), 0777, true);
+            mkdir(dirname($filename), 0o777, true);
         }
 
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -88,7 +88,7 @@ final class RateLimiter
             $data[$ip] = [
                 'count' => 0,
                 'reset_time' => 0,
-                'failures' => 0
+                'failures' => 0,
             ];
         }
 
@@ -98,7 +98,7 @@ final class RateLimiter
 
         $n = min(
             $rate?->maxLevels ?? 1,
-            $data[$ip]['failures'] ?? 0
+            $data[$ip]['failures'] ?? 0,
         );
 
         $timeMethod = $rate?->timeMethod ?? RateLimitTimeMethod::CONSTANT;
@@ -120,7 +120,7 @@ final class RateLimiter
         if ($data[$ip]['count'] >= $limit) {
             $data[$ip]['failures'] = min(
                 $data[$ip]['failures'] + 1,
-                $rate?->maxLevels ?? 1
+                $rate?->maxLevels ?? 1,
             );
             $this->finalWrite($fp, json_encode($data));
             return false;

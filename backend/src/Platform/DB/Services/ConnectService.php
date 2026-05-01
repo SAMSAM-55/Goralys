@@ -41,7 +41,7 @@ final class ConnectService
                 $credentials->host,
                 $credentials->username,
                 $credentials->password,
-                $credentials->name
+                $credentials->name,
             );
             $conn->set_charset('utf8mb4');
         } catch (mysqli_sql_exception) {

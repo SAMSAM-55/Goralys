@@ -1,97 +1,28 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { SubjectsProxy } from "./app/lib/proxies/subjects-proxy";
+import { AdminsProxy } from "./app/lib/proxies/admins-proxy";
+
+const routes: Array<{
+    matcher: RegExp;
+    handler: (req: NextRequest) => Promise<NextResponse>;
+}> = [
+    { matcher: /^\/subject/, handler: SubjectsProxy },
+    { matcher: /^\/admin/,   handler: AdminsProxy },
+];
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    if (!pathname.startsWith("/subject")) {
-        return NextResponse.next();
-    }
-    console.log("Incoming cookies:", request.headers.get("cookie"));
-    const hasSession = request.cookies.has("GORALYSSESSID");
-    if (!hasSession) {
-        return NextResponse.redirect(new URL("/user/login?reason=unauthenticated", request.url));
+    for (const route of routes) {
+        if (route.matcher.test(pathname)) {
+            return route.handler(request);
+        }
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_DOMAIN;
-    if (!apiUrl) {
-        console.error("NEXT_PUBLIC_API_DOMAIN is not set in proxy");
-        return NextResponse.redirect(
-            new URL("/user/login?reason=server_error", request.url)
-        );
-    }
-
-    const clientOrigin = request.headers.get("origin") ?? request.nextUrl.origin;
-
-    let res: Response;
-    try {
-        res = await fetch(`${apiUrl}/user/role`, {
-            method: "GET",
-            headers: {
-                cookie: request.headers.get("cookie") ?? "",
-                "User-Agent": request.headers.get("user-agent") ?? "",
-                "X-Forwarded-Origin": clientOrigin,
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                "Pragma": "no-cache",
-                "Expires": "0",
-            },
-            cache: "no-store",
-        });
-        console.log(res)
-    } catch (err) {
-        console.error("Error calling role API in proxy:", err);
-        return NextResponse.redirect(
-            new URL("/user/login?reason=server_error", request.url)
-        );
-    }
-
-    if (res.status === 401) {
-        const response = NextResponse.redirect(
-            new URL("/user/login?reason=unauthenticated", request.url)
-        );
-
-        response.headers.set('Cache-Control', 'no-store, max-age=0');
-        return response;
-    }
-
-    if (!res.ok) {
-        console.error("Role API returned non-ok status:", res.status);
-        return NextResponse.redirect(
-            new URL("/user/login?reason=unauthenticated", request.url)
-        );
-    }
-
-    let data;
-    try {
-        data = await res.json();
-    } catch (err) {
-        console.error("Failed to parse JSON from role API:", err);
-        return NextResponse.redirect(
-            new URL("/user/login?reason=unauthenticated", request.url)
-        );
-    }
-
-    const role = data?.role;
-    if (!role) {
-        console.error("Role API returned no role field:", data);
-        return NextResponse.redirect(
-            new URL("/user/login?reason=unauthenticated", request.url)
-        );
-    }
-
-    let response: NextResponse;
-
-    if (pathname === "/subject" && role) {
-        response = NextResponse.redirect(
-            new URL(`/subject/${role}`, request.url)
-        );
-    } else {
-        response = NextResponse.next();
-    }
-
-    return response;
+    return NextResponse.next();
 }
 
 export const config = {
-    matcher: "/subject/:path*",
+    matcher: ["/subject/:path*", "/admin/:path*"],
 };

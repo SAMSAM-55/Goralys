@@ -44,7 +44,7 @@ final class TopicsController
         DbContainerInterface $db,
         UsernameTable $usernames,
         UtilitiesManager $utils,
-        GoralysFileManager $files
+        GoralysFileManager $files,
     ) {
         $this->usernames = $usernames;
 
@@ -73,7 +73,7 @@ final class TopicsController
             $name,
             $code,
             $teachers,
-            $students
+            $students,
         );
     }
 
@@ -88,7 +88,7 @@ final class TopicsController
             !$this->repo->insertTopic(
                 $topic->id,
                 $topic->code,
-                $topic->name
+                $topic->name,
             )
         ) {
             return false;
@@ -97,7 +97,7 @@ final class TopicsController
         if (
             array_any($topic->teachers, fn($t) => !$this->repo->insertTeacher(
                 $topic->id,
-                $this->usernames->resolve($t)
+                $this->usernames->resolve($t),
             ))
         ) {
             return false;
@@ -105,7 +105,7 @@ final class TopicsController
 
         return array_all($topic->students, fn($s) => $this->repo->insertStudent(
             $topic->id,
-            $this->usernames->resolve($s)
+            $this->usernames->resolve($s),
         ));
     }
 

@@ -80,6 +80,12 @@ interface UserRepositoryInterface
     public function getPublicIdForUsername(string $username): ?string;
 
     /**
+     * Returns all the users inside the database.
+     * @return UserFullDTO[] The users.
+     */
+    public function getAll(): array;
+
+    /**
      * Removes all non-admin users from the database.
      * @return bool If the deletion was successful or not.
      */

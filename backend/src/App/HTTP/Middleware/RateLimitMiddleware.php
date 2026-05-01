@@ -36,7 +36,7 @@ final class RateLimitMiddleware implements MiddlewareInterface
         $kernel->requireRateLimit(
             $this->endpoint,
             $this->redirect ?? "/",
-            $this->message ?? "Trop de requêtes. Veuillez réessayer plus tard."
+            $this->message ?? "Trop de requêtes. Veuillez réessayer plus tard.",
         );
 
         return $next($kernel);

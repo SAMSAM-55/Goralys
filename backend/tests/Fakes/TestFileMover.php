@@ -32,7 +32,7 @@ class TestFileMover implements FileMover
 
         if (!rename($from, $destination)) {
             throw new GoralysRuntimeException(
-                sprintf('Failed to move file from "%s" to "%s"', $from, $destination)
+                sprintf('Failed to move file from "%s" to "%s"', $from, $destination),
             );
         }
 

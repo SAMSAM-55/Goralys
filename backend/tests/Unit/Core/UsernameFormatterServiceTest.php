@@ -24,7 +24,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "DOE J.",
             $this->service->formatUsername("j.doe"),
-            "Expected 'j.doe' to be formatted as 'DOE J.'"
+            "Expected 'j.doe' to be formatted as 'DOE J.'",
         );
     }
 
@@ -33,7 +33,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "DOE J.",
             $this->service->formatUsername("j.doe1"),
-            "Expected 'j.doe1' to be formatted as 'DOE J.'"
+            "Expected 'j.doe1' to be formatted as 'DOE J.'",
         );
     }
 
@@ -42,7 +42,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "SMITH A.",
             $this->service->formatUsername("a.smith42"),
-            "Expected 'a.smith42' to be formatted as 'SMITH A.'"
+            "Expected 'a.smith42' to be formatted as 'SMITH A.'",
         );
     }
 
@@ -51,7 +51,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "DOE J.",
             $this->service->formatUsername("J.DOE"),
-            "Expected 'J.DOE' to be formatted as 'DOE J.'"
+            "Expected 'J.DOE' to be formatted as 'DOE J.'",
         );
     }
 
@@ -60,7 +60,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "invalid_username",
             $this->service->formatUsername("invalid_username"),
-            "Expected invalid username to be returned as-is"
+            "Expected invalid username to be returned as-is",
         );
     }
 
@@ -69,7 +69,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "",
             $this->service->formatUsername(""),
-            "Expected empty string to be returned as-is"
+            "Expected empty string to be returned as-is",
         );
     }
 
@@ -78,7 +78,7 @@ class UsernameFormatterServiceTest extends TestCase
         self::assertSame(
             "doe",
             $this->service->formatUsername("doe"),
-            "Expected username without dot to be returned as-is"
+            "Expected username without dot to be returned as-is",
         );
     }
 }

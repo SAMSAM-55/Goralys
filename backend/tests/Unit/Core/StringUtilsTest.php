@@ -25,7 +25,7 @@ class StringUtilsTest extends TestCase
         self::assertSame(
             "hello",
             $this->utils->sanitize("  hello  "),
-            "Expected leading and trailing whitespace to be trimmed"
+            "Expected leading and trailing whitespace to be trimmed",
         );
     }
 
@@ -34,7 +34,7 @@ class StringUtilsTest extends TestCase
         self::assertSame(
             "Hello World",
             $this->utils->sanitize("Hello World"),
-            "Expected string to remain unchanged with StringCase::NONE (default)"
+            "Expected string to remain unchanged with StringCase::NONE (default)",
         );
     }
 
@@ -43,7 +43,7 @@ class StringUtilsTest extends TestCase
         self::assertSame(
             "hello world",
             $this->utils->sanitize("Hello World", StringCase::LOWER),
-            "Expected string to be lowercased with StringCase::LOWER"
+            "Expected string to be lowercased with StringCase::LOWER",
         );
     }
 
@@ -52,7 +52,7 @@ class StringUtilsTest extends TestCase
         self::assertSame(
             "HELLO WORLD",
             $this->utils->sanitize("Hello World", StringCase::UPPER),
-            "Expected string to be uppercased with StringCase::UPPER"
+            "Expected string to be uppercased with StringCase::UPPER",
         );
     }
 
@@ -61,7 +61,7 @@ class StringUtilsTest extends TestCase
         self::assertSame(
             "",
             $this->utils->sanitize(""),
-            "Expected empty string to remain empty"
+            "Expected empty string to remain empty",
         );
     }
 
@@ -70,7 +70,7 @@ class StringUtilsTest extends TestCase
         self::assertSame(
             "abc ABC 123",
             $this->utils->sanitize("abc ABC 123"),
-            "Expected plain ASCII string to remain unchanged"
+            "Expected plain ASCII string to remain unchanged",
         );
     }
 }

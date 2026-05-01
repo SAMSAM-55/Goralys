@@ -24,7 +24,6 @@ final readonly class UserFullDTO
         public int $id,
         public string $username,
         public UserRole $role,
-        public string $fullName
-    ) {
-    }
+        public string $fullName,
+    ) {}
 }

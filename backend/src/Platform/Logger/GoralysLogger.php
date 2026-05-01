@@ -50,11 +50,11 @@ final class GoralysLogger implements LoggerInterface
 
                 $dir = dirname($path);
                 if (!is_dir($dir)) {
-                    mkdir($dir, 0755, true);
+                    mkdir($dir, 0o755, true);
                 }
 
                 touch($path);
-                chmod($path, 0644);
+                chmod($path, 0o644);
             }
         }
 
@@ -72,11 +72,11 @@ final class GoralysLogger implements LoggerInterface
 
             $dir = dirname($path);
             if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
+                mkdir($dir, 0o755, true);
             }
 
             touch($path);
-            chmod($path, 0644);
+            chmod($path, 0o644);
         }
     }
 
@@ -91,7 +91,7 @@ final class GoralysLogger implements LoggerInterface
         LoggerService::log(
             $initiator,
             LoggerType::Info,
-            $message
+            $message,
         );
     }
 
@@ -104,11 +104,11 @@ final class GoralysLogger implements LoggerInterface
      */
     public function debug(LoggerInitiator $initiator, string $message): void
     {
-            LoggerService::log(
-                $initiator,
-                LoggerType::Debug,
-                $message
-            );
+        LoggerService::log(
+            $initiator,
+            LoggerType::Debug,
+            $message,
+        );
     }
 
     /**
@@ -122,7 +122,7 @@ final class GoralysLogger implements LoggerInterface
         LoggerService::log(
             $initiator,
             LoggerType::Warning,
-            $message
+            $message,
         );
     }
 
@@ -137,7 +137,7 @@ final class GoralysLogger implements LoggerInterface
         LoggerService::log(
             $initiator,
             LoggerType::Error,
-            $message
+            $message,
         );
     }
 
@@ -152,7 +152,7 @@ final class GoralysLogger implements LoggerInterface
         LoggerService::log(
             $initiator,
             LoggerType::Fatal,
-            $message
+            $message,
         );
     }
 }
