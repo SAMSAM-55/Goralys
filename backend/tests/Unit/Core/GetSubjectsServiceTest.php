@@ -3,7 +3,7 @@
 namespace Goralys\Tests\Unit\Core;
 
 use DateMalformedStringException;
-use Goralys\App\Subjects\Services\UsernameManager;
+use Goralys\App\User\Services\UsernameManager;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserFullDTO;

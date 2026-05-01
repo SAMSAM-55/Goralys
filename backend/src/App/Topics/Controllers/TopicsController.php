@@ -9,6 +9,7 @@ namespace Goralys\App\Topics\Controllers;
 
 use Goralys\App\HTTP\Files\Data\UploadedFileDTO;
 use Goralys\App\HTTP\Files\GoralysFileManager;
+use Goralys\App\User\Data\UsernameTable;
 use Goralys\Core\Topics\Config\TopicsImportConfig;
 use Goralys\Core\Topics\Data\TopicDescriptorDTO;
 use Goralys\Core\Topics\Data\TopicDTO;
@@ -25,34 +26,33 @@ use Goralys\Shared\Utils\UtilitiesManager;
  */
 final class TopicsController
 {
-    private UtilitiesManager $utils;
     private DbContainerInterface $db;
     private TopicsImportConfig $config;
     private TopicsRepositoryInterface $repo;
     private BuildFromCSVService $CSVBuilder;
     private GoralysFileManager $files;
-    /** @var array<string, string> Cache for username mappings (Full Name => username). */
-    private array $usernameTable; // Temporary will be moved to a proper typed object later.
+    private UsernameTable $usernames;
     private int $nextId;
 
     /**
      * @param DbContainerInterface $db The injected DB.
+     * @param UsernameTable $usernames The injected username table.
      * @param UtilitiesManager $utils The injected utility manager.
      * @param GoralysFileManager $files The injected file manager.
      */
     public function __construct(
         DbContainerInterface $db,
+        UsernameTable $usernames,
         UtilitiesManager $utils,
         GoralysFileManager $files
     ) {
-        $this->usernameTable = [];
-        $this->utils = $utils;
+        $this->usernames = $usernames;
 
         $this->db = $db;
         $this->config = new TopicsImportConfig();
 
         $this->repo = new TopicsRepository($this->db);
-        $this->CSVBuilder = new BuildFromCSVService($this->utils, $this->config);
+        $this->CSVBuilder = new BuildFromCSVService($utils, $this->config);
         $this->nextId = 0;
         $this->files = $files;
     }
@@ -78,29 +78,6 @@ final class TopicsController
     }
 
     /**
-     * Generates a unique username based on a person's full name.
-     * @param string $fullName The full name of the student or teacher.
-     * @return string The generated username (e.g., 'f.lastname9').
-     */
-    private function generateUsername(string $fullName): string
-    {
-        if (in_array($fullName, array_keys($this->usernameTable))) {
-            return $this->usernameTable[$fullName];
-        }
-
-        $fullName = trim($fullName);
-        $names = explode(" ", $fullName);
-        [$lastName, $firstName] = array_slice($names, -2);
-        $firstName = $this->utils->string->sanitize($firstName, StringCase::LOWER);
-        $lastName = $this->utils->string->sanitize(explode("-", $lastName)[0], StringCase::LOWER);
-        $number = rand(0, 9);
-
-        $userName = substr($firstName, 0, 1) . "." . $lastName . $number;
-        $this->usernameTable[$fullName] = $userName;
-        return $this->usernameTable[$fullName];
-    }
-
-    /**
      * Inserts a TopicDTO into the database, including its students and teachers.
      * @param TopicDTO $topic The topic data transfer object to insert.
      * @return bool If the insertion succeded.
@@ -120,7 +97,7 @@ final class TopicsController
         if (
             array_any($topic->teachers, fn($t) => !$this->repo->insertTeacher(
                 $topic->id,
-                $this->generateUsername($t)
+                $this->usernames->resolve($t)
             ))
         ) {
             return false;
@@ -128,7 +105,7 @@ final class TopicsController
 
         return array_all($topic->students, fn($s) => $this->repo->insertStudent(
             $topic->id,
-            $this->generateUsername($s)
+            $this->usernames->resolve($s)
         ));
     }
 
@@ -252,12 +229,12 @@ final class TopicsController
 
             $out .= "Professeurs:" . PHP_EOL;
             foreach ($topic->teachers as $teacher) {
-                $out .= "    - " . $teacher . ": " . $this->usernameTable[$teacher] . PHP_EOL;
+                $out .= "    - " . $teacher . ": " . $this->usernames->resolve($teacher) . PHP_EOL;
             }
 
             $out .= "Élèves:" . PHP_EOL;
             foreach ($topic->students as $student) {
-                $out .= "    - " . $student . ": " . $this->usernameTable[$student] . PHP_EOL;
+                $out .= "    - " . $student . ": " . $this->usernames->resolve($student) . PHP_EOL;
             }
 
             $out .= str_repeat("-", strlen($head)) . PHP_EOL;

@@ -105,5 +105,5 @@ export function useSubjects(role: UserRole['role']) {
         void fetchSubjects();
     }, [fetchSubjects]);
 
-    return useMemo(() => ({ subjects, refetch: fetchSubjects }), [subjects, fetchSubjects]);
+    return useMemo(() => ({ subjects, refetch: fetchSubjects, syncKey: `subjects-synced-${role}`}), [subjects, fetchSubjects, role]);
 }

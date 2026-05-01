@@ -2,10 +2,10 @@
 
 namespace Goralys\Tests\Unit\App;
 
-use Goralys\App\Subjects\Services\UsernameManager;
-use Goralys\Tests\Fakes\FakeUserRepository;
-use Goralys\Core\User\Data\UserFullDTO;
+use Goralys\App\User\Services\UsernameManager;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Data\UserFullDTO;
+use Goralys\Tests\Fakes\FakeUserRepository;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

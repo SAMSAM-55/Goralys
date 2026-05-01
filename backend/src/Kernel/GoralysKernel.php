@@ -46,6 +46,7 @@ use Goralys\App\Topics\Controllers\TopicsController;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\User\Controllers\UserController;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
+use Goralys\App\User\Data\UsernameTable;
 use Goralys\App\User\Services\UsernameManager;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
@@ -331,7 +332,12 @@ class GoralysKernel
      */
     private function initTopics(): void
     {
-        $this->topics = new TopicsController($this->db, $this->utils, $this->fileManager);
+        $this->topics = new TopicsController(
+            $this->db,
+            new UsernameTable($this->utils),
+            $this->utils,
+            $this->fileManager
+        );
     }
 
     /**

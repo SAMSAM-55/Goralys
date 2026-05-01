@@ -57,6 +57,10 @@ final class TopicsRepository implements TopicsRepositoryInterface
             "is",
             $topicId,
             $teacherUsername
+        ) && $this->db->run(
+            "insert ignore into public_ids (user_id, public_id) values (?, uuid());",
+            "s",
+            $teacherUsername
         );
     }
 
@@ -75,6 +79,10 @@ final class TopicsRepository implements TopicsRepositoryInterface
             "si",
             $studentUsername,
             $topicId
+        ) && $this->db->run(
+            "insert ignore into public_ids (user_id, public_id) values (?, uuid());",
+            "s",
+            $studentUsername
         );
     }
 

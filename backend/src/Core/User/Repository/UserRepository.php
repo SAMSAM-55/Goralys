@@ -95,7 +95,7 @@ final class UserRepository implements UserRepositoryInterface
     public function save(UserCreateDTO $userData): bool
     {
         return $this->db->run(
-            "insert into users (user_id, full_name, password_hash, role, public_id) values (?, ?, ?, ?, uuid())",
+            "insert into users (user_id, full_name, password_hash, role) values (?, ?, ?, ?)",
             "ssss",
             $userData->username,
             $userData->fullName,
@@ -247,7 +247,10 @@ final class UserRepository implements UserRepositoryInterface
     public function getByPublicId(string $uuid): UserFullDTO
     {
         $result = $this->db->fetch(
-            "select id, user_id, role, full_name from users where public_id = ?",
+            "select u.id, u.user_id, u.role, u.full_name 
+                   from users u
+                   join public_ids pi on u.user_id = pi.user_id
+                   where pi.public_id = ?",
             "s",
             $uuid
         );
@@ -262,7 +265,11 @@ final class UserRepository implements UserRepositoryInterface
      */
     public function isPublicIdValid(string $uuid): bool
     {
-        return $this->db->fetch("select 0 from users where public_id = ?", "s", $uuid)->num_rows !== 0;
+        return $this->db->fetch(
+            "select 0 from public_ids where public_id = ?",
+            "s",
+            $uuid
+        )->num_rows !== 0;
     }
 
     /**
@@ -273,7 +280,7 @@ final class UserRepository implements UserRepositoryInterface
     public function getPublicIdForUsername(string $username): ?string
     {
         return $this->db->fetch(
-            "select public_id from users where user_id = ?",
+            "select public_id from public_ids where user_id = ?",
             "s",
             $username
         )->fetch_assoc()['public_id'] ?? null;

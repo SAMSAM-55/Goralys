@@ -10,13 +10,15 @@ import { Subject } from "@/app/lib/types";
 import { SubjectsSearchBar } from "@/app/ui/subjects/subjects-search-bar";
 import { useState, useEffect } from "react";
 import { useConfirm } from "@/app/ui/modals/confirm/confirm-provider";
+import Cookies from "universal-cookie";
 
 export default function Page() {
     const modal = useImportTopicsModal();
     const confirm = useConfirm();
     const toast = useToast();
-    const { subjects, refetch } = useSubjects("admin");
+    const { subjects, refetch, syncKey } = useSubjects("admin");
     const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects);
+    const cookies = new Cookies();
 
     useEffect(() => {
         const run = () => setCurrentSubjects(subjects ?? null);
@@ -60,6 +62,7 @@ export default function Page() {
             a.download = "utilisateurs.txt";
             a.click();
             URL.revokeObjectURL(url);
+            cookies.set(syncKey, "0");
             await refetch();
             setCurrentSubjects(subjects || []);
             return;
@@ -105,6 +108,7 @@ export default function Page() {
         }
 
         if (res.ok) {
+            cookies.set(syncKey, "0");
             await refetch();
             setCurrentSubjects(subjects || []);
         }
