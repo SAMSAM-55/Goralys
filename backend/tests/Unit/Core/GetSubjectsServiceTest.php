@@ -185,7 +185,7 @@ class GetSubjectsServiceTest extends TestCase
         $this->repo->setGetResult($this->mysqliResult);
 
         // Preparing the data
-        $actual = json_encode($this->service->getAllSubjects(), JSON_UNESCAPED_UNICODE, )
+        $actual = json_encode($this->service->getAllSubjects(), JSON_UNESCAPED_UNICODE)
             |> (fn($x) => json_decode($x, true))
             |> $this->stripTokens(...);
 

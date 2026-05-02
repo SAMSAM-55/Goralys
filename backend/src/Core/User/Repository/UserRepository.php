@@ -257,10 +257,18 @@ final class UserRepository implements UserRepositoryInterface
      */
     public function clearAll(): bool
     {
-        return $this->db->runNoArgs("
-            delete from users
-            where role <> 'admin'
-        ");
+        $this->db->beginTransaction();
+        try {
+            $this->db->runNoArgs(
+                "delete from public_ids where user_id not in (select user_id from users where role = 'admin')",
+            );
+            $this->db->runNoArgs("delete from users where role <> 'admin'");
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
     }
 
     /**
@@ -317,7 +325,7 @@ final class UserRepository implements UserRepositoryInterface
      */
     public function getAll(): array
     {
-        $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role != 'admin'");
+        $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role <> 'admin'");
         return $this->buildUsersFromResult($result);
     }
 
@@ -351,7 +359,7 @@ final class UserRepository implements UserRepositoryInterface
                 "delete from topics where id in (
                 select topic_id from topic_teachers where teacher_id = ?
                 and topic_id not in (
-                    select topic_id from topic_teachers where teacher_id != ?
+                    select topic_id from topic_teachers where teacher_id <> ?
                 )
             )",
                 "ss",
@@ -361,6 +369,29 @@ final class UserRepository implements UserRepositoryInterface
 
             $this->db->run("delete from student_topics where student_id = ?", "s", $username);
             $this->db->run("delete from users where user_id = ?", "s", $username);
+            $this->db->run("delete from public_ids where user_id = ?", "s", $username);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Replaces a teacher inside the database, the new teacher's username will replace the old one, and all the subjects
+     * will remain linked correctly to that new teacher.
+     * @param string $old The old teacher's username.
+     * @param string $new The new teacher's username.
+     * @return bool Wether the replacement is successful.
+     */
+    public function replaceTeacher(string $old, string $new): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $this->db->run("update topic_teachers set teacher_id = ? where teacher_id = ?", "ss", $new, $old);
+            $this->db->run("update public_ids set user_id = ?, public_id = uuid() where user_id = ?", "ss", $new, $old);
 
             $this->db->commit();
             return true;

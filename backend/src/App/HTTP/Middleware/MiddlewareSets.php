@@ -48,4 +48,19 @@ final class MiddlewareSets
             new Middleware(...DbMiddleware::transaction()),
         ];
     }
+
+    /**
+     * Middlewares for general admin panel routes.
+     * @param string $action The action/endpoint of the route.
+     * @return list<Middleware> The pre-composed middlewares list.
+     */
+    public static function adminPanelRoute(string $action): array
+    {
+        return [
+            new Middleware(...RateLimitMiddleware::for($action, '/admin/user')),
+            new Middleware(...CSRFMiddleware::form($action, '/admin/user')),
+            new Middleware(...AuthMiddleware::require()),
+            new Middleware(...RoleMiddleware::require(UserRole::ADMIN, true)),
+        ];
+    }
 }

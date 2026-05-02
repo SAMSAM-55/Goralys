@@ -9,6 +9,7 @@ namespace Goralys\App\User\Controllers;
 
 use Goralys\App\User\Data\UserCollection;
 use Goralys\App\User\Data\UserGetDTO;
+use Goralys\App\User\Data\UsernameTable;
 use Goralys\App\User\Services\UsernameManager;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
@@ -18,6 +19,7 @@ use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
+use Goralys\Shared\Utils\UtilitiesManager;
 
 /**
  * The controller that handles the user logic.
@@ -94,6 +96,22 @@ final class UserController
     public function resetPassword(string $publicId): bool
     {
         return $this->repo->softDelete($this->usernames->get($publicId));
+    }
+
+    /**
+     * Replaces a teacher inside the database.
+     * @param string $publicId The current teacher's public id.
+     * @param string $newName The full name of the new teacher.
+     * @return string|null Wether the operation was successful.
+     * @throws GoralysRuntimeException If the username of the user could not be retrieved.
+     */
+    public function replaceTeacher(string $publicId, string $newName): ?string
+    {
+        $utils = new UtilitiesManager();
+        $table = new UsernameTable($utils);
+        $old = $this->usernames->get($publicId);
+        $new = $table->resolve($newName);
+        return ($this->repo->softDelete($old) && $this->repo->replaceTeacher($old, $new)) ? $new : null;
     }
 
     /**

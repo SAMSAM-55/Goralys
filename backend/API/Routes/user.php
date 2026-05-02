@@ -3,14 +3,13 @@
 use Goralys\App\HTTP\Middleware\AuthMiddleware;
 use Goralys\App\HTTP\Middleware\CSRFMiddleware;
 use Goralys\App\HTTP\Middleware\DbMiddleware;
+use Goralys\App\HTTP\Middleware\MiddlewareSets;
 use Goralys\App\HTTP\Middleware\RateLimitMiddleware;
-use Goralys\App\HTTP\Middleware\RoleMiddleware;
 use Goralys\App\HTTP\Middleware\ToastMiddleware;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Router\GoralysRouter;
 use Goralys\App\Router\Options\RouterOptions;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
-use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Kernel\GoralysKernel;
@@ -138,9 +137,7 @@ function createUserRoutes(GoralysRouter $router): void
     $router->post('users/all', function (GoralysKernel $kernel) {
         $kernel->response()->json($kernel->users->getAll());
     })
-        ->middleware(...RateLimitMiddleware::for('get-all-users'))
-        ->middleware(...CSRFMiddleware::form('get-all-users'))
-        ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
+        ->middlewares(...MiddlewareSets::adminPanelRoute('get-all-users'))
         ->middleware(...DbMiddleware::require());
 
     $router->post('users/reset-password', function (GoralysKernel $kernel, RequestInterface $request) {
@@ -170,9 +167,7 @@ function createUserRoutes(GoralysRouter $router): void
                 ->redirect("/admin/user")
                 ->send();
     }, ...RouterOptions::$INPUT::require("target", "admin-password"))
-            ->middleware(...RateLimitMiddleware::for('reset-password'))
-            ->middleware(...CSRFMiddleware::form('reset-password'))
-            ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
+            ->middlewares(...MiddlewareSets::adminPanelRoute('reset-password'))
             ->middleware(...DbMiddleware::require());
 
     $router->post('users/delete', function (GoralysKernel $kernel, RequestInterface $request) {
@@ -202,8 +197,44 @@ function createUserRoutes(GoralysRouter $router): void
                 ->redirect("/admin/user")
                 ->send();
     }, ...RouterOptions::$INPUT::require("target", "admin-password"))
-            ->middleware(...RateLimitMiddleware::for('delete-user'))
-            ->middleware(...CSRFMiddleware::form('delete-user'))
-            ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
+            ->middlewares(...MiddlewareSets::adminPanelRoute('delete-user'))
+            ->middleware(...DbMiddleware::transaction());
+
+    // -------------------------
+    // [SUB SECTION] User replacement
+    // -------------------------
+
+    $router->post('users/teacher/replace', function (GoralysKernel $kernel, RequestInterface $request) {
+        if (!$kernel->users->validatePassword($request->get("admin-password"))) {
+            $kernel->deferredResponse(501)->toast( // Unauthorized
+                ToastType::WARNING,
+                "Mot de passe",
+                "Veuillez saisir le bon mot de passe",
+            )
+                    ->redirect("/admin/user")
+                    ->send();
+        }
+
+        $result = $kernel->users->replaceTeacher(
+            $request->get("target"),
+            trim($request->get("last-name")) . " " . trim($request->get("first-name")),
+        );
+        if (!$result) {
+            $kernel->deferredResponse(500)->error(
+                "Le professeur n'a pas pu être remplacé.",
+            )
+                    ->redirect("/admin/user")
+                    ->send();
+        }
+
+        $kernel->deferredResponse()->toast(
+            ToastType::INFO,
+            "Remplacement",
+            "Le professeur a bien été remplacé. Il peut désormais créer un compte avec l'identifiant $result.",
+        )
+                ->redirect("/admin/user")
+                ->send();
+    }, ...RouterOptions::$INPUT::require("target", "first-name", "last-name", "admin-password"))
+            ->middlewares(...MiddlewareSets::adminPanelRoute('replace-teacher'))
             ->middleware(...DbMiddleware::transaction());
 }

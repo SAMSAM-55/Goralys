@@ -8,13 +8,14 @@ import {usePasswordModal} from "@/app/ui/modals/password/password-modal-provider
 import {useToast} from "@/app/ui/toast/toast-provider";
 import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import Cookies from "universal-cookie";
+import ReplaceTeacherElement from "@/app/ui/admin-pannel/replace-teacher-element";
 
 export default function UserCard({ user, onUpdateAction, syncKey }: { user: User, onUpdateAction: () => void, syncKey: string }) {
     const password = usePasswordModal();
     const toast = useToast();
     const cookies = new Cookies();
 
-    const fetchAdmin = async (route: string, action: string) => {
+    const fetchAdmin = async (route: string, action: string, extraPayload: Record<string, string> = {}) => {
         const pwd = await password.showPasswordModal();
 
         if (!pwd) return;
@@ -32,6 +33,7 @@ export default function UserCard({ user, onUpdateAction, syncKey }: { user: User
             'target': user.publicId,
             'admin-password': pwd,
             'csrf-token': csrfToken,
+            ...extraPayload
         };
 
         const res = await goralysFetchClient(route, {
@@ -59,21 +61,33 @@ export default function UserCard({ user, onUpdateAction, syncKey }: { user: User
 
     const deleteUser = async () => await fetchAdmin('users/delete', 'delete-user');
 
+    const replaceTeacher = async (firstName: string, lastName: string) => await fetchAdmin(
+        'users/teacher/replace',
+        'replace-teacher',
+        {
+            'first-name': firstName,
+            'last-name': lastName,
+        }
+    )
+
     return (
-        <Card className="flex-row w-175! justify-between items-center bg-sky-200 gap-1 p-1 mb-1 mt-1">
-            <div className="flex flex-row">
-                {
-                    // No admins here.
-                    user.role == "teacher"
-                        ? <BookOpenIcon width={27.5} className="mr-1.5"/>
-                        : <AcademicCapIcon width={27.5} className="mr-1.5"/>
-                }
-                <strong>{user.fullName}</strong>
+        <Card className="flex-col w-175! bg-sky-200 gap-1 p-1 mb-1 mt-1">
+            <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-row">
+                    {
+                        // No admins here.
+                        user.role == "teacher"
+                            ? <BookOpenIcon width={27.5} className="mr-1.5"/>
+                            : <AcademicCapIcon width={27.5} className="mr-1.5"/>
+                    }
+                    <strong>{user.fullName}</strong>
+                </div>
+                <div className="flex flex-row w-100 gap-1">
+                    <Button type="button" text="Réinitialiser le mot de passe" onClick={resetPassword} />
+                    <Button color="red" className="w-50!" type="button" text="Supprimer" onClick={deleteUser} />
+                </div>
             </div>
-            <div className="flex flex-row w-100 gap-1">
-                <Button type="button" text="Réinitialiser le mot de passe" onClick={resetPassword} />
-                <Button color="red" className="w-50!" type="button" text="Supprimer" onClick={deleteUser} />
-            </div>
+            {user.role == 'teacher' && <ReplaceTeacherElement onReplaceAction={replaceTeacher} />}
         </Card>
     );
 }

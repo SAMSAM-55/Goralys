@@ -86,6 +86,15 @@ interface UserRepositoryInterface
     public function getAll(): array;
 
     /**
+     * Replaces a teacher inside the database, the new teacher's username will replace the old one, and all the subjects
+     * will remain linked correctly to that new teacher.
+     * @param string $old The old teacher's username.
+     * @param string $new The new teacher's username.
+     * @return bool Wether the replacement is successful.
+     */
+    public function replaceTeacher(string $old, string $new): bool;
+
+    /**
      * Deletes a user only from the `users` table. This is used to reset the user's password.
      * @param string $username The user's username.
      * @return bool Wether the deletion was successful.
