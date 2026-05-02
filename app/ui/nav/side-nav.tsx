@@ -39,14 +39,15 @@ export function SideNav() {
             case "none":
                 return "Mon Espace";
             case "teacher": return "Mes Élèves";
-            case "admin": return "Administration";
+            case "admin": return "Questions";
         }
     }
 
     const links: { name: string; url: string }[] = buildArray(
         { name: "Accueil", url: "/" },
         { name: getSubjectLinkText(), url: "/subject" },
-        role == "admin" && { name: "Utilisateurs", url: "/admin/user" }
+        role == "admin" && { name: "Utilisateurs", url: "/admin/user" },
+        role == "admin" && { name: "Accès", url: "/admin/admin" }
     );
 
     return (

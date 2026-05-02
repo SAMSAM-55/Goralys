@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\App\Config;
 
 use Goralys\App\Config\Data\RateLimit;
@@ -23,6 +28,9 @@ final class RateLimiterConfig
             'register' => new RateLimit(5, 180, RateLimitTimeMethod::LINEAR, 3),
             'flash-toast' => new RateLimit(100, 60, RateLimitTimeMethod::CONSTANT),
             'csrf-create' => new RateLimit(30, 60, RateLimitTimeMethod::CONSTANT),
+
+            'admin-panel' => new RateLimit(3, 90, RateLimitTimeMethod::CONSTANT),
+            'admin-fetch' => new RateLimit(15, 90, RateLimitTimeMethod::CONSTANT),
         ];
     }
 }

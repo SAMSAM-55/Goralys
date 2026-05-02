@@ -56,7 +56,7 @@ final class SubjectsTemplateRenderer
      * Resolves column widths, pathway detection, and all template variables before returning the source DTO.
      * @param StudentSubjectsDTO $student The student data to render.
      * @return PdfSourceDTO The rendered HTML and CSS ready for PDF generation.
-     * @throws \InvalidArgumentException If the student has fewer than 2 subjects.
+     * @throws InvalidArgumentException If the student has fewer than 2 subjects.
      */
     public function render(StudentSubjectsDTO $student): PdfSourceDTO
     {

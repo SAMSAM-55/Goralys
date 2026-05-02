@@ -7,6 +7,8 @@
 
 namespace Goralys\App\HTTP\Request\Interfaces;
 
+use Goralys\Shared\Exception\Request\InvalidInputException;
+
 /**
  * Contract that represents an incoming request.
  */
@@ -23,6 +25,7 @@ interface RequestInterface
      * Validates a given input from the request.
      * @param array $rules The rules to apply for the validation.
      * @return array The list of the validated inputs.
+     * @throws InvalidInputException If the input validation fails.
      */
     public function validate(array $rules): array;
 }

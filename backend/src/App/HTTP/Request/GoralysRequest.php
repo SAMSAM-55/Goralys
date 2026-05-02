@@ -44,9 +44,6 @@ final class GoralysRequest implements RequestInterface
         if (is_string($v)) {
             return trim($v);
         }
-        if ((is_scalar($v) || is_bool($v))) {
-            return $v;
-        }
         return $v;
     }
 

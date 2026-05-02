@@ -8,7 +8,7 @@
 namespace Goralys\Platform\Logger\Data\Enums;
 
 /**
- * An enum used to represent the type of a log.
+ * An enum used to represent the type of log.
  */
 enum LoggerType: int
 {

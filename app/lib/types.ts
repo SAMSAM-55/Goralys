@@ -153,9 +153,11 @@ export type UserData = {
     username: string,
     full_name: string,
     role: UserRole['role'],
+    public_id: string,
 }
 
 export type User = {
+    username: string,
     publicId: string,
     fullName: string,
     role: UserRole['role']

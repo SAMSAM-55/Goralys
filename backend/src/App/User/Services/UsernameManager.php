@@ -9,7 +9,6 @@ namespace Goralys\App\User\Services;
 
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
-use RuntimeException;
 
 /**
  * Manages the mapping between real usernames and their opaque public tokens,
@@ -57,6 +56,6 @@ final class UsernameManager
             throw new GoralysRuntimeException("Invalid user public id: $id");
         }
 
-        return $this->users->getByPublicId($id)->username;
+        return $this->users->getUsernameForPublicId($id) ?? "";
     }
 }

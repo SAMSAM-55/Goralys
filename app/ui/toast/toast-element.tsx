@@ -20,7 +20,7 @@ export default function ToastElement({ type, title, message, visible }: ToastPro
     return (
         <div
             className={clsx(
-                "absolute flex gap-2 p-3 h-22 w-115 bg-sky-300 rounded shadow overflow-hidden left-1/2 -translate-x-1/2 top-1 ",
+                "fixed flex gap-2 p-3 h-22 w-115 bg-sky-300 rounded shadow overflow-hidden left-1/2 -translate-x-1/2 top-1 ",
                 "after:absolute after:left-0 after:top-0 after:h-full after:w-1.25 after:content-['']",
                 "transition-all duration-500 z-10 ",
                 {

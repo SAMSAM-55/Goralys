@@ -22,6 +22,7 @@ export async function cacheUserDataClient() {
     setCookie(cookie, "username", data.username, 1.5*60*60);
     setCookie(cookie, "full-name", data.full_name, 1.5*60*60);
     setCookie(cookie, "user-role", data.role, 1.5*60*60);
+    setCookie(cookie, "public-id", data.public_id, 1.5*60*60);
 }
 
 export function emptyUserCacheClient() {
@@ -42,6 +43,42 @@ export async function fetchUsersClient() {
     }
 
     return await goralysFetchClient('users/all', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+export async function fetchVirtualUsersClient() {
+    const csrfToken = await fetchCsrfClient('get-virtual-users')
+    const payload = {
+        'csrf-token': csrfToken
+    }
+
+    return await goralysFetchClient('users/virtual', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+export async function fetchAdminsClient() {
+    const csrfToken = await fetchCsrfClient('get-all-admins')
+    const payload = {
+        'csrf-token': csrfToken
+    }
+
+    return await goralysFetchClient('admins/all', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
+}
+
+export async function fetchVirtualAdminsClient() {
+    const csrfToken = await fetchCsrfClient('get-virtual-admins')
+    const payload = {
+        'csrf-token': csrfToken
+    }
+
+    return await goralysFetchClient('admins/virtual', {
         method: 'POST',
         body: JSON.stringify(payload)
     });

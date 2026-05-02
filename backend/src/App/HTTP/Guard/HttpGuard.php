@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\App\HTTP\Guard;
 
 use Goralys\App\Context\AppContext;
@@ -9,6 +14,7 @@ use Goralys\App\HTTP\Response\DeferredResponse;
 use Goralys\App\HTTP\Response\Interfaces\DeferredResponseInterface;
 use Goralys\App\User\Services\UsernameManager;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
+use Goralys\Shared\Exception\GoralysRuntimeException;
 
 /**
  * HTTP implementation of the guard that validates request fields against the session user.
@@ -34,6 +40,7 @@ final class HttpGuard implements GuardInterface
      * @param RequestInterface $request The current HTTP request.
      * @param string $field The request field to compare against the session username.
      * @return DeferredResponseInterface|null Null on success, a 403 response on mismatch.
+     * @throws GoralysRuntimeException If the user's public id cannot be retrieved.
      */
     public function matchCurrentUser(RequestInterface $request, string $field): ?DeferredResponseInterface
     {

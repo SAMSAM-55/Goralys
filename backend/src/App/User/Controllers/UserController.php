@@ -11,10 +11,13 @@ use Goralys\App\User\Data\UserCollection;
 use Goralys\App\User\Data\UserGetDTO;
 use Goralys\App\User\Data\UsernameTable;
 use Goralys\App\User\Services\UsernameManager;
+use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\VirtualUserDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
 use Goralys\Core\User\Services\LoginService;
+use Goralys\Core\Utils\User\Services\UsernameFormatterService;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
@@ -57,21 +60,80 @@ final class UserController
     }
 
     /**
+     * Builds a {@see UserCollection} from an array of user DTOs using the provided mapping callable.
+     * @param VirtualUserDTO[]|UserFullDTO[] $users The users to build the collection from.
+     * @param callable $fromDTO The callable used to map each user to a {@see UserGetDTO}.
+     * @return UserCollection The built collection.
+     */
+    private function buildCollection(array $users, callable $fromDTO): UserCollection
+    {
+        $publicIds = $this->repo->getPublicIds();
+        $collection = new UserCollection();
+        foreach ($users as $user) {
+            // Let PHP throw because all users should have a public id, even uncreated ones.
+            $collection->addUser($fromDTO($user, $publicIds[$user->username]));
+        }
+        return $collection;
+    }
+
+    /**
      * Returns all non-admin users from the database.
      * @return UserCollection The users (teachers and students).
      */
     public function getAll(): UserCollection
     {
-        $result = new UserCollection();
-        foreach ($this->repo->getAll() as $user) {
-            $result->addUser(
-                UserGetDTO::fromFull(
-                    $user,
-                    $this->repo->getPublicIdForUsername($user->username),
-                ),
-            );
-        }
-        return $result;
+        return $this->buildCollection($this->repo->getAll(), UserGetDTO::fromFull(...));
+    }
+
+    /**
+     * Returns all uncreated non-admin users from the database.
+     * @return UserCollection The uncreated users (teachers and students).
+     */
+    public function getVirtual(): UserCollection
+    {
+        return $this->buildCollection($this->repo->getVirtual(), UserGetDTO::fromVirtual(...));
+    }
+
+    /**
+     * Returns all admin users from the database.
+     * @return UserCollection The users (admins).
+     */
+    public function getAdmins(): UserCollection
+    {
+        return $this->buildCollection($this->repo->getAdmins(), UserGetDTO::fromFull(...));
+    }
+
+    /**
+     * Returns all uncreated admin users from the database.
+     * @return UserCollection The uncreated users (admins).
+     */
+    public function getAdminsVirtual(): UserCollection
+    {
+        return $this->buildCollection($this->repo->getVirtualAdmins(), UserGetDTO::fromVirtual(...));
+    }
+
+    /**
+     * Adds a new admin inside the database.
+     * @param string $name The full name of the admin to add.
+     * @return string|null The admin's username on success, null otherwise.
+     */
+    public function addAdmin(string $name): ?string
+    {
+        $utils = new UtilitiesManager();
+        $table = new UsernameTable($utils);
+        $username = $table->resolve($name);
+        return $this->repo->addAdmin($username) ? $username : null;
+    }
+
+    /**
+     * Revokes a new admin inside the database.
+     * @param string $publicId The public id of the admin to revoke.
+     * @return bool Wether the creation was successful.
+     * @throws GoralysRuntimeException If the admin's username could not be retrieved.
+     */
+    public function revokeAdmin(string $publicId): bool
+    {
+        return $this->repo->revokeAdmin($this->usernames->get($publicId));
     }
 
     /**

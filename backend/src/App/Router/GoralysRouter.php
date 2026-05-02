@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\App\Router;
 
 use Closure;
@@ -10,7 +15,6 @@ use Goralys\App\HTTP\Middleware\Interface\MiddlewareInterface;
 use Goralys\App\HTTP\Middleware\RateLimitMiddleware;
 use Goralys\App\HTTP\Middleware\RoleMiddleware;
 use Goralys\App\HTTP\Middleware\ToastMiddleware;
-use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\App\Router\Data\Route;
 use Goralys\App\Router\Options\InputOptions;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;

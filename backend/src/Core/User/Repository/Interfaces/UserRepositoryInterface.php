@@ -11,6 +11,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\VirtualUserDTO;
 
 /**
  * Contract for the user repository.
@@ -80,10 +81,55 @@ interface UserRepositoryInterface
     public function getPublicIdForUsername(string $username): ?string;
 
     /**
+     * @param string $publicId The user's public id.
+     * @return string|null The user's username, or null if the user does not exist.
+     */
+    public function getUsernameForPublicId(string $publicId): ?string;
+
+    /**
+     * Gets all the public associated with their usernames.
+     * @return array<string, string> The user's public UUID, or null if the user does not exist.
+     */
+    public function getPublicIds(): array;
+
+    /**
      * Returns all the users inside the database.
      * @return UserFullDTO[] The users.
      */
     public function getAll(): array;
+
+    /**
+     * Returns all the users not yet created inside the database.
+     * @return VirtualUserDTO[] The users.
+     */
+    public function getVirtual(): array;
+
+    /**
+     * Creates a new potential admin in the database.
+     * @param string $username The new admin's username.
+     * @return bool Wether the creation was successful.
+     */
+    public function addAdmin(string $username): bool;
+
+    /**
+     * Deletes an admin in the database.
+     * @param string $username The new admin's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function revokeAdmin(string $username): bool;
+
+    /**
+     * Returns all admins from the database.
+     * @return UserFullDTO[] The admins.
+     */
+    public function getAdmins(): array;
+
+    /**
+     * Returns all uncreated admins from the database.
+     * These are users present in admins_list but not yet in the users table.
+     * @return VirtualUserDTO[] The virtual admins.
+     */
+    public function getVirtualAdmins(): array;
 
     /**
      * Replaces a teacher inside the database, the new teacher's username will replace the old one, and all the subjects

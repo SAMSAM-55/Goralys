@@ -7,18 +7,14 @@
 
 namespace Goralys\App\HTTP\Files\Interface;
 
-use Goralys\App\HTTP\Files\Data\FileDTO;
-
 /**
  * Interface for file move-operations services.
  */
 interface FileMover
 {
-    /**
-     * Returns the files used by the mover.
-     * @return FileDTO[] The files of the mover.
-     */
-    public function getFiles(): array;
+    public ?array $files {
+        get;
+    }
 
     /**
      * Moves the specified file a given path.

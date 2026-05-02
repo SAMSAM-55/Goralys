@@ -15,7 +15,7 @@ use Goralys\Shared\Utils\String\Data\StringCase;
 final class StringUtils
 {
     /**
-     * Strips leading/trailing whitespace, removes diacritics, and optionally changes case.
+     * Strips leading/trailing whitespace, removes diacritics, and optionally changes the string's case.
      * Diacritics are replaced with their ASCII equivalents (e.g. `é` → `e`, `œ` → `oe`)
      * before case conversion is applied, making the output safe for case-insensitive comparisons.
      * @param string $s The input string to sanitize.

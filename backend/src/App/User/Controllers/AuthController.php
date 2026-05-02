@@ -105,6 +105,7 @@ final class AuthController
             $_SESSION['current_id'] = $sessionData->id;
             $_SESSION['current_full_name'] = $sessionData->fullName;
             $_SESSION['current_username'] = $sessionData->username;
+            $_SESSION['current_public_id'] = $this->repo->getPublicIdForUsername($sessionData->username);
             $_SESSION['current_role'] = $sessionData->role->toString();
 
             $_SESSION['ua'] = hash("sha256", $_SERVER['HTTP_USER_AGENT']);

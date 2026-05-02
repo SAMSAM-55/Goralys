@@ -4,9 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { User } from "@/app/lib/types";
 import { useToast } from "@/app/ui/toast/toast-provider";
 import Cookies from "universal-cookie";
-import { fetchUsersClient } from "@/app/lib/user/user.client";
+import { fetchUsersClient, fetchVirtualUsersClient, fetchAdminsClient, fetchVirtualAdminsClient } from "@/app/lib/user/user.client";
 
-export function useUsers() {
+function useUserCollection(
+    fetchFn: () => Promise<Response | undefined>,
+    cacheKey: string,
+    syncKey: string,
+) {
     const [users, setUsers] = useState<User[] | null>(null);
     const { showToast } = useToast();
     const showToastRef = useRef(showToast);
@@ -17,11 +21,8 @@ export function useUsers() {
 
     const fetchUsers = useCallback(async () => {
         const cookies = cookiesRef.current;
-        const cacheKey = 'users-cache';
-        const syncKey = 'users-synced';
 
         if (!cookies.get("username")) return;
-
         if (inFlightRef.current) return inFlightRef.current;
 
         let resolve: () => void;
@@ -37,7 +38,7 @@ export function useUsers() {
                 return;
             }
 
-            const res = await fetchUsersClient();
+            const res = await fetchFn();
             const data = await res?.json();
 
             if (data?.toast) {
@@ -48,11 +49,12 @@ export function useUsers() {
                 });
             }
 
-            cookies.set(syncKey, "1", { path: '/' });
-            sessionStorage.setItem(cacheKey, JSON.stringify(data));
+            if (res?.ok) {
+                cookies.set(syncKey, "1", { path: '/' });
+                sessionStorage.setItem(cacheKey, JSON.stringify(data));
+            }
 
             const result = Array.isArray(data) ? data as User[] : null;
-            console.log(result);
             setUsers(prev => {
                 if (JSON.stringify(prev) === JSON.stringify(result)) return prev;
                 return result;
@@ -61,24 +63,38 @@ export function useUsers() {
             inFlightRef.current = null;
             resolve!();
         }
-    }, []);
+    }, [fetchFn, cacheKey, syncKey]);
 
     useEffect(() => {
         const cookies = new Cookies();
         const onChange = () => {
             if (inFlightRef.current) return;
-            if (cookies.get('users-synced') != "1") {
-                void fetchUsers();
-            }
+            if (cookies.get(syncKey) != "1") void fetchUsers();
         };
 
         cookies.addChangeListener(onChange);
         return () => cookies.removeChangeListener(onChange);
-    }, [fetchUsers]);
+    }, [fetchUsers, syncKey]);
 
     useEffect(() => {
         void fetchUsers();
     }, [fetchUsers]);
 
-    return useMemo(() => ({ users, refetch: fetchUsers, syncKey: 'users-synced' }), [users, fetchUsers]);
+    return useMemo(() => ({ users, refetch: fetchUsers, syncKey }), [users, fetchUsers, syncKey]);
+}
+
+export function useUsers() {
+    return useUserCollection(fetchUsersClient, 'users-cache', 'users-synced');
+}
+
+export function useVirtualUsers() {
+    return useUserCollection(fetchVirtualUsersClient, 'virtual-users-cache', 'virtual-users-synced');
+}
+
+export function useAdmins() {
+    return useUserCollection(fetchAdminsClient, 'admins-cache', 'admins-synced');
+}
+
+export function useVirtualAdmins() {
+    return useUserCollection(fetchVirtualAdminsClient, 'virtual-admins-cache', 'virtual-admins-synced');
 }

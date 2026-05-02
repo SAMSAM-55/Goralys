@@ -24,8 +24,10 @@ export function UsersSearchBar({users, setCurrentUsers}: UsersSearchBarProps) {
     };
 
     const sortUsers = (list: User[]) => {
-        return [...list].sort((a, b) =>
-            a.fullName.trim().toLowerCase().localeCompare(b.fullName.trim().toLowerCase(), 'fr')
+        return [...list].sort((a, b) => {
+            if (a.role !== b.role) return a.role === 'teacher' ? -1 : 1; // role as primary key
+            return a.fullName.trim().toLowerCase().localeCompare(b.fullName.trim().toLowerCase(), 'fr')
+            }
         );
     };
 

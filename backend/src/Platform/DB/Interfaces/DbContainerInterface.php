@@ -41,7 +41,7 @@ interface DbContainerInterface
     /* Queries */
 
     /**
-     * Executes a prepared SELECT query and returns the result set.
+     * Executes a prepared select-query and returns the result set.
      * @param string $query The SQL query with placeholders.
      * @param string $types The bind types string (e.g. `"si"` for string + int).
      * @param mixed $value1 The first bound value.
@@ -51,14 +51,14 @@ interface DbContainerInterface
     public function fetch(string $query, string $types, mixed $value1, mixed ...$args): mysqli_result;
 
     /**
-     * Executes a SELECT query with no bound parameters and returns the result set.
+     * Executes a select-query with no bound parameters and returns the result set.
      * @param string $query The SQL query to execute.
      * @return mysqli_result The query result set.
      */
     public function fetchNoArgs(string $query): mysqli_result;
 
     /**
-     * Executes a prepared write query (INSERT, UPDATE, DELETE) and returns its outcome.
+     * Executes a prepared write-query (INSERT, UPDATE, DELETE) and returns its outcome.
      * @param string $query The SQL query with placeholders.
      * @param string $types The bind types string (e.g. `"si"` for string + int).
      * @param mixed $value1 The first bound value.
@@ -68,7 +68,7 @@ interface DbContainerInterface
     public function run(string $query, string $types, mixed $value1, mixed ...$args): bool;
 
     /**
-     * Executes a write query with no bound parameters and returns its outcome.
+     * Executes a write-query with no bound parameters and returns its outcome.
      * @param string $query The SQL query to execute.
      * @return bool Whether the query was executed successfully.
      */

@@ -18,7 +18,6 @@ use Goralys\Core\Topics\Repository\TopicsRepository;
 use Goralys\Core\Topics\Services\BuildFromCSVService;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
-use Goralys\Shared\Utils\String\Data\StringCase;
 use Goralys\Shared\Utils\UtilitiesManager;
 
 /**

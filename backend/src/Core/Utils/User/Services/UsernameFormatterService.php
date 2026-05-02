@@ -18,7 +18,7 @@ final class UsernameFormatterService
      * @param string $username The username.
      * @return string The formated result.
      */
-    public function formatUsername(string $username): string
+    public static function formatUsername(string $username): string
     {
         // Expected format: first initial, dot, last name, optional digits.
         if (preg_match('/^([a-z])\.([a-z]+)\d*$/i', $username, $matches)) {

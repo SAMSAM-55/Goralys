@@ -18,19 +18,14 @@ use Goralys\Shared\Exception\GoralysRuntimeException;
 final class HttpFileMover implements FileMover
 {
     /** @var FileDTO[]|null  */
-    private ?array $files = null;
+    public ?array $files = null {
+        get {
+            if (!$this->files) {
+                $this->files = FilesNormalizer::fromGlobals($_FILES);
+            }
 
-    /**
-     * @inheritDoc
-     * @return FileDTO[] The files of the mover.
-     */
-    public function getFiles(): array
-    {
-        if (!$this->files) {
-            $this->files = FilesNormalizer::fromGlobals($_FILES);
+            return $this->files;
         }
-
-        return $this->files;
     }
 
     /**

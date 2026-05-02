@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Copyright (C) 2026 Sami Saubion
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 namespace Goralys\App\HTTP\Middleware;
 
 use Goralys\App\Router\Data\Middleware;
@@ -54,11 +59,11 @@ final class MiddlewareSets
      * @param string $action The action/endpoint of the route.
      * @return list<Middleware> The pre-composed middlewares list.
      */
-    public static function adminPanelRoute(string $action): array
+    public static function adminPanelRoute(string $action, string $redirect = "/admin/user", bool $fetch = false): array
     {
         return [
-            new Middleware(...RateLimitMiddleware::for($action, '/admin/user')),
-            new Middleware(...CSRFMiddleware::form($action, '/admin/user')),
+            new Middleware(...RateLimitMiddleware::for($fetch ? "admin-fetch" : "admin-panel", $redirect)),
+            new Middleware(...CSRFMiddleware::form($action, $redirect)),
             new Middleware(...AuthMiddleware::require()),
             new Middleware(...RoleMiddleware::require(UserRole::ADMIN, true)),
         ];

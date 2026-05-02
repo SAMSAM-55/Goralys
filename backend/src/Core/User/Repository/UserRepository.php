@@ -12,6 +12,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\VirtualUserDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -91,6 +92,38 @@ final class UserRepository implements UserRepositoryInterface
         $users = [];
         while ($row = $result->fetch_assoc()) {
             $users[] = $this->buildUserFromRow($row);
+        }
+        return $users;
+    }
+
+    /**
+     * This helper is used to build a virtual user DTO from a database row.
+     * @param array $row The row from the database result.
+     * @return VirtualUserDTO The virtual user's info.
+     */
+    private function buildVirtualUserFromRow(array $row): VirtualUserDTO
+    {
+        $this->logger->info(
+            LoggerInitiator::CORE,
+            "Virtual user's data were successfully fetched for user : " . $row['user_id'],
+        );
+        return new VirtualUserDTO(
+            $row['user_id'],
+            UserRole::fromString($row['role']),
+        );
+    }
+
+    /**
+     * This helper is used to build multiple virtual user DTOs from a database request's result,
+     * it is in charge of the logging process.
+     * @param mysqli_result $result The result from the database.
+     * @return VirtualUserDTO[] All the virtual users' info.
+     */
+    private function buildVirtualUsersFromResult(mysqli_result $result): array
+    {
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $this->buildVirtualUserFromRow($row);
         }
         return $users;
     }
@@ -320,6 +353,19 @@ final class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * @param string $publicId The user's public id.
+     * @return string|null The user's username, or null if the user does not exist.
+     */
+    public function getUsernameForPublicId(string $publicId): ?string
+    {
+        return $this->db->fetch(
+            "select user_id from public_ids where public_id = ?",
+            "s",
+            $publicId,
+        )->fetch_assoc()['user_id'] ?? null;
+    }
+
+    /**
      * Returns all the users inside the database.
      * @return UserFullDTO[] The users.
      */
@@ -392,6 +438,102 @@ final class UserRepository implements UserRepositoryInterface
         try {
             $this->db->run("update topic_teachers set teacher_id = ? where teacher_id = ?", "ss", $new, $old);
             $this->db->run("update public_ids set user_id = ?, public_id = uuid() where user_id = ?", "ss", $new, $old);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Returns all uncreated users from the database.
+     * @return VirtualUserDTO[] The virtual users.
+     */
+    public function getVirtual(): array
+    {
+        $result = $this->db->fetchNoArgs(
+            "select distinct all_ids.user_id, all_ids.role from (
+                   select student_id as user_id, 'student' as role from student_topics
+                   union
+                   select teacher_id as user_id, 'teacher' as role from topic_teachers
+                   ) as all_ids where all_ids.user_id not in (select user_id from users)",
+        );
+
+        return $this->buildVirtualUsersFromResult($result);
+    }
+
+    /**
+     * Returns a map of all users' public ids indexed by their username.
+     * @return array<string, string> A username => public_id map.
+     */
+    public function getPublicIds(): array
+    {
+        $result = $this->db->fetchNoArgs("select user_id, public_id from public_ids");
+        $map = [];
+        while ($row = $result->fetch_assoc()) {
+            $map[$row['user_id']] = $row['public_id'];
+        }
+        return $map;
+    }
+
+    /**
+     * Returns all admins from the database.
+     * @return UserFullDTO[] The admins.
+     */
+    public function getAdmins(): array
+    {
+        $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role = 'admin'");
+        return $this->buildUsersFromResult($result);
+    }
+
+    /**
+     * Returns all uncreated admins from the database.
+     * These are users present in admins_list but not yet in the user table.
+     * @return VirtualUserDTO[] The virtual admins.
+     */
+    public function getVirtualAdmins(): array
+    {
+        $result = $this->db->fetchNoArgs(
+            "select user_id, 'admin' as role from admins_list 
+                where user_id not in (select user_id from users)",
+        );
+        return $this->buildVirtualUsersFromResult($result);
+    }
+
+    /**
+     * Creates a new potential admin in the database.
+     * @param string $username The new admin's username.
+     * @return bool Wether the creation was successful.
+     */
+    public function addAdmin(string $username): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $this->db->run("insert into admins_list (user_id) values (?)", "s", $username);
+            $this->db->run("insert into public_ids (user_id, public_id) values (?, uuid())", "s", $username);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an admin in the database.
+     * @param string $username The new admin's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function revokeAdmin(string $username): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $this->db->run("delete from public_ids where user_id = ?", "s", $username);
+            $this->db->run("delete from admins_list where user_id = ?", "s", $username);
+            $this->db->run("delete from users where user_id = ?", "s", $username);
 
             $this->db->commit();
             return true;

@@ -286,7 +286,7 @@ class GoralysKernel
         $extractor = new HttpFileExtractor();
 
         try {
-            $this->initFileManager($resolvedMover, $extractor, $resolvedMover->getFiles());
+            $this->initFileManager($resolvedMover, $extractor, $resolvedMover->files);
         } catch (GoralysRuntimeException $e) {
             $this->logger->fatal(
                 LoggerInitiator::KERNEL,

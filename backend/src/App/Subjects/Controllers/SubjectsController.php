@@ -136,6 +136,8 @@ final class SubjectsController
      * Let the defaults value ("") for admins as they have access to all subjects.
      * @return SubjectsCollection The list of the retrieved subjects.
      * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
+     * @throws GoralysRuntimeException If the subjects cannot be retrived refer to the exact implementation for more
+     * details.
      */
     public function getForRole(UserRole $role): SubjectsCollection
     {
