@@ -86,6 +86,21 @@ interface UserRepositoryInterface
     public function getAll(): array;
 
     /**
+     * Deletes a user only from the `users` table. This is used to reset the user's password.
+     * @param string $username The user's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function softDelete(string $username): bool;
+
+    /**
+     * Deletes a user from all the database's tables. This is used to completely remove a user and its associated
+     * subjects and topics (teachers only).
+     * @param string $username The user's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function hardDelete(string $username): bool;
+
+    /**
      * Removes all non-admin users from the database.
      * @return bool If the deletion was successful or not.
      */

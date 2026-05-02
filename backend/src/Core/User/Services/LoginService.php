@@ -35,12 +35,12 @@ final class LoginService
     }
 
     /**
-     * Logs in a user by using its password and username.
+     * Checks if a given password is correct for a specific user.
      * @param UserLoginDTO $userData The necessary credentials to log the user in.
-     * @return bool If the login was successful or not.
-     * @throws UserNotFoundException If the user is not found.
+     * @return bool Wether the password is correct.
+     * @throws UserNotFoundException If the user is invalid (does not exist).
      */
-    public function login(UserLoginDTO $userData): bool
+    public function checkPassword(UserLoginDTO $userData): bool
     {
         $login = $this->repo->getLoginDTO($userData->username);
 
@@ -51,6 +51,20 @@ final class LoginService
         $passwordHash = $login->password;
 
         if (!password_verify($userData->password, $passwordHash)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Logs in a user by using its password and username.
+     * @param UserLoginDTO $userData The necessary credentials to log the user in.
+     * @return bool If the login was successful or not.
+     * @throws UserNotFoundException If the user is not found.
+     */
+    public function login(UserLoginDTO $userData): bool
+    {
+        if (!$this->checkPassword($userData)) {
             $this->logger->error(
                 LoggerInitiator::CORE,
                 "Failed to connect user, invalid password " . " for user : " . $userData->username,

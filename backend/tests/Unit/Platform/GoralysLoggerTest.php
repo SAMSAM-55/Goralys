@@ -61,13 +61,13 @@ class GoralysLoggerTest extends TestCase
     {
         $this->logger->info(LoggerInitiator::APP, "Message");
         $this->logger->reset();
-        self::assertEmpty($this->logger);
+        self::assertEmpty($this->logger->logs);
     }
 
     public function testRotateDoesNothing(): void
     {
         // Should not throw or do anything
         $this->logger->rotate();
-        self::assertEmpty($this->logger);
+        self::assertEmpty($this->logger->logs);
     }
 }

@@ -7,6 +7,7 @@
 
 namespace Goralys\Core\User\Repository;
 
+use Exception;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
@@ -318,5 +319,54 @@ final class UserRepository implements UserRepositoryInterface
     {
         $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role != 'admin'");
         return $this->buildUsersFromResult($result);
+    }
+
+    /**
+     * Unlike {@see UserRepository::hardDelete()}, this deletes a user only from the `users` table.
+     * This is used to reset the user's password.
+     * @param string $username The user's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function softDelete(string $username): bool
+    {
+        return $this->db->run(
+            "delete from users where user_id = ?",
+            "s",
+            $username,
+        );
+    }
+
+    /**
+     * Unlike {@see UserRepository::softDelete()}, this deletes a user from all the database's tables.
+     * This is used to completely remove a user and its associated subjects and topics (teachers only).
+     * @param string $username The user's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function hardDelete(string $username): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            //cascades to student_topics and topics_teachers (see data_strutucre.sql for further info)
+            $this->db->run(
+                "delete from topics where id in (
+                select topic_id from topic_teachers where teacher_id = ?
+                and topic_id not in (
+                    select topic_id from topic_teachers where teacher_id != ?
+                )
+            )",
+                "ss",
+                $username,
+                $username,
+            );
+
+            $this->db->run("delete from student_topics where student_id = ?", "s", $username);
+            $this->db->run("delete from users where user_id = ?", "s", $username);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
     }
 }

@@ -133,7 +133,7 @@ function createUserRoutes(GoralysRouter $router): void
         ->middleware(...DbMiddleware::require());
 
     // ================================================
-    // [SECTION] Getter
+    // [SECTION] Admin actions
     // ================================================
     $router->post('users/all', function (GoralysKernel $kernel) {
         $kernel->response()->json($kernel->users->getAll());
@@ -142,4 +142,68 @@ function createUserRoutes(GoralysRouter $router): void
         ->middleware(...CSRFMiddleware::form('get-all-users'))
         ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
         ->middleware(...DbMiddleware::require());
+
+    $router->post('users/reset-password', function (GoralysKernel $kernel, RequestInterface $request) {
+        if (!$kernel->users->validatePassword($request->get("admin-password"))) {
+            $kernel->deferredResponse(501)->toast( // Unauthorized
+                ToastType::WARNING,
+                "Mot de passe",
+                "Veuillez saisir le bon mot de passe",
+            )
+                    ->redirect("/admin/user")
+                    ->send();
+        }
+
+        if (!$kernel->users->resetPassword($request->get("target"))) {
+            $kernel->deferredResponse(500)->error(
+                "Le mot de passe n'a pas pu être réinitialisé.",
+            )
+                    ->redirect("/admin/user")
+                    ->send();
+        }
+
+        $kernel->deferredResponse()->toast(
+            ToastType::INFO,
+            "Mot de passe",
+            "Le mot de passe a bien été réinitialisé, l'utilisateur peut maintenant recréer son compte.",
+        )
+                ->redirect("/admin/user")
+                ->send();
+    }, ...RouterOptions::$INPUT::require("target", "admin-password"))
+            ->middleware(...RateLimitMiddleware::for('reset-password'))
+            ->middleware(...CSRFMiddleware::form('reset-password'))
+            ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
+            ->middleware(...DbMiddleware::require());
+
+    $router->post('users/delete', function (GoralysKernel $kernel, RequestInterface $request) {
+        if (!$kernel->users->validatePassword($request->get("admin-password"))) {
+            $kernel->deferredResponse(501)->toast( // Unauthorized
+                ToastType::WARNING,
+                "Mot de passe",
+                "Veuillez saisir le bon mot de passe",
+            )
+                    ->redirect("/admin/user")
+                    ->send();
+        }
+
+        if (!$kernel->users->delete($request->get("target"))) {
+            $kernel->deferredResponse(500)->error(
+                "L'utilisateur n'a pas pu être supprimé.",
+            )
+                    ->redirect("/admin/user")
+                    ->send();
+        }
+
+        $kernel->deferredResponse()->toast(
+            ToastType::INFO,
+            "Suppression du compte",
+            "L'utilisateur a bien été supprimé",
+        )
+                ->redirect("/admin/user")
+                ->send();
+    }, ...RouterOptions::$INPUT::require("target", "admin-password"))
+            ->middleware(...RateLimitMiddleware::for('delete-user'))
+            ->middleware(...CSRFMiddleware::form('delete-user'))
+            ->middleware(...RoleMiddleware::require(UserRole::ADMIN, true))
+            ->middleware(...DbMiddleware::transaction());
 }

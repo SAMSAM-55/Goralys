@@ -421,9 +421,19 @@ class GoralysKernel
     #[NoReturn]
     public function exceptionHandler(Throwable $e): void
     {
+        $trace = $e->getTrace();
+        $traceLines = array_slice($trace, 0, 5);
+
+        $callStack = "\n\t" . $e->getFile() . ":" . $e->getLine();
+        foreach ($traceLines as $frame) {
+            $file = $frame['file'] ?? '[internal]';
+            $line = $frame['line'] ?? '?';
+            $callStack .= "\n\t" . $file . ":" . $line;
+        }
+
         $this->logger->error(
             LoggerInitiator::APP,
-            "Uncaught exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine(),
+            "Uncaught exception: " . $e->getMessage() . $callStack,
         );
 
         if (isset($this->errorMessages[$e::class])) {

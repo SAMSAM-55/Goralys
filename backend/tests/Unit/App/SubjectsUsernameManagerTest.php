@@ -5,6 +5,7 @@ namespace Goralys\Tests\Unit\App;
 use Goralys\App\User\Services\UsernameManager;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserFullDTO;
+use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Tests\Fakes\FakeUserRepository;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -94,7 +95,7 @@ class SubjectsUsernameManagerTest extends TestCase
 
     public function testGetThrowsForInvalidPublicId(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(GoralysRuntimeException::class);
 
         $this->service->get("invalid-uuid");
     }

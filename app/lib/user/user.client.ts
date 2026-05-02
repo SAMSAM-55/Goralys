@@ -7,7 +7,7 @@
 
 import {setCookie} from "@/app/lib/cookies";
 import Cookies from "universal-cookie";
-import {goralysFetchClient} from "@/app/lib/fetch/fetch.client";
+import {fetchCsrfClient, goralysFetchClient} from "@/app/lib/fetch/fetch.client";
 import {UserData} from "@/app/lib/types";
 
 export async function cacheUserDataClient() {
@@ -33,4 +33,16 @@ export function emptyUserCacheClient() {
         });
 
     cookies.update();
+}
+
+export async function fetchUsersClient() {
+    const csrfToken = await fetchCsrfClient('get-all-users')
+    const payload = {
+        'csrf-token': csrfToken
+    }
+
+    return await goralysFetchClient('users/all', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    });
 }

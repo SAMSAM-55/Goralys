@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../app/**/*.{ts,tsx}";
 
 @theme {
     --text-2xs: 0.8125rem;

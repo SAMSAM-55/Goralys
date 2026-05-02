@@ -46,7 +46,7 @@ final readonly class UserGetDTO implements JsonSerializable
         return [
             'fullName' => $this->fullName,
             'role' => $this->role->toString(),
-            'token' => $this->publicId,
+            'publicId' => $this->publicId,
         ];
     }
 }

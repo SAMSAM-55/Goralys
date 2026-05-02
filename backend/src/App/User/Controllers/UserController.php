@@ -9,10 +9,15 @@ namespace Goralys\App\User\Controllers;
 
 use Goralys\App\User\Data\UserCollection;
 use Goralys\App\User\Data\UserGetDTO;
+use Goralys\App\User\Services\UsernameManager;
+use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Core\User\Repository\UserRepository;
+use Goralys\Core\User\Services\LoginService;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
+use Goralys\Shared\Exception\GoralysRuntimeException;
+use Goralys\Shared\Exception\User\UserNotFoundException;
 
 /**
  * The controller that handles the user logic.
@@ -22,6 +27,7 @@ final class UserController
     private LoggerInterface $logger;
     private DbContainerInterface $db;
     private UserRepositoryInterface $repo;
+    private UsernameManager $usernames;
 
     /**
      * Initializes the logger and the database container used by the controller.
@@ -36,6 +42,7 @@ final class UserController
         $this->db = $db;
 
         $this->repo = new UserRepository($this->logger, $this->db);
+        $this->usernames = new UsernameManager($this->repo);
     }
 
     /**
@@ -63,5 +70,40 @@ final class UserController
             );
         }
         return $result;
+    }
+
+    /**
+     * Checks if a password is correct for the current user.
+     * @param string $password The password to check.
+     * @return bool Wether the password is correct.
+     * @throws UserNotFoundException If the user does not exists.
+     */
+    public function validatePassword(string $password): bool
+    {
+        $service = new LoginService($this->logger, $this->repo);
+        return $service->checkPassword(new UserLoginDTO($_SESSION['current_username'], $password));
+    }
+
+    /**
+     * Deletes a user partially (consult {@see UserRepositoryInterface::softDelete()} for more information) to allow it
+     * to recreate his account and thus choose a new password.
+     * @param string $publicId The user's public id.
+     * @return bool Wether the operation was successful.
+     * @throws GoralysRuntimeException If the username of the user could not be retrieved.
+     */
+    public function resetPassword(string $publicId): bool
+    {
+        return $this->repo->softDelete($this->usernames->get($publicId));
+    }
+
+    /**
+     * Deletes a user completely (consult {@see UserRepositoryInterface::hardDelete()} for more information).
+     * @param string $publicId The user's public id.
+     * @return bool Wether the operation was successful.
+     * @throws GoralysRuntimeException If the username of the user could not be retrieved.
+     */
+    public function delete(string $publicId): bool
+    {
+        return $this->repo->hardDelete($this->usernames->get($publicId));
     }
 }

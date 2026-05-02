@@ -75,6 +75,7 @@ export type ButtonProps = {
     text: string,
     type: "submit" | "button" | "reset",
     onClick?: MouseEventHandler<HTMLButtonElement>,
+    color?: "sky" | "red" | "green" | "amber",
 };
 
 export type ToastProps = {
@@ -127,6 +128,13 @@ export type ImportTopicsModalProps = {
     onCloseModalAction: () => void,
 }
 
+export type PasswordModalProps = {
+    visible: boolean;
+    onConfirmAction: (password: string) => void;
+    onCancelAction: () => void;
+    onCloseModalAction: () => void;
+}
+
 export type SubjectsSearchBarProps = {
     subjects: Subject[] | null,
     setCurrentSubjects: React.Dispatch<React.SetStateAction<Subject[] | null>>
@@ -144,7 +152,13 @@ export type CheckBoxProps = {
 export type UserData = {
     username: string,
     full_name: string,
-    role: string,
+    role: UserRole['role'],
+}
+
+export type User = {
+    publicId: string,
+    fullName: string,
+    role: UserRole['role']
 }
 
 export type CookieValue = string | boolean | number | null | undefined
