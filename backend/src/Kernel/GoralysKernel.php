@@ -182,7 +182,7 @@ class GoralysKernel
                 'lifetime' => $this->sessionLifetime * $this->sessionLifetimeMultiplier,
                 'path' => '/',
                 'domain' => $this->env->getByKey("COOKIES_DOMAIN"),
-                'secure' => false,
+                'secure' => true,
                 'httponly' => true,
                 'samesite' => 'Lax',
             ]);
