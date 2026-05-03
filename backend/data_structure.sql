@@ -2,7 +2,16 @@
 -- version 2.3
 
 -- makes sure all previous tables are deleted
-drop table if exists student_topics, topic_teachers, topics, admins_list, users;
+drop table if exists student_topics, topic_teachers, topics, admins_list, users, public_ids;
+
+-- -----------------------------------------------------
+-- public ids table
+-- -----------------------------------------------------
+
+create table public_ids (
+    user_id varchar(32) not null unique,
+    public_id uuid not null unique
+) engine=innodb;
 
 -- -----------------------------------------------------
 -- users table (main active accounts)
