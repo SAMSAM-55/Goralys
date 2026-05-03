@@ -24,13 +24,20 @@ export default function LoginPageClient() {
                 type: "warning",
                 title: "Session",
                 message: "Votre session a expirée, vous avez été déconnecté."
-            })
+            });
         } else if (reason === 'unauthenticated') {
             showToast({
                 type: "info",
                 title: "Connexion",
                 message: "Veuillez vous connecter pour accéder à votre espace"
-            })
+            });
+        } else if (reason === 'unauthorized') {
+            showToast({
+                type: "warning",
+                title: "Permission",
+                message: "Vous n'avez pas les permissions nécessaires sur ce compte"
+            });
+            return;
         }
 
         emitUserEvent("logout");

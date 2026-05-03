@@ -14,13 +14,13 @@ use Goralys\App\Utils\Toast\Services\ToastResponderService;
 use JetBrains\PhpStorm\NoReturn;
 
 /**
- * The controller that manages the toasts interactions with the frontend.
+ * The controller that manages the toast interactions with the frontend.
  */
-class ToastController
+final readonly class ToastController
 {
-    private ToastBuilderService $builder;
-    public readonly ToastFlashService $flashService;
-    private ToastResponderService $responder;
+    public ToastBuilderService $builder;
+    public ToastFlashService $flashService;
+    public ToastResponderService $responder;
 
     /**
      * Initializes the toast responder and builder for the controller.
@@ -54,7 +54,7 @@ class ToastController
         string $toastMessage,
         string $redirect,
         bool $flash = false,
-        string $action = ""
+        string $action = "",
     ): void {
         $toastData = $this->builder->buildToast($toastType, $toastTitle, $toastMessage, $redirect, $flash);
         $this->responder->sendToast($toastData, $action);
@@ -64,7 +64,7 @@ class ToastController
      * A simple macro to send error toasts.
      * @param int $responseCode The HTTP response code to send.
      * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
-     * @param string $redirect The page to redirect the user to (default = "index.html").
+     * @param string $redirect The page to redirect the user to (default = "/").
      * @param bool $flash If the toast is flash or not.
      * @return never
      */
@@ -72,8 +72,8 @@ class ToastController
     public function fatalError(
         int $responseCode,
         string $msg = "Une erreur interne est survenue.",
-        string $redirect = "index.html",
-        bool $flash = false
+        string $redirect = "/",
+        bool $flash = false,
     ): never {
         http_response_code($responseCode);
         $this->showToast(
@@ -81,7 +81,7 @@ class ToastController
             "Erreur",
             $msg,
             $redirect,
-            $flash
+            $flash,
         );
         exit;
     }

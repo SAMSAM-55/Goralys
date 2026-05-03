@@ -21,25 +21,38 @@
 namespace Goralys\Kernel;
 
 use ErrorException;
+use Goralys\App\Config\RateLimiterConfig;
+use Goralys\App\Context\AppContext;
+use Goralys\App\Context\Data\ToastMode;
 use Goralys\App\HTTP\Files\GoralysFileManager;
 use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\App\HTTP\Files\Interface\FileMover;
 use Goralys\App\HTTP\Files\Services\HttpFileExtractor;
 use Goralys\App\HTTP\Files\Services\HttpFileMover;
-use Goralys\App\HTTP\Files\Services\TestFileMover;
-use Goralys\App\HTTP\Files\Utils\FilesNormalizer;
+use Goralys\App\HTTP\Files\Services\HttpFileResponder;
+use Goralys\App\HTTP\Guard\HttpGuard;
+use Goralys\App\HTTP\Guard\Interface\GuardInterface;
+use Goralys\App\HTTP\JSON\Services\HttpJsonResponder;
 use Goralys\App\HTTP\Request\GoralysRequest;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
+use Goralys\App\HTTP\Response\DeferredResponse;
+use Goralys\App\HTTP\Response\ImmediateResponse;
+use Goralys\App\HTTP\Response\Interfaces\DeferredResponseInterface;
+use Goralys\App\HTTP\Response\Interfaces\ImmediateResponseInterface;
+use Goralys\App\RateLimiter\RateLimiter;
 use Goralys\App\Security\CSRF\Services\CSRFService;
 use Goralys\App\Subjects\Controllers\SubjectsController;
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
 use Goralys\App\Topics\Controllers\TopicsController;
 use Goralys\App\User\Controllers\AuthController;
 use Goralys\App\User\Controllers\UserController;
 use Goralys\App\User\Data\Enums\UserAuthStatus;
+use Goralys\App\User\Data\UsernameTable;
+use Goralys\App\User\Services\UsernameManager;
 use Goralys\App\Utils\Toast\Controllers\ToastController;
 use Goralys\App\Utils\Toast\Data\Enums\ToastType;
 use Goralys\Core\User\Data\Enums\UserRole;
+use Goralys\Core\User\Repository\UserRepository;
+use Goralys\Kernel\Data\ErrorMessageConfig;
 use Goralys\Platform\DB\Facade\DbContainer;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Doc\PDF\DomPdfExporter;
@@ -52,7 +65,6 @@ use Goralys\Shared\Exception\GoralysException;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Utils\UtilitiesManager;
 use JetBrains\PhpStorm\NoReturn;
-use JsonSerializable;
 use Throwable;
 
 /**
@@ -71,13 +83,15 @@ class GoralysKernel
     public SubjectsController $subjects;
     public TopicsController $topics;
     public ToastController $toast;
-    private CSRFService $CSRF;
+    public GuardInterface $guard;
+    public CSRFService $csrf;
+    private RateLimiter $rateLimiter;
     /**
-     * This variable is used to determine if the kernel handlers should use flash toasts.
-     * @var bool
+     * This variable is used to determine the context of the app.
+     * @var AppContext
      */
-    private bool $useFlash;
-    public SubjectsUsernameManager $usernameManager;
+    private AppContext $context;
+    public UsernameManager $usernameManager;
     private RequestInterface $request;
     private DomPdfExporter $exporter;
     private int $sessionLifetime;
@@ -107,11 +121,15 @@ class GoralysKernel
     private readonly float $sessionLifetimeMultiplier;
     private int $sinceLastActivity;
 
+    /* @var array<class-string<Throwable>, ErrorMessageConfig> */
+    private array $errorMessages = [];
+
     /**
      * Initializes the kernel and all of its members.
      * @param string $rootPath The path to the .env file and that is considered to be the root path for the kernel.
+     * @param FileMover|null $mover The file mover used by the kernel.
      */
-    public function __construct(string $rootPath, bool $useFlash = false, bool $test = false, array $testFiles = [])
+    public function __construct(string $rootPath, ?FileMover $mover = null)
     {
         $this->rootPath = $rootPath;
 
@@ -124,17 +142,19 @@ class GoralysKernel
 
         // Initializes toast before the DB to be able to provide user feedback if the connection to the DB fails.
         $this->initToast();
-        $this->useFlash = $useFlash;
+        $this->context = new AppContext(ToastMode::DEFAULT, trim($this->env->getByKey("ORIGIN_DOMAIN")));
 
         $this->initDb();
         $this->initAuth();
         $this->initUser();
-        $this->bootFileSubsystem($test, $testFiles);
+        $this->bootFileSubsystem($mover);
         $this->initExporter();
         $this->initSubjects();
         $this->initTopics();
         $this->initCSRF();
         $this->initUsernameManager();
+        $this->initGuard();
+        $this->initRateLimiter();
     }
 
     /**
@@ -238,7 +258,7 @@ class GoralysKernel
             $this->logger,
             $this->db,
             $this->sessionLifetime,
-            $this->sessionLifetimeMultiplier
+            $this->sessionLifetimeMultiplier,
         );
     }
 
@@ -250,33 +270,27 @@ class GoralysKernel
     {
         $this->users = new UserController(
             $this->logger,
-            $this->db
+            $this->db,
         );
     }
 
     /**
      * Initializes the files-related subservices for the kernel.
-     * @param bool $test If the kernel is running in "test mode" or not.
-     * @param array $testFiles The files array, used only in "test mode".
+     * @param FileMover|null $mover The file mover for the kernel.
      * @return void
      */
-    private function bootFileSubsystem(bool $test, array $testFiles): void
+    private function bootFileSubsystem(?FileMover $mover): void
     {
-        if ($test) {
-            $files = $testFiles;
-            $mover = new TestFileMover();
-        } else {
-            $files = FilesNormalizer::fromGlobals($_FILES);
-            $mover = new HttpFileMover();
-        }
+        $resolvedMover = $mover ?? new HttpFileMover();
+
         $extractor = new HttpFileExtractor();
 
         try {
-            $this->initFileManager($mover, $extractor, $files);
+            $this->initFileManager($resolvedMover, $extractor, $resolvedMover->files);
         } catch (GoralysRuntimeException $e) {
             $this->logger->fatal(
                 LoggerInitiator::KERNEL,
-                "A GoralysRuntimeException occurred while initializing the kernel: " . $e->getMessage()
+                "A GoralysRuntimeException occurred while initializing the kernel: " . $e->getMessage(),
             );
         }
     }
@@ -304,7 +318,7 @@ class GoralysKernel
     }
 
     /**
-     * Initializes the subjects controller of the kernel.
+     * Initializes the subject controller of the kernel.
      * @return void
      */
     private function initSubjects(): void
@@ -313,12 +327,17 @@ class GoralysKernel
     }
 
     /**
-     * Initializes the subjects controller of the kernel.
+     * Initializes the topic controller of the kernel.
      * @return void
      */
     private function initTopics(): void
     {
-        $this->topics = new TopicsController($this->db, $this->utils, $this->fileManager);
+        $this->topics = new TopicsController(
+            $this->db,
+            new UsernameTable($this->utils),
+            $this->utils,
+            $this->fileManager,
+        );
     }
 
     /**
@@ -331,29 +350,65 @@ class GoralysKernel
     }
 
     /**
+     * Initializes the guard used by the kernel.
+     * @return void
+     */
+    private function initGuard(): void
+    {
+        $this->guard = new HttpGuard($this->usernameManager, $this->context);
+    }
+
+    /**
      * Initializes the CSRF service used by the kernel
      * @return void
      */
     private function initCSRF(): void
     {
-        $this->CSRF = new CSRFService($this->logger);
+        $this->csrf = new CSRFService($this->logger);
     }
 
+    /**
+     * Initializes the kernel's username manager.
+     * @return void
+     */
     private function initUsernameManager(): void
     {
-        $this->usernameManager = new SubjectsUsernameManager($this->logger);
+        $this->usernameManager = new UsernameManager(new UserRepository($this->logger, $this->db));
+    }
+
+    /**
+     * Initializes the kernel's rate limiter.
+     * @return void
+     */
+    private function initRateLimiter(): void
+    {
+        $this->rateLimiter = new RateLimiter($this->logger);
     }
 
     /**
      * Connects the kernel to the database.
      * @throws GoralysConnectException Throws an exception if the connection with the database could not be established.
      */
-    public function connect(): bool
+    private function connect(): bool
     {
         if (!isset($this->db)) {
             $this->db = new DbContainer($this->logger);
         }
         return $this->db->connect();
+    }
+
+    /**
+     * Sets a custom message for the given exception.
+     * This message will then be sent to the user if the exception is thrown.
+     * @param class-string<Throwable> $eClass The class of the targeted exception.
+     * @param string $msg The message to display.
+     * @param int $code The HTTP response code to send along with the message.
+     * @param string $redirect The page to redirect the user to.
+     * @return void
+     */
+    public function setExceptionMessage(string $eClass, string $msg, int $code = 500, string $redirect = "/"): void
+    {
+        $this->errorMessages[$eClass] = new ErrorMessageConfig($msg, $redirect, $code);
     }
 
     /**
@@ -366,27 +421,40 @@ class GoralysKernel
     #[NoReturn]
     public function exceptionHandler(Throwable $e): void
     {
+        $trace = $e->getTrace();
+        $traceLines = array_slice($trace, 0, 5);
+
+        $callStack = "\n\t" . $e->getFile() . ":" . $e->getLine();
+        foreach ($traceLines as $frame) {
+            $file = $frame['file'] ?? '[internal]';
+            $line = $frame['line'] ?? '?';
+            $callStack .= "\n\t" . $file . ":" . $line;
+        }
+
         $this->logger->error(
             LoggerInitiator::APP,
-            "Uncaught exception: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine()
-        );
-        $this->logger->debug(
-            LoggerInitiator::APP,
-            "Is kernel using flash: " . $this->useFlash
+            "Uncaught exception: " . $e->getMessage() . $callStack,
         );
 
-        if ($e instanceof GoralysException) {
-            if ($this->useFlash) {
-                $this->flashFatalError();
-            } else {
-                $this->toast->fatalError(500);
-            }
+        if (isset($this->errorMessages[$e::class])) {
+            $msg = $this->errorMessages[$e::class];
+            $this->deferredResponse($msg->code)->error(
+                $msg->message,
+            )
+                ->redirect($msg->redirect)
+                ->send();
+        } elseif ($e instanceof GoralysException) {
+            $this->deferredResponse(500)->error( // Internal Server Error
+                "Une erreur interne est survenue",
+            )
+                ->redirect("/")
+                ->send();
         } else {
-            if ($this->useFlash) {
-                $this->flashFatalError("Une erreur inattendue s'est produite.");
-            } else {
-                $this->toast->fatalError(500, "Une erreur inattendue s'est produite.");
-            }
+            $this->deferredResponse(500)->error( // Internal Server Error
+                "Une erreur inattendue s'est produite",
+            )
+                ->redirect("/")
+                ->send();
         }
     }
 
@@ -409,10 +477,10 @@ class GoralysKernel
     {
         $this->logger->warning(
             LoggerInitiator::APP,
-            "PHP Error (severity $severity) : $message — $file:$line"
+            "PHP Error (severity $severity) : $message — $file:$line",
         );
 
-        // Ignore non fatal errors
+        // Ignore non-fatal errors
         if (!in_array($severity, [E_ERROR, E_USER_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_RECOVERABLE_ERROR])) {
             return;
         }
@@ -424,7 +492,7 @@ class GoralysKernel
      * Gets the kernel's current HTTP request
      * @return RequestInterface The request.
      */
-    public function getRequest(): RequestInterface
+    public function request(): RequestInterface
     {
         if (!isset($this->request)) {
             $this->request = new GoralysRequest();
@@ -433,6 +501,27 @@ class GoralysKernel
         return $this->request;
     }
 
+    /**
+     * Generate a new HTTP response.
+     * @param int $code The response's code (default = 200).
+     * @return ImmediateResponseInterface The response.
+     */
+    public function response(int $code = 200): ImmediateResponseInterface
+    {
+        $files = new HttpFileResponder();
+        $json = new HttpJsonResponder();
+        return new ImmediateResponse($code, $this->logger, $files, $json);
+    }
+
+    public function deferredResponse(int $code = 200): DeferredResponseInterface
+    {
+        $this->logger->debug(
+            LoggerInitiator::KERNEL,
+            "Sending deferred response with context:\n"
+            . print_r($this->context, true),
+        );
+        return new DeferredResponse($this->context, $code);
+    }
 
     /**
      * Runs the provided function and catches any exception to handle it.
@@ -443,17 +532,65 @@ class GoralysKernel
     {
         try {
             $callback($this, $this->request);
+
+            if (session_status() == PHP_SESSION_ACTIVE) {
+                session_write_close();
+            }
         } catch (Throwable $e) {
             $this->exceptionHandler($e);
         }
     }
 
+
     /**
-     * Helper to check if the user is authenticated
-     * @param string $context The context the authentification is required in.
+     * Helper used to centralize db connection logic and failure behavior.
      * @return void
      */
-    public function requireAuth(string $context): void
+    public function requireDb(): void
+    {
+        try {
+            if (!$this->connect()) {
+                $this->deferredResponse(500)->error( // Internal server error
+                    "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
+                )
+                    ->redirect("/")
+                    ->send();
+            }
+        } catch (Throwable) {
+            $this->deferredResponse(500)->error( // Internal server error
+                "Une erreur interne est survenue lors de la connexion, veuillez réessayer ultérieurement.",
+            )
+                ->redirect("/")
+                ->send();
+        }
+    }
+
+    /**
+     * Helper to require a rate limit for a given endpoint/action.
+     * @param string $endpoint The endpoint to require rate limiting on (refer to {@see RateLimiterConfig} for endpoint
+     * specific rates).
+     * @param string $redirect The url to redirect the user to on failure.
+     * @param string $message The message to display on failure (vie toast notificaation).
+     * @return void
+     */
+    public function requireRateLimit(
+        string $endpoint,
+        string $redirect = "/",
+        string $message = "Vous avez atteint la limite périodique de requêtes. Veuillez réessayer ultérieurement.",
+    ): void {
+        if (!$this->rateLimiter->forwardRequest($endpoint)) {
+            $this->deferredResponse(429)->toast(ToastType::WARNING, "Limite atteinte", $message)
+                ->redirect($redirect)
+                ->send();
+        }
+    }
+
+    /**
+     * Helper to check if the user is authenticated
+     * @param string $endpoint The endpoint the authentification is required in.
+     * @return void
+     */
+    public function requireAuth(string $endpoint): void
     {
         $this->logger->debug(LoggerInitiator::KERNEL, "Session lifetime : " . $this->sessionLifetime);
         $this->logger->debug(LoggerInitiator::KERNEL, "Since last activity : " . $this->sinceLastActivity);
@@ -462,23 +599,21 @@ class GoralysKernel
             case UserAuthStatus::SESSION_EXPIRED:
                 $this->logger->warning(
                     LoggerInitiator::CORE,
-                    "Tried to perform action: $context without authentification"
+                    "Tried to perform action: $endpoint without authentification",
                 );
                 $this->destroySession();
 
-                http_response_code(401); // Unauthorized
-                echo json_encode(["authEvent" => "expired"]);
-                exit;
+                $this->response(401)->json(["authEvent" => "expired"]); // Unauthorized
+                // no break
             case UserAuthStatus::NOT_AUTHENTICATED:
                 $this->destroySession();
                 $this->logger->warning(
                     LoggerInitiator::CORE,
-                    "Tried to perform action: $context without authentification"
+                    "Tried to perform action: $endpoint without authentification",
                 );
 
-                http_response_code(401); // Unauthorized
-                echo json_encode(["authEvent" => "unauthenticated"]);
-                exit;
+                $this->response(401)->json(["authEvent" => "unauthenticated"]); // Unauthorized
+                // no break
             case UserAuthStatus::AUTHENTICATED:
                 break;
         }
@@ -500,27 +635,17 @@ class GoralysKernel
      * @param string|null $redirect The page to redirect the user to.
      * @return void
      */
-    public function requireCSRF(string $formId, string | null $redirect = null): void
+    public function requireCSRF(string $formId, ?string $redirect = null): void
     {
 
-        if (!$this->CSRF->validate($formId, $this->request)) {
-            http_response_code(403);
-            if ($this->useFlash) {
-                $this->flashToast(
-                    ToastType::WARNING,
-                    "Lien externe",
-                    "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
-                    $redirect ?? ""
-                );
-                exit;
-            }
-            $this->toast->showToast(
+        if (!$this->csrf->validate($formId, $this->request)) {
+            $this->deferredResponse(403)->toast( // Forbidden
                 ToastType::WARNING,
                 "Lien externe",
                 "Ce lien semble inconnu. Ne faite pas confiance aux sources externes.",
-                ""
-            );
-            exit;
+            )
+                ->redirect($redirect ?? "/")
+                ->send();
         }
     }
 
@@ -535,88 +660,32 @@ class GoralysKernel
         if (!isset($_SESSION['current_role'])) {
             $this->destroySession();
 
-            http_response_code(401); // Unauthorized
-            echo json_encode(["authEvent" => "expired"]);
-            exit;
+            $this->response(401)->json(["authEvent" => "expired"]); // Unauthorized
         }
 
         $currentRole = UserRole::fromString($_SESSION['current_role']);
 
         if ($strict && $currentRole !== $role) {
-            $this->toast->fatalError(
-                403, // Forbidden
-                "Il semblerait que vous n'ayez pas les permissions nécéssaires."
-            );
+            $this->deferredResponse(403)->error( // Forbidden
+                "Il semblerait que vous n'ayez pas les permissions nécéssaires.",
+            )
+                ->send();
         }
 
         if (!$currentRole->isAtLeast($role)) {
-            $this->toast->fatalError(
-                403, // Forbidden
-                "Il semblerait que vous n'ayez pas les permissions nécéssaires."
-            );
+            $this->deferredResponse(403)->error( // Forbidden
+                "Il semblerait que vous n'ayez pas les permissions nécéssaires.",
+            )
+                ->send();
         }
     }
 
     /**
-     * Helper to centralize the way JSON data should be output to the client.
-     * @param array | JsonSerializable $data The data to encode and send to the client.
-     * @param int $responseCode The response code of the request. Default is OK (200)
+     * Switch the {@see AppContext::mode} to flash toast.
      * @return void
      */
-    public function sendJSON(array | JsonSerializable $data, int $responseCode = 200): void
+    public function useFlash(): void
     {
-        http_response_code($responseCode);
-        header("Content-Type: application/JSON; charset: utf-8");
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    }
-
-    /**
-     * Helper to easily send flash toasts to the frontend for form requests.
-     * @param ToastType $type The type of the toast.
-     * @param string $title The title of the toast.
-     * @param string $message The message of the toast.
-     * @param string $redirect The page to redirect the user to.
-     * @param string $action The action to perform when the frontend receives the toast.
-     * Refer to the frontend root layout to know which actions are currently supported and to add your own ones.
-     * @return void
-     */
-    public function flashToast(
-        ToastType $type,
-        string $title,
-        string $message,
-        string $redirect = "/",
-        string $action = ""
-    ): void {
-        http_response_code(302); // Temporary redirect
-        $destination = $this->env->getByKey("ORIGIN_DOMAIN") . $redirect;
-        $this->toast->showToast(
-            $type,
-            $title,
-            $message,
-            $destination,
-            true,
-            $action
-        );
-        header("Location: $destination");
-    }
-
-    /**
-     * A helper to send flash error toasts.
-     * @param string $msg The message of the toast (default = "Une erreur interne est survenue.").
-     * @param string $redirect The page to redirect the user to (default = "index.html").
-     * @return void
-     */
-    #[NoReturn]
-    public function flashFatalError(
-        string $msg = "Une erreur interne est survenue.",
-        string $redirect = "/"
-    ): void {
-        $this->flashToast(
-            ToastType::ERROR,
-            "Erreur",
-            $msg,
-            $redirect
-        );
-        exit;
+        $this->context->mode = ToastMode::FLASH;
     }
 }

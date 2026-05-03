@@ -18,7 +18,7 @@ class GetUserRoleServiceTest extends TestCase
         $this->repo = new FakeUserRepository();
 
         $this->service = new GetUserRoleService(
-            $this->repo
+            $this->repo,
         );
     }
 

@@ -7,6 +7,9 @@
 
 namespace Goralys\Core\Subjects\Data\Enums;
 
+/**
+ * Represents the review lifecycle of a subject submission.
+ */
 enum SubjectStatus: int
 {
     case UNKNOWN = -1;

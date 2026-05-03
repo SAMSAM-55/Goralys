@@ -48,15 +48,15 @@ Steps:
 ## Testing
 
 You can use phpunit to run the unit tests for the backend in `backend/tests`.
-To run the tests, use the following command after installing the projects dependencies with composer:
+To run the tests, use the following command after installing the project dependencies with composer:
 
 ```bash
 .\backend\vendor\bin\phpunit --configuration backend\phpunit.xml
 ```
 
-### Topics import
+### Topic import
 
-To test the topics import system, you can use the test file under the `assets/` folder ([test.zip](assets/test.zip)).
+To test the topic import system, you can use the test file under the `assets/` folder ([test.zip](assets/test.zip)).
 This can also help you understand the required format for Goralys topics import. If your data does not follow this exact
 format, the system will not be able to import it successfully.
 

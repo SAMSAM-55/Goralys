@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, useContext, useState, ReactNode, useCallback} from "react";
+import {createContext, useContext, useState, ReactNode, useCallback, useMemo} from "react";
 import ToastElement from "@/app/ui/toast/toast-element";
 import {Toast} from "@/app/lib/types";
 import {createPortal} from "react-dom";
@@ -33,8 +33,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         cacheToast(toastInput, duration);
     }, [cacheToast]);
 
+    const value = useMemo(() => ({ showToast, cacheToast }), [showToast, cacheToast]);
     return (
-        <ToastContext.Provider value={{ showToast, cacheToast }}>
+        <ToastContext.Provider value={value}>
             {children}
 
             {toast && typeof document !== "undefined" &&

@@ -6,6 +6,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\VirtualUserDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 
 class FakeUserRepository implements UserRepositoryInterface
@@ -14,6 +15,8 @@ class FakeUserRepository implements UserRepositoryInterface
     private mixed $getResult = null;
     private bool $existsResult = false;
     private bool $usernameValidResult = false;
+    private array $publicIds = [];
+    private array $users = [];
 
     /**
      * Set the result for update/save operations.
@@ -50,7 +53,7 @@ class FakeUserRepository implements UserRepositoryInterface
 
     public function save(UserCreateDTO $userData): bool
     {
-        return (bool)$this->updateResult;
+        return (bool) $this->updateResult;
     }
 
     public function getLoginDTO(string $username): ?UserLoginDTO
@@ -80,6 +83,89 @@ class FakeUserRepository implements UserRepositoryInterface
 
     public function getFullNameForUsername(string $username): ?string
     {
-        return null;
+        return $this->getResult;
+    }
+
+    public function isPublicIdValid(string $uuid): bool
+    {
+        return in_array($uuid, array_keys($this->users), true);
+    }
+
+    public function setPublicId(string $username, string $uuid): void
+    {
+        $this->publicIds[$username] = $uuid;
+    }
+
+    public function setUser(string $uuid, UserFullDTO $user): void
+    {
+        $this->users[$uuid] = $user;
+    }
+
+    public function getPublicIdForUsername(string $username): ?string
+    {
+        return $this->publicIds[$username] ?? null;
+    }
+
+    public function getByPublicId(string $uuid): UserFullDTO
+    {
+        return $this->users[$uuid];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll(): array
+    {
+        return [];
+    }
+
+    public function getUsernameForPublicId(string $publicId): ?string
+    {
+        return isset($this->users[$publicId]) ? $this->users[$publicId]->username : null;
+    }
+
+    public function getPublicIds(): array
+    {
+        return $this->publicIds;
+    }
+
+    public function getVirtual(): array
+    {
+        return [];
+    }
+
+    public function addAdmin(string $username): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function revokeAdmin(string $username): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function getAdmins(): array
+    {
+        return [];
+    }
+
+    public function getVirtualAdmins(): array
+    {
+        return [];
+    }
+
+    public function replaceTeacher(string $old, string $new): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function softDelete(string $username): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function hardDelete(string $username): bool
+    {
+        return (bool) $this->updateResult;
     }
 }

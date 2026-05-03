@@ -9,6 +9,7 @@ namespace Goralys\Core\Topics\Services;
 
 use Goralys\Core\Topics\Config\TopicsImportConfig;
 use Goralys\Shared\Exception\GoralysRuntimeException;
+use Goralys\Shared\Utils\String\Data\StringCase;
 use Goralys\Shared\Utils\UtilitiesManager;
 use RuntimeException;
 use SplFileObject;
@@ -16,7 +17,7 @@ use SplFileObject;
 /**
  * Service responsible for building topic-related data (groups and students) from CSV files.
  */
-class BuildFromCSVService
+final class BuildFromCSVService
 {
     private UtilitiesManager $utils;
     private TopicsImportConfig $config;
@@ -33,7 +34,6 @@ class BuildFromCSVService
 
     /**
      * Ensures the provided path is a valid CSV file and returns a SplFileObject.
-     *
      * @param string $path The full path to the CSV file.
      * @return SplFileObject
      * @throws GoralysRuntimeException If the file is not a valid CSV or cannot be opened.
@@ -42,7 +42,7 @@ class BuildFromCSVService
     {
         if (!is_file($path) || strtolower(pathinfo($path, PATHINFO_EXTENSION)) !== 'csv') {
             throw new GoralysRuntimeException(
-                "The provided file ($path) is not a valid CSV file."
+                "The provided file ($path) is not a valid CSV file.",
             );
         }
 
@@ -50,9 +50,9 @@ class BuildFromCSVService
             $file = new SplFileObject($path, 'r');
 
             $file->setFlags(
-                SplFileObject::READ_CSV |
-                SplFileObject::SKIP_EMPTY |
-                SplFileObject::DROP_NEW_LINE
+                SplFileObject::READ_CSV
+                | SplFileObject::SKIP_EMPTY
+                | SplFileObject::DROP_NEW_LINE,
             );
 
             $file->setCsvControl(escape: '');
@@ -61,14 +61,13 @@ class BuildFromCSVService
         } catch (RuntimeException $e) {
             throw new GoralysRuntimeException(
                 "Could not open CSV file ($path).",
-                previous: $e
+                previous: $e,
             );
         }
     }
 
     /**
      * Parses a CSV file to build a mapping of group codes to teacher usernames.
-     *
      * @param string $from The full path to the groups CSV file.
      * @return array<string, list<string>> A mapping of group code => array of teacher usernames.
      * @throws GoralysRuntimeException If the CSV format is invalid.
@@ -86,7 +85,7 @@ class BuildFromCSVService
 
             if (count($row) !== 2) {
                 throw new GoralysRuntimeException(
-                    "CSV format error at line " . ($i + 1) . ": expected 2 columns."
+                    "CSV format error at line " . ($i + 1) . ": expected 2 columns.",
                 );
             }
 
@@ -107,7 +106,6 @@ class BuildFromCSVService
     /**
      * Parses a CSV file to extract student names from a specific column.
      * It attempts to automatically detect the student column based on common headers.
-     *
      * @param string $from The full path to the student CSV file.
      * @return string[] A unique list of student names.
      * @throws GoralysRuntimeException If the CSV file cannot be opened.
@@ -115,9 +113,7 @@ class BuildFromCSVService
     public function buildStudents(string $from): array
     {
         $file = $this->ensureCSV($from);
-
         $students = [];
-
         $firstRow = null;
         foreach ($file as $row) {
             if ($row === null || $row === false || $row === [null]) {
@@ -135,13 +131,19 @@ class BuildFromCSVService
         }
 
         $normalized = array_map(
-            fn($v) => $this->utils->string->sanitize((string) $v),
-            $firstRow
+            fn($v) => $this->utils->string->sanitize((string) $v, StringCase::LOWER),
+            $firstRow,
+        );
+
+        $accepted = ['élève', 'student', 'étudiant', 'nom'];
+        $accepted = array_map(
+            fn($v) => $this->utils->string->sanitize((string) $v, StringCase::LOWER),
+            $accepted,
         );
 
         $studentCol = null;
         foreach ($normalized as $idx => $name) {
-            if (in_array(trim(strtolower($name)), ['eleve', 'élève', 'student', 'etudiant', 'étudiant', 'nom'], true)) {
+            if (in_array($name, $accepted, true)) {
                 $studentCol = $idx;
                 break;
             }

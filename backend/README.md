@@ -112,7 +112,7 @@ Maintaining these boundaries keeps the system modular and easier to test.
 
 ## File layout (snapshot)
 
-- `PHP/Platform/DB` — DB facade, interfaces and services
+- `PHP/Platform/DB` — DB facade, interfaces, and services
 - `PHP/Platform/Loader` — environment loader
 - `PHP/Platform/Logger` — logger API and enums
 - `PHP/Core/User` — user domain (data, repos, services)

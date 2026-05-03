@@ -1,6 +1,6 @@
 import {Lusitana} from "next/font/google";
 
-export const lusitana = Lusitana({
+export const Lusitania = Lusitana({
     weight: [
         '400',
         '700',

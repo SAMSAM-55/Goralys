@@ -28,6 +28,12 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
 
         }
 
+        if (! await confirm.showConfirm({
+            title: "Confirmer le rejet",
+            message: "Une fois la question rejetée l'élève devra en soumettre une nouvelle." +
+                " Voulez-vous quand même rejeter cette question ?",
+        })) return;
+
         if (comment?.trim() === subjectData.comment.trim()) {
             const confirmed = await confirm.showConfirm({
                 title: "Confirmer le rejet",
@@ -53,7 +59,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             'csrf-token': csrfToken,
         };
 
-        const res = await goralysFetchClient("Subjects/Teacher/Reject/", {
+        const res = await goralysFetchClient("subjects/reject", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),
@@ -70,7 +76,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         if (data.toastType === 'info' && res.ok) {
-            cookies.set('subjects-synced-teacher', false);
+            cookies.set('subjects-synced-teacher', false, { path: '/' });
             onUpdateAction();
         }
     }
@@ -78,7 +84,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
     async function approveSubject() {
         if (!await confirm.showConfirm({
             title: "Validation de la question",
-            message: "Etes-vous sûr de vouloir valider cette question de manière définitive. Une fois la question " +
+            message: "Êtes-vous sûr de vouloir valider cette question de manière définitive. Une fois la question " +
                 "validée, toute modification devient impossible."
         })) return;
 
@@ -92,7 +98,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             'csrf-token': csrfToken,
         };
 
-        const res = await goralysFetchClient("Subjects/Teacher/Approve/", {
+        const res = await goralysFetchClient("subjects/approve", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),
@@ -108,7 +114,7 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             });
 
             if (data.toastType === 'info' && res.ok) {
-                cookies.set('subjects-synced-teacher', false);
+                cookies.set('subjects-synced-teacher', false, { path: '/' });
                 onUpdateAction();
             }
         }
@@ -134,8 +140,10 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             />
             {subjectData.status === "submitted"
             && <>
-                <Button className="-mb-1! mt-1! shadow-none!" text="Ne pas valider la question" type="button" onClick={rejectSubject} />
-                <Button className="mb-1! mt-1! shadow-none!" text="Valider la question" type="button" onClick={approveSubject} />
+                <Button className="-mb-1! mt-1! shadow-none!" text="Ne pas valider la question" type="button" onClick={rejectSubject}
+                color="red"/>
+                <Button className="mb-1! mt-1! shadow-none!" text="Valider la question" type="button" onClick={approveSubject}
+                color="green"/>
             </>}
         </div>
     );

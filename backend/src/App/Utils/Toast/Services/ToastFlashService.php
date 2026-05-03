@@ -14,7 +14,7 @@ use Goralys\Shared\Exception\GoralysRuntimeException;
 /**
  * This service is used to store and retrieve flash toasts.
  */
-class ToastFlashService
+final class ToastFlashService
 {
     /**
      * Stores a new flash toast in the session.
@@ -29,7 +29,7 @@ class ToastFlashService
             "toastInfo" => $toastData->toastInfo,
             "redirect" => $toastData->redirect,
             "flash" => true,
-            "action" => $action
+            "action" => $action,
         ];
     }
 

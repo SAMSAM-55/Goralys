@@ -1,6 +1,7 @@
 'use client';
+'use no memo';
 
-import {createContext, useContext, useState, ReactNode} from "react";
+import {createContext, useContext, useState, ReactNode, useCallback, useMemo} from "react";
 import DraftModalElement from "@/app/ui/modals/drafts/draft-modal-element";
 import {createPortal} from "react-dom";
 import {DraftModalResult} from "@/app/lib/types";
@@ -17,13 +18,13 @@ export function DraftModalProvider({ children }: { children: ReactNode }) {
     } | null>(null);
     const [visible, setVisible] = useState(false);
 
-    function showDraftModal(): Promise<DraftModalResult> {
+    const showDraftModal = useCallback((): Promise<DraftModalResult> => {
         return new Promise((resolve: (value: DraftModalResult) => void) => {
             setChosenFile({resolve});
             setVisible(false);
             requestAnimationFrame(() => setVisible(true));
         });
-    }
+    }, []);
 
     function handleChooseDraft(file: File | null) {
         setVisible(false);
@@ -49,8 +50,11 @@ export function DraftModalProvider({ children }: { children: ReactNode }) {
         }, 500);
     }
 
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
+    const value = useMemo(() => ({ showDraftModal }), [showDraftModal]);
+
     return (
-        <DraftModalContext.Provider value={{ showDraftModal }}>
+        <DraftModalContext.Provider value={value}>
             {children}
 
             {fileChosen && typeof document !== "undefined" &&

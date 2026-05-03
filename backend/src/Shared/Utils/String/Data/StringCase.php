@@ -7,6 +7,9 @@
 
 namespace Goralys\Shared\Utils\String\Data;
 
+/**
+ * Defines the casing transformation to apply when sanitizing or comparing strings.
+ */
 enum StringCase
 {
     case NONE;

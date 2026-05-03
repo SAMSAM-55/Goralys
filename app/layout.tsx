@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {SideNav} from "@/app/ui/nav/side-nav";
-import {lusitana} from "@/app/lib/fonts";
-import {ToastProvider} from "@/app/ui/toast/toast-provider";
-import {ConfirmProvider} from "@/app/ui/modals/confirm/confirm-provider";
+import {Lusitania} from "@/app/lib/fonts";
 import React from "react";
 import {AuthListener} from "@/app/lib/auth/auth-listener";
 import FlashToastListener from "@/app/ui/toast/flash-toast-listener";
 import {UserListener} from "@/app/lib/auth/user-listerner";
-import {DraftModalProvider} from "@/app/ui/modals/drafts/draft-modal-provider";
-import {ImportTopicsModalProvider} from "@/app/ui/modals/import-topics/import-topics-modal-provider";
+import {Providers} from "@/app/ui/modals/providers";
 
 export const metadata: Metadata = {
   title: "Goralys",
@@ -23,7 +20,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
         <title>Goralys</title>
     </head>
 
-    <body className={`${lusitana.className} antialiased text-gray-900 bg-gray-50 lg:overflow-auto overflow-hidden`}>
+    <body className={`${Lusitania.className} antialiased text-gray-900 bg-gray-50 lg:overflow-auto overflow-hidden`}>
 
     <div className="z-50 absolute h-screen w-screen lg:hidden bg-gray-200 flex items-center justify-center p-6 overflow-hidden">
         <h1 className="font-bold text-center text-2xl">
@@ -35,22 +32,18 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
     <div id="confirm-root"></div>
     <div id="draft-modal-root"></div>
     <div id="import-topics-modal-root"></div>
-
-    <ToastProvider>
-        <ConfirmProvider>
-            <DraftModalProvider>
-                <ImportTopicsModalProvider>
-                    <AuthListener />
-                    <UserListener />
-                    <FlashToastListener />
-                    <div className="flex flex-row min-h-screen">
-                        <SideNav />
-                        {children}
-                    </div>
-                </ImportTopicsModalProvider>
-            </DraftModalProvider>
-        </ConfirmProvider>
-    </ToastProvider>
+    <div id="password-modal-root"></div>
+    <Providers>
+        <AuthListener />
+        <UserListener />
+        <FlashToastListener />
+        <div className="flex flex-row min-h-screen">
+            <SideNav />
+            <main className="flex ml-55 w-full">
+                {children}
+            </main>
+        </div>
+    </Providers>
     </body>
     </html>
   );

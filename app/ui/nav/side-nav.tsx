@@ -4,7 +4,7 @@ import { NavLink } from "@/app/ui/nav/nav-link";
 import {UserNav} from "@/app/ui/nav/user-nav";
 import Cookies from "universal-cookie";
 import {useEffect, useState} from "react";
-import {UserRole, USER_ROLES} from "@/app/lib/types";
+import {UserRole, USER_ROLES, buildArray} from "@/app/lib/types";
 import Image from "next/image";
 
 export function SideNav() {
@@ -38,18 +38,20 @@ export function SideNav() {
                 return "Mes Questions"
             case "none":
                 return "Mon Espace";
-            case "teacher": return "Mes Elèves";
-            case "admin": return "Administration";
+            case "teacher": return "Mes Élèves";
+            case "admin": return "Questions";
         }
     }
 
-    const links: { name: string; url: string }[] = [
+    const links: { name: string; url: string }[] = buildArray(
         { name: "Accueil", url: "/" },
         { name: getSubjectLinkText(), url: "/subject" },
-    ];
+        role == "admin" && { name: "Utilisateurs", url: "/admin/user" },
+        role == "admin" && { name: "Accès", url: "/admin/admin" }
+    );
 
     return (
-        <div className="min-w-50 w-55 h-auto max-h-screen sticky top-0 flex flex-col m-0 p-2 rounded-xl">
+        <div className="min-w-50 w-55 h-auto min-h-screen fixed top-0 flex flex-col m-0 p-2 rounded-xl">
             <div className="flex rounded-md min-w-full h-25 bg-sky-500 mb-2">
                 <Image src="/logo/goralys-logo.svg" width={150} height={10} alt="Goralys logo" className="ml-1 self-center" />
             </div>

@@ -9,19 +9,25 @@ namespace Goralys\App\HTTP\Files\Utils;
 
 use Goralys\App\HTTP\Files\Data\FileDTO;
 
+/**
+ * Utility class for normalizing the PHP `$_FILES` superglobal into a flat array of FileDTOs.
+ * Handles both single-file and multi-file inputs transparently.
+ */
 final class FilesNormalizer
 {
     /**
-     * @return FileDTO[]
+     * Converts the raw `$_FILES` superglobal into a map of input name => FileDTO (or FileDTO[]).
+     * @param array $files The raw `$_FILES` array.
+     * @return FileDTO[] The normalized files array.
      */
     public static function fromGlobals(array $files): array
     {
-        $dtos = [];
+        $normalized = [];
 
         foreach ($files as $inputName => $file) {
             // single file
             if (!is_array($file['name'])) {
-                $dtos[$inputName] = new FileDTO(
+                $normalized[$inputName] = new FileDTO(
                     $file['name'],
                     $file['type'],
                     $file['tmp_name'],
@@ -32,9 +38,9 @@ final class FilesNormalizer
             }
 
             // multiple files
-            $dtos[$inputName] = [];
+            $normalized[$inputName] = [];
             foreach ($file['name'] as $i => $name) {
-                $dtos[$inputName][] = new FileDTO(
+                $normalized[$inputName][] = new FileDTO(
                     $name,
                     $file['type'][$i],
                     $file['tmp_name'][$i],
@@ -44,6 +50,6 @@ final class FilesNormalizer
             }
         }
 
-        return $dtos;
+        return $normalized;
     }
 }

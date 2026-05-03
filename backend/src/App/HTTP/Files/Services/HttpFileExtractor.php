@@ -12,10 +12,16 @@ use Goralys\App\HTTP\Files\Interface\FileExtractor;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use ZipArchive;
 
-class HttpFileExtractor implements FileExtractor
+/**
+ * The HTTP service used to extract ZIP archives.
+ */
+final class HttpFileExtractor implements FileExtractor
 {
     /**
-     * @throws GoralysRuntimeException
+     * Ensures a given file is a valid ZIP archive.
+     * @param UploadedFileDTO $file The file to validate.
+     * @return void
+     * @throws GoralysRuntimeException If the validation fails.
      */
     private function ensureZip(UploadedFileDTO $file): void
     {
@@ -24,13 +30,13 @@ class HttpFileExtractor implements FileExtractor
 
         if (!is_file($path)) {
             throw new GoralysRuntimeException(
-                "Uploaded file not found at path: $path"
+                "Uploaded file not found at path: $path",
             );
         }
 
         if (strtolower(pathinfo($originalName, PATHINFO_EXTENSION)) !== 'zip') {
             throw new GoralysRuntimeException(
-                "The uploaded file must have a .zip extension."
+                "The uploaded file must have a .zip extension.",
             );
         }
 
@@ -39,7 +45,7 @@ class HttpFileExtractor implements FileExtractor
 
         if ($result !== true) {
             throw new GoralysRuntimeException(
-                "The provided file is not a valid zip archive."
+                "The provided file is not a valid zip archive.",
             );
         }
 
@@ -57,7 +63,7 @@ class HttpFileExtractor implements FileExtractor
     {
         $this->ensureZip($file);
 
-        if (!is_dir($dest) && !mkdir($dest, 0777, true)) {
+        if (!is_dir($dest) && !mkdir($dest, 0o777, true)) {
             throw new GoralysRuntimeException("Could not create extraction directory: $dest");
         }
 

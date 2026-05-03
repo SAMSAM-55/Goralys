@@ -26,7 +26,7 @@ final class GoralysFileManager
     private LoggerInterface $logger;
 
     /**
-     * Initializes the files array ($uploads) used by the file manager.
+     * Initializes the file array ($uploads) used by the file manager.
      * @param FileDTO[] $files The files to manage.
      * @param FileMover $mover The injected file mover.
      * @param FileExtractor $extractor The injected file extractor (zip files only)
@@ -53,7 +53,7 @@ final class GoralysFileManager
     }
 
     /**
-     * Retrieves a file inside the uploads array, returns nul if the file could not be found.
+     * Retrieves a file inside the upload array, returns null if the file could not be found.
      * @param string $fileName The name of the file to retrieve.
      * @return ?UploadedFileDTO The information of the file.
      */
@@ -66,7 +66,7 @@ final class GoralysFileManager
      * Moves a given file.
      * @param string $fileName The file to move.
      * @param string $destination The destination of the file
-     * @return bool
+     * @return bool If the move succeded or not.
      */
     public function move(string $fileName, string $destination): bool
     {

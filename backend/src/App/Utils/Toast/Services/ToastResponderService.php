@@ -7,13 +7,12 @@
 
 namespace Goralys\App\Utils\Toast\Services;
 
-// Toast specific classes
 use Goralys\App\Utils\Toast\Data\ToastDTO;
 
 /**
  * The service used to send a toast to the frontend
  */
-class ToastResponderService
+final class ToastResponderService
 {
     private ToastFlashService $flashService;
 
@@ -24,8 +23,8 @@ class ToastResponderService
 
     /**
      * Sends a toast to the frontend.
-     * If the `isJS` property is set to `true`, the toast will be sent as a JSON object and then parsed by the frontend.
-     * Else, the toast will be sent via url params that will then be read by the frontend to display the toast.
+     * If the {@see ToastDTO::$flash} property is set to `false`, the toast will be sent as a JSON object
+     * and then parsed by the frontend.
      * @param ToastDTO $toastData The data of the toast.
      * @param string $action The action to perform when the toast is sent to the frontend.
      * @return void

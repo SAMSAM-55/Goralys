@@ -7,6 +7,9 @@
 
 namespace Goralys\App\Utils\Toast\Data\Enums;
 
+/*
+ * An enum representing a toast's type.
+ */
 enum ToastType: string
 {
     case SUCCESS = "success";

@@ -10,13 +10,15 @@ import { Subject } from "@/app/lib/types";
 import { SubjectsSearchBar } from "@/app/ui/subjects/subjects-search-bar";
 import { useState } from "react";
 import { useConfirm } from "@/app/ui/modals/confirm/confirm-provider";
+import Cookies from "universal-cookie";
 
 export default function Page() {
     const modal = useImportTopicsModal();
     const confirm = useConfirm();
     const toast = useToast();
-    const { subjects, refetch } = useSubjects("admin");
-    const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects || null);
+    const { subjects, refetch, syncKey } = useSubjects("admin");
+    const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects);
+    const cookies = new Cookies();
 
     async function sendTopics() {
         const csrfToken = await fetchCsrfClient("import-topics");
@@ -38,7 +40,7 @@ export default function Page() {
         formData.append('topics-file', file);
 
         const res = await goralysFetchClient(
-            "Topics/Import/",
+            "topics/import",
             {
                 method: "POST",
                 credentials: "include",
@@ -54,6 +56,9 @@ export default function Page() {
             a.download = "utilisateurs.txt";
             a.click();
             URL.revokeObjectURL(url);
+            cookies.set(syncKey, "0", { path: '/' });
+            cookies.set("users-synced", "0", { path: '/' });
+            cookies.set("virtual-users-synced", "0", { path: '/' });
             await refetch();
             setCurrentSubjects(subjects || []);
             return;
@@ -83,7 +88,7 @@ export default function Page() {
             'csrf-token': csrfToken
         };
 
-        const res = await goralysFetchClient("Topics/Delete/", {
+        const res = await goralysFetchClient("topics/delete", {
             method: "POST",
             body: JSON.stringify(payload),
         });
@@ -99,18 +104,19 @@ export default function Page() {
         }
 
         if (res.ok) {
+            cookies.set(syncKey, "0", { path: '/' });
             await refetch();
             setCurrentSubjects(subjects || []);
         }
     }
 
-    async function exportTopics() {
+    async function exportSubjects() {
         const csrfToken = await fetchCsrfClient("export-subjects");
         const payload = {
             'csrf-token': csrfToken
         };
 
-        const res = await goralysFetchClient("Subjects/Export/", {
+        const res = await goralysFetchClient("subjects/export", {
             method: "POST",
             body: JSON.stringify(payload),
         });
@@ -145,8 +151,8 @@ export default function Page() {
                 <p className="underline text-xl self-start mb-2.5">Gestion des sujets:</p>
                 <div className="w-150">
                     <Button text="Importer les sujets" type="button" onClick={sendTopics} />
-                    <Button text="Exporter les sujets en PDF" type="button" onClick={exportTopics} />
-                    <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} />
+                    <Button text="Exporter les sujets en PDF" type="button" onClick={exportSubjects} />
+                    <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} color="red" />
                 </div>
             </div>
             <div className="h-auto w-fit p-2 mt-4">

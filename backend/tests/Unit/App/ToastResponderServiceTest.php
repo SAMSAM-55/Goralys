@@ -54,7 +54,7 @@ class ToastResponderServiceTest extends TestCase
             'toastType' => 'error',
             'toastTitle' => 'Err',
             'toastMessage' => 'Oops',
-            'redirect' => '/err'
+            'redirect' => '/err',
         ];
         $toast = new ToastDTO($toastInfo, "/err", false);
 

@@ -1,8 +1,10 @@
 @import "tailwindcss";
+@source "../app/**/*.{ts,tsx}";
 
 @theme {
     --text-2xs: 0.8125rem;
     --text-2xs--line-height: 1.2;
+    --breakpoint-3xl: 125rem;
 }
 
 input:-webkit-autofill,

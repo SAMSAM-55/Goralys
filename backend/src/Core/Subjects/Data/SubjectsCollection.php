@@ -12,10 +12,14 @@ use JsonSerializable;
 /**
  * A special object used to represent an array of subjects.
  */
-class SubjectsCollection implements JsonSerializable
+final class SubjectsCollection implements JsonSerializable
 {
     /* @var SubjectDTO[] */
-    private array $subjects = [];
+    public array $subjects = [] {
+        get {
+            return $this->subjects;
+        }
+    }
 
     /**
      * Adds a new subject to the collection.
@@ -24,20 +28,11 @@ class SubjectsCollection implements JsonSerializable
      */
     public function addSubject(SubjectDTO $newSubject): void
     {
-        $this->subjects[] = $newSubject;
+        $this->subjects = [...$this->subjects, $newSubject];
     }
 
     /**
-     * Gets the list of subjects held by the collection
-     * @return SubjectDTO[]
-     */
-    public function getSubjects(): array
-    {
-        return $this->subjects;
-    }
-
-    /**
-     * Transforms the subjects collection into a JSON array
+     * Transforms the subject collection into a JSON array
      * @return SubjectDTO[]
      */
     public function jsonSerialize(): array

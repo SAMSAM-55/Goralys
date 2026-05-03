@@ -6,7 +6,7 @@ import {fetchCsrfClient} from "@/app/lib/fetch/fetch.client";
 
 export default function RegisterForm() {
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
-    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/User/Auth/Register/`
+    const requestUrl = `${process.env.NEXT_PUBLIC_API_DOMAIN}/user/register`
 
     useEffect(() => {
         const run = async () => setCsrfToken(await fetchCsrfClient("register"));
@@ -28,7 +28,7 @@ export default function RegisterForm() {
 
                 <input type="hidden" name="csrf-token" value={(csrfToken ? csrfToken : "no-token").trim()} />
 
-                <Button type="submit" text="Créez mon compte" className="absolute! bottom-0"/>
+                <Button type="submit" text="Créer mon compte" className="absolute! bottom-0"/>
             </form>
         </Card>
     );

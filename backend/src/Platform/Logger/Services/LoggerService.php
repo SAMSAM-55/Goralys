@@ -15,7 +15,7 @@ use Goralys\Platform\Logger\Data\Enums\LoggerType;
  * Main logging service.
  * It provides a global `log` method to log to the correct file.
  */
-class LoggerService
+final class LoggerService
 {
     private static string $logDirectory;
 
@@ -25,9 +25,37 @@ class LoggerService
      * @return void
      */
     final public static function init(
-        string $logDirectory
+        string $logDirectory,
     ): void {
         LoggerService::$logDirectory = $logDirectory;
+    }
+
+    /**
+     * Writes a log entry to the specified file.
+     * @param mixed $file The file to write the log into.
+     * @param LoggerInitiator $initiator The inititor of the log.
+     * @param LoggerType $type The log type.
+     * @param string $time The time of the log.
+     * @param string $message The log's message.
+     * @return void
+     */
+    private static function writeLog(
+        mixed $file,
+        LoggerInitiator $initiator,
+        LoggerType $type,
+        string $time,
+        string $message,
+    ): void {
+        flock($file, LOCK_EX);
+
+        fwrite(
+            $file,
+            "($initiator->value)[$type->name]{session:" . session_id() . "} at $time : $message" . PHP_EOL,
+        );
+
+        fflush($file);
+        flock($file, LOCK_UN);
+        fclose($file);
     }
 
     /**
@@ -45,7 +73,7 @@ class LoggerService
     final public static function log(
         LoggerInitiator $initiator,
         LoggerType $type,
-        string $message
+        string $message,
     ): void {
         if ($type === LoggerType::Debug && LoggerConfigLoader::getGoralysEnv() !== 'dev') {
             return;
@@ -56,30 +84,12 @@ class LoggerService
 
         // Logs to the layer-specific log file
         if ($file = fopen(LoggerService::$logDirectory . $filename . ".log", "a")) {
-            flock($file, LOCK_EX);
-
-            fwrite(
-                $file,
-                "($initiator->value)[$type->name] at $time : $message" . PHP_EOL
-            );
-
-            fflush($file);
-            flock($file, LOCK_UN);
-            fclose($file);
+            self::writeLog($file, $initiator, $type, $time, $message);
         }
 
         // Logs to the global log file
         if ($file = fopen(LoggerService::$logDirectory . LoggerConfigLoader::getGlobalFile() . ".log", "a")) {
-            flock($file, LOCK_EX);
-
-            fwrite(
-                $file,
-                "($initiator->value)[$type->name] at $time : $message" . PHP_EOL
-            );
-
-            fflush($file);
-            flock($file, LOCK_UN);
-            fclose($file);
+            self::writeLog($file, $initiator, $type, $time, $message);
         }
     }
 }

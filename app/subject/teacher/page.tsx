@@ -5,10 +5,16 @@ import TeacherCard from "@/app/ui/subjects/teacher-card";
 import {SubjectsSearchBar} from "@/app/ui/subjects/subjects-search-bar";
 import {useState} from "react";
 import {Subject} from "@/app/lib/types";
+import Cookies from "universal-cookie";
 
 export default function Page() {
-    const {subjects, refetch} = useSubjects("teacher");
+    const {subjects, refetch, syncKey} = useSubjects("teacher");
     const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects || null);
+    const cookies = new Cookies();
+    const updateSubjects = async () => {
+        cookies.set(syncKey, "0", { path: '/' });
+        await refetch();
+    }
 
     return (
         <div className="relative flex flex-col grow h-fit items-center top-10">
@@ -20,7 +26,7 @@ export default function Page() {
                         <TeacherCard
                             key={`card-teacher-for-${s.student}-${s.topic}`}
                             subjectData={s}
-                            onUpdateAction={refetch}
+                            onUpdateAction={updateSubjects}
                         />
                     ))}
                 </div>

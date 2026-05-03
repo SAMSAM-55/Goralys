@@ -15,7 +15,10 @@ use Goralys\Core\User\Interfaces\RegisterValidatorServiceInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 
-class RegisterService
+/**
+ * Orchestrates the user registration flow by coordinating validation, role assignment, and persistence.
+ */
+final class RegisterService
 {
     private LoggerInterface $logger;
     private RegisterValidatorServiceInterface $validator;
@@ -26,7 +29,7 @@ class RegisterService
      * Initializes the logger and all the service's sub-services.
      * @param LoggerInterface $logger The injected logger
      * @param RegisterValidatorServiceInterface $validator The injected validator.
-     * It is used to verify that the can register
+     * It is used to verify that the can register.
      * @param GetUserRoleInterface $roleGetter The injected role getter.
      * It is used to retrieve the user's role and assign iot automatically.
      * @param CreateUserInterface $userCreator The injected user creator.
@@ -36,7 +39,7 @@ class RegisterService
         LoggerInterface $logger,
         RegisterValidatorServiceInterface $validator,
         GetUserRoleInterface $roleGetter,
-        CreateUserInterface $userCreator
+        CreateUserInterface $userCreator,
     ) {
         $this->logger = $logger;
 
@@ -55,7 +58,7 @@ class RegisterService
         if (!$this->validator->canRegister($data)) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to register user with user name : " . $data->username
+                "Failed to register user with user name : " . $data->username,
             );
             return false;
         }
@@ -63,21 +66,21 @@ class RegisterService
         $createData = new UserCreateDTO(
             $data->username,
             $data->fullName,
-            password_hash($data->fullName, PASSWORD_DEFAULT),
-            $this->roleGetter->getRoleByUsername($data->username)
+            password_hash($data->password, PASSWORD_DEFAULT),
+            $this->roleGetter->getRoleByUsername($data->username),
         );
 
         if (!$this->userCreator->createUser($createData)) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "Failed to create user with user name : " . $data->username
+                "Failed to create user with user name : " . $data->username,
             );
             return false;
         }
         $this->logger->info(
             LoggerInitiator::CORE,
             "Successfully registered a new user with username : "
-            . $data->username . "(" . $createData->role->toString() . ")"
+            . $data->username . "(" . $createData->role->toString() . ")",
         );
         return true;
     }

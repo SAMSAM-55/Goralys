@@ -1,0 +1,14 @@
+<?php
+
+use Goralys\App\Router\GoralysRouter;
+
+require __DIR__ . "/../vendor/autoload.php";
+require __DIR__ . "/../src/Kernel/bootstrap.php";
+
+$kernel = bootKernel();
+$router = new GoralysRouter($kernel);
+
+(require __DIR__ . "/../API/api.php")($router);
+
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$router->dispatch($_SERVER['REQUEST_METHOD'], $uri);

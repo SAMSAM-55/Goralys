@@ -34,6 +34,7 @@ export async function goralysFetchClient(input: string | URL | Request, requestO
     if (!(contentType && contentType.toLowerCase().trim().includes("application/json"))) return res;
 
     const data = await clone.json();
+    console.log("[FetchClient](" + input + ") Raw data: ", data)
     // Auth check
     if (res.status === 401) {
         try {
@@ -52,7 +53,7 @@ export async function fetchCsrfClient(formId: string): Promise<string | null> {
         'form-id': formId,
     };
 
-    const res = await fetch(`${apiUrl}/Security/CSRF/Create/`, {
+    const res = await fetch(`${apiUrl}/csrf/create`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
