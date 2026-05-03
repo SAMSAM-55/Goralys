@@ -61,4 +61,34 @@ class LoginServiceTest extends TestCase
         $this->repo->setGetResult(new UserLoginDTO("j.doe1", password_hash("foo", PASSWORD_DEFAULT)));
         self::assertTrue($this->service->login(new UserLoginDTO("j.doe1", "foo")));
     }
+
+    public function testCheckPasswordNoUser(): void
+    {
+        $this->repo->setGetResult(null);
+
+        try {
+            $this->service->checkPassword(new UserLoginDTO("j.doe1", "foo"));
+            self::fail("Expected UserNotFoundException was not thrown");
+        } catch (UserNotFoundException $e) {
+            self::assertSame("No such user : j.doe1", $e->getMessage());
+        }
+    }
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function testCheckPasswordInvalidPassword(): void
+    {
+        $this->repo->setGetResult(new UserLoginDTO("j.doe1", password_hash("correct", PASSWORD_DEFAULT)));
+        self::assertFalse($this->service->checkPassword(new UserLoginDTO("j.doe1", "wrong")));
+    }
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function testCheckPasswordWorks(): void
+    {
+        $this->repo->setGetResult(new UserLoginDTO("j.doe1", password_hash("foo", PASSWORD_DEFAULT)));
+        self::assertTrue($this->service->checkPassword(new UserLoginDTO("j.doe1", "foo")));
+    }
 }

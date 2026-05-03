@@ -6,6 +6,7 @@ use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\VirtualUserDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 
 class FakeUserRepository implements UserRepositoryInterface
@@ -116,5 +117,55 @@ class FakeUserRepository implements UserRepositoryInterface
     public function getAll(): array
     {
         return [];
+    }
+
+    public function getUsernameForPublicId(string $publicId): ?string
+    {
+        return isset($this->users[$publicId]) ? $this->users[$publicId]->username : null;
+    }
+
+    public function getPublicIds(): array
+    {
+        return $this->publicIds;
+    }
+
+    public function getVirtual(): array
+    {
+        return [];
+    }
+
+    public function addAdmin(string $username): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function revokeAdmin(string $username): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function getAdmins(): array
+    {
+        return [];
+    }
+
+    public function getVirtualAdmins(): array
+    {
+        return [];
+    }
+
+    public function replaceTeacher(string $old, string $new): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function softDelete(string $username): bool
+    {
+        return (bool) $this->updateResult;
+    }
+
+    public function hardDelete(string $username): bool
+    {
+        return (bool) $this->updateResult;
     }
 }

@@ -61,4 +61,28 @@ class CreateUserServiceTest extends TestCase
             UserRole::STUDENT,
         )));
     }
+
+    public function testCreateUserWithTeacherRole(): void
+    {
+        $this->repo->setUpdateResult(true);
+
+        self::assertTrue($this->service->createUser(new UserCreateDTO(
+            "a.teacher1",
+            "Alice Teacher",
+            "foo",
+            UserRole::TEACHER,
+        )));
+    }
+
+    public function testCreateUserWithAdminRole(): void
+    {
+        $this->repo->setUpdateResult(true);
+
+        self::assertTrue($this->service->createUser(new UserCreateDTO(
+            "a.admin1",
+            "Alice Admin",
+            "foo",
+            UserRole::ADMIN,
+        )));
+    }
 }
