@@ -18,15 +18,15 @@ const SUBJECTS: [string, string][] = [
     ["hggsp",          "histoire géographie géopolitique et sciences politiques"],
     ["hlphi",          "humanité littérature et philosophie"],
     ["hlp",            "humanité littérature et philosophie"],
-    ["llce",           "langue littérature et culture etrangère"],
-    ["llcer",          "langue littérature et culture etrangère"],
+    ["llce",           "langue littérature et culture étrangère"],
+    ["llcer",          "langue littérature et culture étrangère"],
     ["maths",          "mathématiques"],
     ["math",           "mathématiques"],
     ["nsinf",          "numérique et sciences informatiques"],
     ["nsi",            "numérique et sciences informatiques"],
     ["phch",           "physique-chimie"],
     ["pc",             "physique-chimie"],
-    ["ses",            "sciences economiques et sociales"],
+    ["ses",            "sciences économiques et sociales"],
     ["svt",            "sciences et vie de la terre"],
 ];
 

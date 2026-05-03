@@ -11,7 +11,7 @@ namespace Goralys\Platform\DB\Data;
  * The DTO used to transport the data of a statement across the different services and layers.
  * Its use stops as soon as the statement is prepared (it is now a `mysqli_stmt`).
  */
-readonly class StmtDto
+final readonly class StmtDto
 {
     public array $args;
 
@@ -19,7 +19,7 @@ readonly class StmtDto
         public string $query,
         public string $types,
         mixed $value1,
-        mixed ...$_
+        mixed ...$_,
     ) {
         $this->args = [$value1, ...$_];
     }

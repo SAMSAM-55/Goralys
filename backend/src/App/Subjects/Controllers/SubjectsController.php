@@ -11,14 +11,14 @@ use DateMalformedStringException;
 use DateTime;
 use Goralys\App\HTTP\Files\GoralysFileManager;
 use Goralys\App\Subjects\Data\Enums\SubjectFields;
-use Goralys\App\Subjects\Services\SubjectsUsernameManager;
+use Goralys\App\User\Services\UsernameManager;
 use Goralys\Core\Drafts\Services\StudentDraftsManager;
 use Goralys\Core\Subjects\Config\SubjectsExportConfig;
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Data\SpecialityDTO;
 use Goralys\Core\Subjects\Data\StudentSubjectsDTO;
-use Goralys\Core\Subjects\Data\SubjectsCollection;
 use Goralys\Core\Subjects\Data\SubjectDTO;
+use Goralys\Core\Subjects\Data\SubjectsCollection;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
 use Goralys\Core\Subjects\Repository\SubjectsRepository;
 use Goralys\Core\Subjects\Services\GetSubjectsService;
@@ -35,16 +35,17 @@ use Goralys\Shared\Exception\GoralysRuntimeException;
 use ZipArchive;
 
 /**
- * The controller used to update/get subjects from the database via the `SubjectsRepository` (and intermediate services)
+ * The controller used to update/get subjects from the database via the {@see SubjectsRepository}
+ * (and intermediate services)
  */
-class SubjectsController
+final class SubjectsController
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;
     private SubjectsRepositoryInterface $repo;
     private UpdateSubjectService $updateService;
     private UsernameFormatterService $formatter;
-    private SubjectsUsernameManager $usernameManager;
+    private UsernameManager $usernameManager;
     public StudentDraftsManager $draftsManager;
     private GoralysFileManager $fileManager;
     private GetSubjectsService $getService;
@@ -65,7 +66,7 @@ class SubjectsController
         LoggerInterface $logger,
         DbContainerInterface $db,
         GoralysFileManager $fileManager,
-        PdfExporterInterface $exporter
+        PdfExporterInterface $exporter,
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -73,7 +74,7 @@ class SubjectsController
         $this->repo = new SubjectsRepository($this->db);
         $this->userRepo = new UserRepository($this->logger, $this->db);
         $this->formatter = new UsernameFormatterService();
-        $this->usernameManager = new SubjectsUsernameManager($this->logger);
+        $this->usernameManager = new UsernameManager($this->userRepo);
         $this->fileManager = $fileManager;
         $this->draftsManager = new StudentDraftsManager($this->logger, $this->repo, $this->fileManager);
         $this->updateService = new UpdateSubjectService($this->logger, $this->repo);
@@ -81,7 +82,7 @@ class SubjectsController
             $this->logger,
             $this->repo,
             $this->formatter,
-            $this->usernameManager
+            $this->usernameManager,
         );
         $this->exportConfig = new SubjectsExportConfig();
         $this->exporter = $exporter;
@@ -95,7 +96,7 @@ class SubjectsController
      * @param string $topic The name of the topic.
      * @param SubjectFields $field The field to update.
      * @param string|SubjectStatus $newValue The new value of the field.
-     * @param bool|null $interdisciplinary [Optional] Only used when updating the subject.
+     * @param bool|null $interdisciplinary Only used when updating the subject.
      * @return bool If the update was successful or not.
      */
     public function updateField(
@@ -104,7 +105,7 @@ class SubjectsController
         string $topic,
         SubjectFields $field,
         string|SubjectStatus $newValue,
-        bool|null $interdisciplinary = null
+        ?bool $interdisciplinary = null,
     ): bool {
         return match ($field) {
             SubjectFields::SUBJECT => $this->updateService->updateSubject(
@@ -112,40 +113,43 @@ class SubjectsController
                 $studentUsername,
                 $topic,
                 $newValue,
-                $interdisciplinary
+                $interdisciplinary,
             ),
             SubjectFields::STATUS => $this->updateService->updateSubjectStatus(
                 $teacherUsername,
                 $studentUsername,
                 $topic,
-                $newValue
+                $newValue,
             ),
             SubjectFields::COMMENT => $this->updateService->updateComment(
                 $teacherUsername,
                 $studentUsername,
                 $topic,
-                $newValue
-            )
+                $newValue,
+            ),
         };
     }
 
     /**
      * Get the subjects for a given user with a given role.
      * @param UserRole $role The role of the user to get the subjects of.
-     * @param string $username The username of the student or teacher to get the subjects for.
      * Let the defaults value ("") for admins as they have access to all subjects.
      * @return SubjectsCollection The list of the retrieved subjects.
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException If one the date column fails to create a valid {@see DateTime} object.
+     * @throws GoralysRuntimeException If the subjects cannot be retrived refer to the exact implementation for more
+     * details.
      */
-    public function getForRole(UserRole $role, string $username = ""): SubjectsCollection
+    public function getForRole(UserRole $role): SubjectsCollection
     {
+        $username = $_SESSION['current_username'];
+
         unset($_SESSION['username-table']);
 
         return match ($role) {
             UserRole::STUDENT => $this->getService->getStudentSubjects($username),
             UserRole::TEACHER => $this->getService->getTeacherSubjects($username),
             UserRole::ADMIN => $this->getService->getAllSubjects(),
-            UserRole::UNKNOWN => new SubjectsCollection()
+            UserRole::UNKNOWN => new SubjectsCollection(),
         };
     }
 
@@ -169,45 +173,46 @@ class SubjectsController
      * Groups the given subjects by students.
      * @param SubjectsCollection $subjects The subjects to group.
      * @return StudentSubjectsDTO[] The students associated with their subjects.
-     * @throws DateMalformedStringException
+     * @throws GoralysRuntimeException If the username resolution fails.
      */
     private function groupByStudents(SubjectsCollection $subjects): array
     {
         /** @var SubjectDTO[][] $grouped */
         $grouped = [];
-        foreach ($subjects->getSubjects() as $subject) {
+        foreach ($subjects->subjects as $subject) {
             $grouped[$this->usernameManager->get($subject->studentUsernameToken)][] = $subject;
         }
 
-        return array_values(array_map(
-        /**
-         * @param string $username
-         * @param SubjectDTO[] $subjects
-         * @return StudentSubjectsDTO
-         */
-            function (string $username, array $subjects) {
-                $specialities = [];
-                foreach ($subjects as $subject) {
-                    $specialities[] = new SpecialityDTO(
-                        $this->userRepo->getFullNameForUsername(
-                            $this->usernameManager->get($subject->teacherUsernameToken)
-                        ),
-                        $subject->topic,
-                        $subject->topicCode,
-                        $subject->subject,
-                        $subject->lastUpdatedAt ?? new DateTime(),
-                        $subject->interdisciplinary
-                    );
-                }
-
-                return new StudentSubjectsDTO(
-                    $this->userRepo->getFullNameForUsername($username),
-                    $specialities
-                );
-            },
-            array_keys($grouped),
-            $grouped
-        ));
+        return $grouped
+                    |> array_keys(...)
+                    |> (fn($x) => array_map(
+                        /**
+                         * @param SubjectDTO[] $subjects * @return StudentSubjectsDTO
+                         * @throws GoralysRuntimeException
+                         */
+                        function (string $username, array $subjects) {
+                            $specialities = [];
+                            foreach ($subjects as $subject) {
+                                $specialities[] = new SpecialityDTO(
+                                    $this->userRepo->getFullNameForUsername(
+                                        $this->usernameManager->get($subject->teacherUsernameToken),
+                                    ),
+                                    $subject->topic,
+                                    $subject->topicCode,
+                                    $subject->subject,
+                                    $subject->lastUpdatedAt ?? new DateTime(),
+                                    $subject->interdisciplinary,
+                                );
+                            }
+                            return new StudentSubjectsDTO(
+                                $this->userRepo->getFullNameForUsername($username),
+                                $specialities,
+                            );
+                        },
+                        $x,
+                        $grouped,
+                    ))
+                    |> array_values(...);
     }
 
     /**
@@ -215,7 +220,6 @@ class SubjectsController
      * @param SubjectsCollection $subjects The subjects to export.
      * @return string The path to the generated zip file.
      * @throws GoralysRuntimeException If the zip export goes wrong.
-     * @throws DateMalformedStringException
      */
     public function exportAll(SubjectsCollection $subjects): string
     {
@@ -230,7 +234,7 @@ class SubjectsController
             $this->exporter->export(
                 $pdf,
                 $filePath,
-                $this->exportConfig::ASSETS_PATH
+                $this->exportConfig::ASSETS_PATH,
             );
 
             $exportedPaths[] = $filePath;

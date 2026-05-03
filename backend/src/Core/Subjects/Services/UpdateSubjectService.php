@@ -9,25 +9,26 @@ namespace Goralys\Core\Subjects\Services;
 
 use Goralys\Core\Subjects\Data\Enums\SubjectStatus;
 use Goralys\Core\Subjects\Repository\Interfaces\SubjectsRepositoryInterface;
+use Goralys\Core\Subjects\Repository\SubjectsRepository;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 
 /**
- * The service used to update the subjects info inside the database via the subjects repository
+ * The service used to update the subject info inside the database via the {@see SubjectsRepository}.
  */
-class UpdateSubjectService
+final class UpdateSubjectService
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
 
     /**
-     * Initializes the logger and the repository used by the service
-     * @param LoggerInterface $logger The injected logger
-     * @param SubjectsRepositoryInterface $repo The injected repository
+     * Initializes the logger and the repository used by the service.
+     * @param LoggerInterface $logger The injected logger.
+     * @param SubjectsRepositoryInterface $repo The injected repository.
      */
     public function __construct(
         LoggerInterface $logger,
-        SubjectsRepositoryInterface $repo
+        SubjectsRepositoryInterface $repo,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
@@ -49,14 +50,14 @@ class UpdateSubjectService
         if (!$result) {
             $this->logger->warning(
                 LoggerInitiator::CORE,
-                "Failed to update $field for (teacher, student) : $pair"
+                "Failed to update $field for (teacher, student) : $pair",
             );
             return;
         }
 
         $this->logger->info(
             LoggerInitiator::CORE,
-            "Updated $field for (student, teacher) : $pair"
+            "Updated $field for (student, teacher) : $pair",
         );
     }
 
@@ -74,14 +75,14 @@ class UpdateSubjectService
         string $studentUsername,
         string $topic,
         string $newSubject,
-        bool $interdisciplinary
+        bool $interdisciplinary,
     ): bool {
         $result = $this->repo->updateSubject(
             $teacherUsername,
             $studentUsername,
             $topic,
             $newSubject,
-            $interdisciplinary
+            $interdisciplinary,
         );
 
         $this->handleResult($result, $teacherUsername, $studentUsername, "subject");
@@ -101,7 +102,7 @@ class UpdateSubjectService
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newComment
+        string $newComment,
     ): bool {
         $result = $this->repo->updateComment($teacherUsername, $studentUsername, $topic, $newComment);
 
@@ -121,7 +122,7 @@ class UpdateSubjectService
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        SubjectStatus $newStatus
+        SubjectStatus $newStatus,
     ): bool {
         $result = $this->repo->updateStatus($teacherUsername, $studentUsername, $topic, $newStatus);
 

@@ -14,26 +14,39 @@ use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 
-class StudentDraftsManager
+/**
+ * Manages student draft file uploads: stores files on disk and records their paths in the database.
+ */
+final class StudentDraftsManager
 {
     private LoggerInterface $logger;
     private SubjectsRepositoryInterface $repo;
     private GoralysFileManager $fileManager;
 
+    /**
+     * @param LoggerInterface $logger The injected logger.
+     * @param SubjectsRepositoryInterface $repo The injected subjects repository.
+     * @param GoralysFileManager $fileManager The injected file manager.
+     */
     public function __construct(
         LoggerInterface $logger,
         SubjectsRepositoryInterface $repo,
-        GoralysFileManager $fileManager
+        GoralysFileManager $fileManager,
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
         $this->fileManager = $fileManager;
     }
 
+    /**
+     * Clears existing draft files for the given student/teacher pair and ensures the target directory exists.
+     * @param string $studentUsername The student's username.
+     * @param string $teacherUsername The teacher's username.
+     * @return void
+     */
     private function emptyDir(string $studentUsername, string $teacherUsername): void
     {
         $fullDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/";
-        $teacherDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/";
 
         if (is_dir($fullDir)) {
             foreach (new DirectoryIterator($fullDir) as $file) {
@@ -45,48 +58,47 @@ class StudentDraftsManager
                     unlink($file->getPathname());
                 }
             }
-        } elseif (!is_dir($teacherDir)) {
-            mkdir($teacherDir);
-            mkdir($fullDir);
-        } elseif (!is_dir($fullDir)) {
-            mkdir($fullDir);
+        }
+        if (!is_dir($fullDir)) {
+            mkdir($fullDir, 0o777, true);
         }
     }
 
     /**
-     * @param string $studentUsername
-     * @param string $teacherUsername
-     * @param string $topicName
-     * @return bool
+     * Updates a student's draft in the database.
+     * @param string $studentUsername The student's username.
+     * @param string $teacherUsername The teachers's username.
+     * @param string $topicName The topic name.
+     * @return bool If the draft was correctly updated or not.
      */
     public function update(string $studentUsername, string $teacherUsername, string $topicName): bool
     {
-        $uploadDir = __DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/";
         $this->emptyDir($studentUsername, $teacherUsername);
+        $uploadDir = realpath(__DIR__ . "/../../../../Assets/StudentsDrafts/$teacherUsername/$studentUsername/") ?: "";
 
         $file = $this->fileManager->get("draft-file");
 
         $extension = pathinfo($file->name, PATHINFO_EXTENSION) ?? "";
-        $destination = $uploadDir . "draft." . $extension;
+        $destination = $uploadDir . DIRECTORY_SEPARATOR . "draft." . $extension;
 
         if ($this->fileManager->move('draft-file', $destination)) {
             $this->logger->debug(
                 LoggerInitiator::CORE,
-                "Successfully moved uploaded draft for student: " . $studentUsername . ", with topic: " . $topicName
+                "Successfully moved uploaded draft for student: " . $studentUsername . ", with topic: " . $topicName,
             );
 
             return $this->repo->updateDraftPath(
                 $teacherUsername,
                 $studentUsername,
                 $topicName,
-                $destination
+                $destination,
             );
         }
 
         $this->logger->debug(
             LoggerInitiator::CORE,
             "Failed to move uploaded draft for student: " . $studentUsername . ", with topic: " . $topicName
-                . " from: " . $file->tmpPath . ", to: " . $destination
+                . " from: " . $file->tmpPath . ", to: " . $destination,
         );
 
         return false;
@@ -94,11 +106,11 @@ class StudentDraftsManager
 
     /**
      * Retrieves the path to a student's draft
-     * @param string $studentUsername
-     * @param string $teacherUsername
-     * @param string $topicName
-     * @return string
-     * @throws GoralysRuntimeException
+     * @param string $studentUsername The student's username.
+     * @param string $teacherUsername The teachers's username.
+     * @param string $topicName The topic name.
+     * @return string The path to the student's draft file.
+     * @throws GoralysRuntimeException If the draft could not be found.
      */
     public function getPath(string $studentUsername, string $teacherUsername, string $topicName): string
     {

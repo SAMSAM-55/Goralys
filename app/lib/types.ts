@@ -1,4 +1,8 @@
-import {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
+import React, {ChangeEventHandler, FormEventHandler, MouseEventHandler, RefObject} from "react";
+
+export function buildArray<T>(...items: (T | false | null | undefined)[]): T[] {
+    return items.filter((item): item is T => Boolean(item));
+}
 
 export type UserRole = {
     role: "admin" | "teacher" | "student" | "none",
@@ -71,6 +75,7 @@ export type ButtonProps = {
     text: string,
     type: "submit" | "button" | "reset",
     onClick?: MouseEventHandler<HTMLButtonElement>,
+    color?: "sky" | "red" | "green" | "amber",
 };
 
 export type ToastProps = {
@@ -123,9 +128,16 @@ export type ImportTopicsModalProps = {
     onCloseModalAction: () => void,
 }
 
+export type PasswordModalProps = {
+    visible: boolean;
+    onConfirmAction: (password: string) => void;
+    onCancelAction: () => void;
+    onCloseModalAction: () => void;
+}
+
 export type SubjectsSearchBarProps = {
     subjects: Subject[] | null,
-    setCurrentSubjects: (v: Subject[]) => void
+    setCurrentSubjects: React.Dispatch<React.SetStateAction<Subject[] | null>>
 }
 
 export type CheckBoxProps = {
@@ -140,14 +152,22 @@ export type CheckBoxProps = {
 export type UserData = {
     username: string,
     full_name: string,
-    role: string,
+    role: UserRole['role'],
+    public_id: string,
+}
+
+export type User = {
+    username: string,
+    publicId: string,
+    fullName: string,
+    role: UserRole['role']
 }
 
 export type CookieValue = string | boolean | number | null | undefined
 
 export const searchFields = {
     all: "Tout",
-    student: "Elèves",
+    student: "Élèves",
     teacher: "Professeur",
     topic: "Matière",
 } as const;

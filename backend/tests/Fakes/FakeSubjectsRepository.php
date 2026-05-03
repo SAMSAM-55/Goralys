@@ -59,7 +59,7 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         string $studentUsername,
         string $topic,
         string $newSubject,
-        bool $interdisciplinary
+        bool $interdisciplinary,
     ): bool {
         return $this->updateResult;
     }
@@ -68,7 +68,7 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        SubjectStatus $newStatus
+        SubjectStatus $newStatus,
     ): bool {
         return $this->updateResult;
     }
@@ -77,7 +77,7 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newComment
+        string $newComment,
     ): bool {
         return $this->updateResult;
     }
@@ -93,7 +93,7 @@ class FakeSubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newPath
+        string $newPath,
     ): bool {
         return $this->updateResult;
     }

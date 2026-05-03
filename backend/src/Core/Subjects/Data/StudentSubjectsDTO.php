@@ -7,7 +7,10 @@
 
 namespace Goralys\Core\Subjects\Data;
 
-readonly class StudentSubjectsDTO
+/**
+ * DTO grouping all speciality entries for a single student, used in PDF exports.
+ */
+final readonly class StudentSubjectsDTO
 {
     /**
      * @param string $studentName
@@ -15,7 +18,6 @@ readonly class StudentSubjectsDTO
      */
     public function __construct(
         public string $studentName,
-        public array $subjects = []
-    ) {
-    }
+        public array $subjects = [],
+    ) {}
 }

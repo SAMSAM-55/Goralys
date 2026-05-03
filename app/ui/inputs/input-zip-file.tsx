@@ -10,7 +10,7 @@ export default function InputZipFile({text, onFileSelected}: {text: string, onFi
 
     return (
         <label htmlFor="doc" key={`input-file-label-${text}`}
-               className="flex items-center gap-0 rounded-xs border border-sky-400 border-dashed bg-sky-300 cursor-pointer">
+               className="flex items-center gap-0 rounded-xs border border-sky-400 border-dashed bg-sky-200 cursor-pointer">
             <ArrowUpTrayIcon className="size-7 ml-1 mr-2" />
             <div className="">
                 <h4 className="text-base font-semibold text-gray-700">{fileName || text}</h4>

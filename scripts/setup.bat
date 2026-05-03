@@ -77,6 +77,7 @@ echo Creating Assets directory ...
 if not exist ".\backend\Assets" mkdir ".\backend\Assets" >nul 2>&1
 if not exist ".\backend\Assets\Template" mkdir ".\backend\Assets\Template" >nul 2>&1
 if not exist ".\backend\Assets\Template\Exports" mkdir ".\backend\Assets\Template\Exports" >nul 2>&1
+if not exist ".\backend\Assets\StudentsDrafts" mkdir ".\backend\Assets\StudentsDrafts" >nul 2>&1
 echo Directories are ready.
 echo.
 

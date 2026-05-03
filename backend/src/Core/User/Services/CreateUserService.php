@@ -15,7 +15,7 @@ use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 /**
  * The service used to create users.
  */
-class CreateUserService implements CreateUserInterface
+final class CreateUserService implements CreateUserInterface
 {
     private UserRepositoryInterface $repo;
 
@@ -24,7 +24,7 @@ class CreateUserService implements CreateUserInterface
      * @param UserRepositoryInterface $repo The injected user repository.
      */
     public function __construct(
-        UserRepositoryInterface $repo
+        UserRepositoryInterface $repo,
     ) {
         $this->repo = $repo;
     }

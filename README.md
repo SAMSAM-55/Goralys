@@ -13,15 +13,9 @@ Goralys is a lightweight web app to manage "Grand Oral" topics for students and 
 ## Quick start (development)
 
 Prerequisites:
-- PHP 8.1+ with mysqli
-- Composer (for PHPMailer)
+- PHP 8.5+ with mysqli
+- Composer
 - pnpm package manager
-
-To simulate a local PHP server with mysql on Windows, you can use [XAMPP](https://www.apachefriends.org) (also available on Linux and macOS)
-
-(Optional):
-- PHP_CodeSniffer
-- PHP ruleset for PSR-12 convention
 
 Steps:
 1. Run setup script:
@@ -48,15 +42,15 @@ Steps:
 ## Testing
 
 You can use phpunit to run the unit tests for the backend in `backend/tests`.
-To run the tests, use the following command after installing the projects dependencies with composer:
+To run the tests, use the following command after installing the project dependencies with composer:
 
 ```bash
 .\backend\vendor\bin\phpunit --configuration backend\phpunit.xml
 ```
 
-### Topics import
+### Topic import
 
-To test the topics import system, you can use the test file under the `assets/` folder ([test.zip](assets/test.zip)).
+To test the topic import system, you can use the test file under the `assets/` folder ([test.zip](assets/test.zip)).
 This can also help you understand the required format for Goralys topics import. If your data does not follow this exact
 format, the system will not be able to import it successfully.
 

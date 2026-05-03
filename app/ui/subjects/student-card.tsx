@@ -29,7 +29,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             'csrf-token': csrfToken,
         };
 
-        const res = await goralysFetchClient("Subjects/Student/SaveDraft/", {
+        const res = await goralysFetchClient("subjects/save-draft", {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(payload),
@@ -46,7 +46,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         if (data.toastType === 'info' && res.ok) {
-            cookies.set('subjects-synced-student', false);
+            cookies.set('subjects-synced-student', "0", { path: '/' });
             onUpdateAction();
         }
     }
@@ -88,7 +88,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
         }
 
         const res = await goralysFetchClient(
-            "Subjects/Student/Submit/",
+            "subjects/submit",
             {
                 method: "POST",
                 credentials: "include",
@@ -106,7 +106,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             });
 
             if (data.toastType === 'info' && res.ok) {
-                cookies.set('subjects-synced-student', false);
+                cookies.set('subjects-synced-student', "0", { path: '/' });
                 onUpdateAction();
             }
         }
@@ -135,7 +135,7 @@ export default function StudentCard({subjectData, onUpdateAction}: {subjectData:
             {!(subjectData.status === "submitted" || subjectData.status === "approved")
             && <>
                 <Button className="mb-1! mt-1!" text="Envoyer la question" type="button" onClick={sendSubject} />
-                <Button className="mb-1! mt-1!" text="Enregistrer commme brouillon" type="button" onClick={saveDraft} />
+                <Button className="mb-1! mt-1!" text="Enregistrer comme brouillon" type="button" onClick={saveDraft} />
             </>}
         </div>
     );

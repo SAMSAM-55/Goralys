@@ -16,16 +16,16 @@ use mysqli_stmt;
 use mysqli_sql_exception;
 
 /**
- * The service used to prepare statements
+ * The service used to prepare statements.
  */
-class PrepareService
+final class PrepareService
 {
     private LoggerInterface $logger;
     private mysqli $conn;
 
     public function __construct(
         LoggerInterface $logger,
-        mysqli $conn
+        mysqli $conn,
     ) {
         $this->logger = $logger;
         $this->conn = $conn;
@@ -46,8 +46,8 @@ class PrepareService
         } catch (mysqli_sql_exception $e) {
             $this->logger->error(
                 LoggerInitiator::PLATFORM,
-                "An error occurred while preparing statement with query : " . $query .
-                    ". Error : " . $e->getMessage()
+                "An error occurred while preparing statement with query : " . $query
+                    . ". Error : " . $e->getMessage(),
             );
             throw new GoralysPrepareException("Failed to prepare statement.");
         }
@@ -68,7 +68,7 @@ class PrepareService
         if (strlen($stmtData->types) !== count($stmtData->args)) {
             $this->logger->error(
                 LoggerInitiator::PLATFORM,
-                "Invalid param count for statement with query : " . $stmtData->query
+                "Invalid param count for statement with query : " . $stmtData->query,
             );
             throw new GoralysPrepareException("Failed to prepare statement.");
         }
@@ -85,13 +85,13 @@ class PrepareService
 
             $stmt->bind_param(
                 $stmtData->types,
-                ...$refs
+                ...$refs,
             );
         } catch (mysqli_sql_exception $e) {
             $this->logger->error(
                 LoggerInitiator::PLATFORM,
-                "An error occurred while preparing statement with query : " . $stmtData->query .
-                ". Error : " . $e->getMessage()
+                "An error occurred while preparing statement with query : " . $stmtData->query
+                . ". Error : " . $e->getMessage(),
             );
             throw new GoralysPrepareException("Failed to prepare statement.");
         }

@@ -29,11 +29,8 @@ export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearch
         if (!subjects) return;
 
         const search = searchText.trim().toLowerCase();
-        if (!search) {
-            setCurrentSubjects(sortSubjects(subjects));
-            return;
-        }
-        setCurrentSubjects(sortSubjects(subjects.filter((s: Subject) => {
+        const sorted = sortSubjects(subjects.filter((s: Subject) => {
+            if (!search) return true;
             const searchTeachers = s.teacher.split(",").map(t => t.trim().toLowerCase());
 
             switch (currentField) {
@@ -47,8 +44,14 @@ export function SubjectsSearchBar({subjects, setCurrentSubjects}: SubjectsSearch
                     return s.student.trim().toLowerCase().startsWith(search) ||
                         searchTeachers.some(t => t.startsWith(search)) ||
                         s.topic.trim().toLowerCase().includes(getLongFromShort(search));
+                default: return true;
             }
-        })));
+        }));
+
+            setCurrentSubjects(prev => {
+            if (JSON.stringify(prev) === JSON.stringify(sorted)) return prev;
+            return sorted;
+        });
     }, [searchText, currentField, subjects, setCurrentSubjects]);
 
     return (

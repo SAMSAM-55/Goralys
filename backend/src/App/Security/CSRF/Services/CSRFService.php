@@ -7,6 +7,7 @@
 
 namespace Goralys\App\Security\CSRF\Services;
 
+use Goralys\App\Config\AppConfig;
 use Goralys\App\HTTP\Request\Interfaces\RequestInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
@@ -15,7 +16,7 @@ use Random\RandomException;
 /**
  * Service to manage the CSRF tokens system.
  */
-class CSRFService
+final class CSRFService
 {
     private LoggerInterface $logger;
 
@@ -24,19 +25,20 @@ class CSRFService
      * @param LoggerInterface $logger The injected logger.
      */
     public function __construct(
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->logger = $logger;
     }
 
     /**
-     * Gets the token for a given form.
+     * Gets the latest token for a given form.
      * @param string $formId The id of the form.
      * @return string The retrieved token.
      */
     public function getForForm(string $formId): string
     {
-        return $_SESSION["csrf-tokens-table"][$formId] ?? "";
+        $tokens = $_SESSION["csrf-tokens-table"][$formId] ?? [];
+        return $tokens ? end($tokens) : "";
     }
 
     /**
@@ -47,18 +49,24 @@ class CSRFService
     public function create(string $formId): bool
     {
         try {
-            $token = bin2hex(random_bytes(8));
-            $_SESSION["csrf-tokens-table"][$formId] = $token;
+            $token = bin2hex(random_bytes(AppConfig::CSRF_TOKENS_SIZE));
+            $_SESSION["csrf-tokens-table"][$formId] ??= [];
+            $_SESSION["csrf-tokens-table"][$formId][] = $token;
+
+            if (count($_SESSION["csrf-tokens-table"][$formId]) > AppConfig::MAX_CSRF_TOKENS) {
+                array_shift($_SESSION["csrf-tokens-table"][$formId]);
+            }
+
             $this->logger->debug(
                 LoggerInitiator::APP,
-                "Successfuly created new token for form " . $formId . ", token : " . $token .
-                ". New session : " . print_r($_SESSION, true)
+                "Successfully created new token for form " . $formId . ", token : " . $token
+                . ". New session : " . print_r($_SESSION, true),
             );
             return true;
         } catch (RandomException $e) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "An error occurred while generating a CSRF token for form : " . $formId . "\nError:" . $e->getMessage()
+                "An error occurred while generating a CSRF token for form : " . $formId . "\nError:" . $e->getMessage(),
             );
             return false;
         }
@@ -66,9 +74,8 @@ class CSRFService
 
     /**
      * Validates a given CSRF token for a specific form.
-     * It automatically invalidates the token even if the validation fails
      * @param string $formId The id of the form to verify the token for.
-     * @param RequestInterface $request The current HTTP request
+     * @param RequestInterface $request The current HTTP request.
      * @return bool If the token is valid or not.
      */
     public function validate(string $formId, RequestInterface $request): bool
@@ -78,25 +85,25 @@ class CSRFService
         if (!isset($_SESSION["csrf-tokens-table"][$formId])) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "Foreign token form id encountered : " . $formId
+                "Foreign token form id encountered : " . $formId,
             );
             $this->logger->debug(
                 LoggerInitiator::APP,
-                "Current session : " . print_r($_SESSION, true)
+                "Current session : " . print_r($_SESSION, true),
             );
             return false;
         }
 
-        if ($_SESSION["csrf-tokens-table"][$formId] !== $token) {
+        if (!in_array($token, $_SESSION["csrf-tokens-table"][$formId])) {
             $this->logger->error(
                 LoggerInitiator::APP,
-                "Failed to validate token for form : " . $formId . "(" . $token . ")"
+                "Failed to validate token for form : " . $formId . "(" . $token . ")",
             );
-            unset($_SESSION["csrf-tokens-table"][$formId]);
             return false;
         }
 
-        unset($_SESSION["csrf-tokens-table"][$formId]);
+        $k = array_search($token, $_SESSION['csrf-tokens-table'][$formId]);
+        unset($_SESSION["csrf-tokens-table"][$formId][$k]);
         return true;
     }
 }

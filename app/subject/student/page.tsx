@@ -2,9 +2,15 @@
 
 import StudentCard from "@/app/ui/subjects/student-card";
 import {useSubjects} from "@/app/hooks/useSubjects";
+import Cookies from "universal-cookie";
 
 export default function Page() {
-    const {subjects, refetch} = useSubjects("student");
+    const {subjects, refetch, syncKey} = useSubjects("student");
+    const cookies = new Cookies();
+    const updateSubjects = async () => {
+        cookies.set(syncKey, "0", { path: '/' });
+        await refetch();
+    }
 
     return (
         <div className="relative flex flex-col grow h-fit items-center top-10">
@@ -15,7 +21,7 @@ export default function Page() {
                         <StudentCard
                             key={s.studentToken + s.teacherToken + s.topic}
                             subjectData={s}
-                            onUpdateAction={refetch}
+                            onUpdateAction={updateSubjects}
                         />
                     ))}
                 </div>

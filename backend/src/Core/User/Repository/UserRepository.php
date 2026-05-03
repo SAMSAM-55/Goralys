@@ -7,10 +7,12 @@
 
 namespace Goralys\Core\User\Repository;
 
+use Exception;
 use Goralys\Core\User\Data\Enums\UserRole;
 use Goralys\Core\User\Data\UserCreateDTO;
 use Goralys\Core\User\Data\UserFullDTO;
 use Goralys\Core\User\Data\UserLoginDTO;
+use Goralys\Core\User\Data\VirtualUserDTO;
 use Goralys\Core\User\Repository\Interfaces\UserRepositoryInterface;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
@@ -21,7 +23,7 @@ use mysqli_result;
 /**
  * The repository used to get user's info from the database.
  */
-class UserRepository implements UserRepositoryInterface
+final class UserRepository implements UserRepositoryInterface
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;
@@ -33,42 +35,97 @@ class UserRepository implements UserRepositoryInterface
      */
     public function __construct(
         LoggerInterface $logger,
-        DbContainerInterface $db
+        DbContainerInterface $db,
     ) {
         $this->logger = $logger;
         $this->db = $db;
     }
 
     /**
-     * This helper is used to build a user DTO containing all the user's info (full) from a database request's result,
-     * it is in charge of the logging process.
-     * @param mysqli_result $result The result from the database.
-     * @param string $username The user's username.
+     * This helper is used to build a user DTO containing all the user's info (full) from a database row.
+     * It is in charge of the logging process.
+     * @param array $row The row from the database result.
      * @return UserFullDTO All the user's info.
-     * @throws UserNotFoundException If the user is invalid.
      */
-    private function buildUserFromResult(mysqli_result $result, string $username): UserFullDTO
+    private function buildUserFromRow(array $row): UserFullDTO
     {
-        if ($result->num_rows === 0) {
-            $this->logger->error(
-                LoggerInitiator::CORE,
-                "Failed to fetch the user's data from the database, invalid username : " . $username
-            );
-            throw new UserNotFoundException("No such user : " . $username);
-        }
-
-        $row = $result->fetch_assoc();
-
         $this->logger->info(
             LoggerInitiator::CORE,
-            "User's data were successfully fetched for user : " . $username
+            "User's data were successfully fetched for user : " . $row['user_id'] . " - Data:\n" . print_r($row, true),
         );
         return new UserFullDTO(
             (int) $row['id'],
             $row['user_id'],
             UserRole::fromString($row['role']),
-            $row['full_name']
+            $row['full_name'],
         );
+    }
+
+    /**
+     * This helper is used to build a user DTO containing all the user's info (full) from a database request's result,
+     * it is in charge of the logging process.
+     * @param mysqli_result $result The result from the database.
+     * @return UserFullDTO All the user's info.
+     * @throws UserNotFoundException If the user is invalid.
+     */
+    private function buildUserFromResult(mysqli_result $result): UserFullDTO
+    {
+        if ($result->num_rows === 0) {
+            $this->logger->error(
+                LoggerInitiator::CORE,
+                "Failed to fetch the user's data from the database.",
+            );
+            throw new UserNotFoundException("Invalid user provided.");
+        }
+
+        return $this->buildUserFromRow($result->fetch_assoc());
+    }
+
+    /**
+     * This helper is used to build multiple users DTO containing all the users' info (full) from a database request's
+     * result, it is in charge of the logging process.
+     * @param mysqli_result $result The result from the database.
+     * @return UserFullDTO[] All the users' info.
+     */
+    private function buildUsersFromResult(mysqli_result $result): array
+    {
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $this->buildUserFromRow($row);
+        }
+        return $users;
+    }
+
+    /**
+     * This helper is used to build a virtual user DTO from a database row.
+     * @param array $row The row from the database result.
+     * @return VirtualUserDTO The virtual user's info.
+     */
+    private function buildVirtualUserFromRow(array $row): VirtualUserDTO
+    {
+        $this->logger->info(
+            LoggerInitiator::CORE,
+            "Virtual user's data were successfully fetched for user : " . $row['user_id'],
+        );
+        return new VirtualUserDTO(
+            $row['user_id'],
+            UserRole::fromString($row['role']),
+        );
+    }
+
+    /**
+     * This helper is used to build multiple virtual user DTOs from a database request's result,
+     * it is in charge of the logging process.
+     * @param mysqli_result $result The result from the database.
+     * @return VirtualUserDTO[] All the virtual users' info.
+     */
+    private function buildVirtualUsersFromResult(mysqli_result $result): array
+    {
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $this->buildVirtualUserFromRow($row);
+        }
+        return $users;
     }
 
     /**
@@ -82,16 +139,16 @@ class UserRepository implements UserRepositoryInterface
         $result = $this->db->fetch(
             "select id, user_id, role, full_name from users where user_id = ?",
             "s",
-            $username
+            $username,
         );
 
-        return $this->buildUserFromResult($result, $username);
+        return $this->buildUserFromResult($result);
     }
 
     /**
-     * Saves a new user to the database
-     * @param UserCreateDTO $userData The necessary data to save the user
-     * @return bool If the save was successful or not
+     * Saves a new user to the database.
+     * @param UserCreateDTO $userData The necessary data to save the user.
+     * @return bool If the save was successful or not.
      */
     public function save(UserCreateDTO $userData): bool
     {
@@ -101,7 +158,7 @@ class UserRepository implements UserRepositoryInterface
             $userData->username,
             $userData->fullName,
             $userData->passwordHash,
-            $userData->role->toString()
+            $userData->role->toString(),
         );
     }
 
@@ -115,7 +172,7 @@ class UserRepository implements UserRepositoryInterface
         return $this->db->fetch(
             "select 1 from users where user_id = ? limit 1",
             "s",
-            $username
+            $username,
         )->num_rows != 0;
     }
 
@@ -135,7 +192,7 @@ class UserRepository implements UserRepositoryInterface
             "sss",
             $username,
             $username,
-            $username
+            $username,
         )->num_rows != 0;
     }
 
@@ -150,13 +207,13 @@ class UserRepository implements UserRepositoryInterface
         $result = $this->db->fetch(
             "select password_hash from users where user_id = ?",
             "s",
-            $username
+            $username,
         );
 
         if ($result->num_rows === 0) {
             $this->logger->warning(
                 LoggerInitiator::CORE,
-                "Failed to connect user, invalid username : " . $username
+                "Failed to connect user, invalid username : " . $username,
             );
             return null;
         }
@@ -187,13 +244,13 @@ class UserRepository implements UserRepositoryInterface
             where user_id = ?
             limit 1",
             "s",
-            $username
+            $username,
         );
 
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "No such user : " . $username
+                "No such user : " . $username,
             );
             return null;
         }
@@ -213,13 +270,13 @@ class UserRepository implements UserRepositoryInterface
             "select full_name from users where user_id = ?
             limit 1",
             "s",
-            $username
+            $username,
         );
 
         if ($result->num_rows === 0) {
             $this->logger->error(
                 LoggerInitiator::CORE,
-                "No such user : " . $username
+                "No such user : " . $username,
             );
             return null;
         }
@@ -229,13 +286,263 @@ class UserRepository implements UserRepositoryInterface
 
     /**
      * Deletes all users (except admins) from the database.
-     * @return bool If the deletion was successful
+     * @return bool If the deletion was successful.
      */
     public function clearAll(): bool
     {
-        return $this->db->runNoArgs("
-            delete from users
-            where role <> 'admin'
-        ");
+        $this->db->beginTransaction();
+        try {
+            $this->db->runNoArgs(
+                "delete from public_ids where user_id not in (
+                       select user_id from users where role = 'admin'
+                       union
+                       select user_id from admins_list)",
+            );
+            $this->db->runNoArgs("delete from users where role <> 'admin'");
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Get a user's info with its public id.
+     * @param string $uuid The public id of the user.
+     * @return UserFullDTO The info of the user.
+     * @throws UserNotFoundException If the user does not exist in the DB.
+     */
+    public function getByPublicId(string $uuid): UserFullDTO
+    {
+        $result = $this->db->fetch(
+            "select u.id, u.user_id, u.role, u.full_name 
+                   from users u
+                   join public_ids pi on u.user_id = pi.user_id
+                   where pi.public_id = ?",
+            "s",
+            $uuid,
+        );
+
+        return $this->buildUserFromResult($result);
+    }
+
+    /**
+     * Get if a public id belongs to a valid user.
+     * @param string $uuid The public id.
+     * @return bool If the pudlic id is valid or not.
+     */
+    public function isPublicIdValid(string $uuid): bool
+    {
+        return $this->db->fetch(
+            "select 0 from public_ids where public_id = ?",
+            "s",
+            $uuid,
+        )->num_rows !== 0;
+    }
+
+    /**
+     * Retrieves the public id of a user from its username.
+     * @param string $username The username of the user.
+     * @return string|null The public id on success, `null` on failure.
+     */
+    public function getPublicIdForUsername(string $username): ?string
+    {
+        return $this->db->fetch(
+            "select public_id from public_ids where user_id = ?",
+            "s",
+            $username,
+        )->fetch_assoc()['public_id'] ?? null;
+    }
+
+    /**
+     * @param string $publicId The user's public id.
+     * @return string|null The user's username, or null if the user does not exist.
+     */
+    public function getUsernameForPublicId(string $publicId): ?string
+    {
+        return $this->db->fetch(
+            "select user_id from public_ids where public_id = ?",
+            "s",
+            $publicId,
+        )->fetch_assoc()['user_id'] ?? null;
+    }
+
+    /**
+     * Returns all the users inside the database.
+     * @return UserFullDTO[] The users.
+     */
+    public function getAll(): array
+    {
+        $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role <> 'admin'");
+        return $this->buildUsersFromResult($result);
+    }
+
+    /**
+     * Unlike {@see UserRepository::hardDelete()}, this deletes a user only from the `users` table.
+     * This is used to reset the user's password.
+     * @param string $username The user's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function softDelete(string $username): bool
+    {
+        return $this->db->run(
+            "delete from users where user_id = ?",
+            "s",
+            $username,
+        );
+    }
+
+    /**
+     * Unlike {@see UserRepository::softDelete()}, this deletes a user from all the database's tables.
+     * This is used to completely remove a user and its associated subjects and topics (teachers only).
+     * @param string $username The user's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function hardDelete(string $username): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            //cascades to student_topics and topics_teachers (see data_strutucre.sql for further info)
+            $this->db->run(
+                "delete from topics where id in (
+                select topic_id from topic_teachers where teacher_id = ?
+                and topic_id not in (
+                    select topic_id from topic_teachers where teacher_id <> ?
+                )
+            )",
+                "ss",
+                $username,
+                $username,
+            );
+
+            $this->db->run("delete from student_topics where student_id = ?", "s", $username);
+            $this->db->run("delete from users where user_id = ?", "s", $username);
+            $this->db->run("delete from public_ids where user_id = ?", "s", $username);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Replaces a teacher inside the database, the new teacher's username will replace the old one, and all the subjects
+     * will remain linked correctly to that new teacher.
+     * @param string $old The old teacher's username.
+     * @param string $new The new teacher's username.
+     * @return bool Wether the replacement is successful.
+     */
+    public function replaceTeacher(string $old, string $new): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $this->db->run("update topic_teachers set teacher_id = ? where teacher_id = ?", "ss", $new, $old);
+            $this->db->run("update public_ids set user_id = ?, public_id = uuid() where user_id = ?", "ss", $new, $old);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Returns all uncreated users from the database.
+     * @return VirtualUserDTO[] The virtual users.
+     */
+    public function getVirtual(): array
+    {
+        $result = $this->db->fetchNoArgs(
+            "select distinct all_ids.user_id, all_ids.role from (
+                   select student_id as user_id, 'student' as role from student_topics
+                   union
+                   select teacher_id as user_id, 'teacher' as role from topic_teachers
+                   ) as all_ids where all_ids.user_id not in (select user_id from users)",
+        );
+
+        return $this->buildVirtualUsersFromResult($result);
+    }
+
+    /**
+     * Returns a map of all users' public ids indexed by their username.
+     * @return array<string, string> A username => public_id map.
+     */
+    public function getPublicIds(): array
+    {
+        $result = $this->db->fetchNoArgs("select user_id, public_id from public_ids");
+        $map = [];
+        while ($row = $result->fetch_assoc()) {
+            $map[$row['user_id']] = $row['public_id'];
+        }
+        return $map;
+    }
+
+    /**
+     * Returns all admins from the database.
+     * @return UserFullDTO[] The admins.
+     */
+    public function getAdmins(): array
+    {
+        $result = $this->db->fetchNoArgs("select id, user_id, full_name, role from users where role = 'admin'");
+        return $this->buildUsersFromResult($result);
+    }
+
+    /**
+     * Returns all uncreated admins from the database.
+     * These are users present in admins_list but not yet in the user table.
+     * @return VirtualUserDTO[] The virtual admins.
+     */
+    public function getVirtualAdmins(): array
+    {
+        $result = $this->db->fetchNoArgs(
+            "select user_id, 'admin' as role from admins_list 
+                where user_id not in (select user_id from users)",
+        );
+        return $this->buildVirtualUsersFromResult($result);
+    }
+
+    /**
+     * Creates a new potential admin in the database.
+     * @param string $username The new admin's username.
+     * @return bool Wether the creation was successful.
+     */
+    public function addAdmin(string $username): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $this->db->run("insert into admins_list (user_id) values (?)", "s", $username);
+            $this->db->run("insert into public_ids (user_id, public_id) values (?, uuid())", "s", $username);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * Deletes an admin in the database.
+     * @param string $username The new admin's username.
+     * @return bool Wether the deletion was successful.
+     */
+    public function revokeAdmin(string $username): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $this->db->run("delete from public_ids where user_id = ?", "s", $username);
+            $this->db->run("delete from admins_list where user_id = ?", "s", $username);
+            $this->db->run("delete from users where user_id = ?", "s", $username);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception) {
+            $this->db->rollback();
+            return false;
+        }
     }
 }

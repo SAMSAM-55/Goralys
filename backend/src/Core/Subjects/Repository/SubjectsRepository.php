@@ -15,7 +15,7 @@ use mysqli_result;
 /**
  * The repository to fetch and modify subjects inside the database.
  */
-class SubjectsRepository implements SubjectsRepositoryInterface
+final class SubjectsRepository implements SubjectsRepositoryInterface
 {
     private DbContainerInterface $db;
 
@@ -52,7 +52,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             where st.student_id = ?
             group by st.student_id, st.topic_id",
             "s",
-            $studentUsername
+            $studentUsername,
         );
     }
 
@@ -82,7 +82,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             where tt.teacher_id = ?
             group by st.student_id, st.topic_id",
             "s",
-            $teacherUsername
+            $teacherUsername,
         );
     }
 
@@ -108,7 +108,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             from topics t
             join topic_teachers tt on t.id = tt.topic_id
             join student_topics st on t.id = st.topic_id
-            group by st.student_id, st.topic_id"
+            group by st.student_id, st.topic_id",
         );
     }
 
@@ -132,7 +132,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             "sss",
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -156,18 +156,18 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             "sss",
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
     /**
      * Update a subject's content inside the database.
      * A subject is always identified by the combination of three variables: the teacher, the student, and the topic.
-     * @param string $teacherUsername
-     * @param string $studentUsername
-     * @param string $topic
-     * @param string $newSubject
-     * @param bool $interdisciplinary
+     * @param string $teacherUsername The student's username.
+     * @param string $studentUsername The teacher's username.
+     * @param string $topic The name of the topic.
+     * @param string $newSubject The new subject.
+     * @param bool $interdisciplinary If this new subject is interdiscplinary or not.
      * @return bool If the update was successful or not.
      */
     public function updateSubject(
@@ -175,7 +175,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $studentUsername,
         string $topic,
         string $newSubject,
-        bool $interdisciplinary
+        bool $interdisciplinary,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -191,7 +191,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             $interdisciplinary,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -208,7 +208,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        SubjectStatus $newStatus
+        SubjectStatus $newStatus,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -224,7 +224,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             $newStatus->value,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -242,7 +242,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newComment
+        string $newComment,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -256,7 +256,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             $newComment,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 
@@ -274,7 +274,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
         string $teacherUsername,
         string $studentUsername,
         string $topic,
-        string $newPath
+        string $newPath,
     ): bool {
         return $this->db->run(
             "update student_topics st
@@ -288,7 +288,7 @@ class SubjectsRepository implements SubjectsRepositoryInterface
             $newPath,
             $teacherUsername,
             $studentUsername,
-            $topic
+            $topic,
         );
     }
 }

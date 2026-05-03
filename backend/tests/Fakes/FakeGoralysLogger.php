@@ -7,7 +7,11 @@ use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 
 class FakeGoralysLogger implements LoggerInterface
 {
-    private array $logs = [];
+    public array $logs = [] {
+        get {
+            return $this->logs;
+        }
+    }
 
     public function info(LoggerInitiator $initiator, string $message): void
     {
@@ -36,17 +40,12 @@ class FakeGoralysLogger implements LoggerInterface
 
     private function log(string $level, LoggerInitiator $initiator, string $message): void
     {
-        $this->logs[] = [
+        $this->logs = [...$this->logs, [
             'level' => $level,
             'initiator' => $initiator,
             'message' => $message,
-            'timestamp' => date('Y-m-d H:i:s')
-        ];
-    }
-
-    public function getLogs(): array
-    {
-        return $this->logs;
+            'timestamp' => date('Y-m-d H:i:s'),
+        ]];
     }
 
     public function reset(): void
@@ -54,7 +53,5 @@ class FakeGoralysLogger implements LoggerInterface
         $this->logs = [];
     }
 
-    public function rotate(): void
-    {
-    }
+    public function rotate(): void {}
 }

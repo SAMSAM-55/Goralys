@@ -12,15 +12,28 @@ use Goralys\Core\Subjects\Data\StudentSubjectsDTO;
 use Goralys\Platform\Doc\PDF\Data\PdfSourceDTO;
 use InvalidArgumentException;
 
-class SubjectsTemplateRenderer
+/**
+ * Renders the HTML export template for a student's subjects by injecting data into placeholders.
+ * Supports simple variable substitution and inline ternary conditional expressions.
+ */
+final class SubjectsTemplateRenderer
 {
     private SubjectsExportConfig $config;
 
+    /**
+     * @param SubjectsExportConfig $config The export configuration (template paths, pathways, etc.).
+     */
     public function __construct(SubjectsExportConfig $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * Resolves inline ternary conditionals of the form `{{ [not ]varName ? 'ifTrue' : 'ifFalse' }}` in an HTML string.
+     * @param string $html The HTML template content.
+     * @param array $vars The variable map used to evaluate conditions.
+     * @return string The HTML with all conditionals replaced by their resolved values.
+     */
     private function resolveConditionals(string $html, array $vars): string
     {
         // Ternary operator match
@@ -34,16 +47,23 @@ class SubjectsTemplateRenderer
                 }
                 return $value ? $ifTrue : $ifFalse;
             },
-            $html
+            $html,
         );
     }
 
+    /**
+     * Renders the PDF source (HTML + CSS) for a given student's subjects.
+     * Resolves column widths, pathway detection, and all template variables before returning the source DTO.
+     * @param StudentSubjectsDTO $student The student data to render.
+     * @return PdfSourceDTO The rendered HTML and CSS ready for PDF generation.
+     * @throws InvalidArgumentException If the student has fewer than 2 subjects.
+     */
     public function render(StudentSubjectsDTO $student): PdfSourceDTO
     {
         if (count($student->subjects) < 2) {
             throw new InvalidArgumentException(
                 "Student $student->studentName must have at least 2 subjects. Got: "
-                . print_r($student->subjects, true)
+                . print_r($student->subjects, true),
             );
         }
 
@@ -56,7 +76,7 @@ class SubjectsTemplateRenderer
 
         $colMm = [
             'label'  => 22,
-            'intitu' => 100,
+            'intitulé' => 100,
             'spe'    => 45,
             'trans'  => 35,
         ];
@@ -91,16 +111,16 @@ class SubjectsTemplateRenderer
         $css .= PHP_EOL . PHP_EOL . "
             .questions-table { width: {$totalMm}mm; }
             .qt-col1 { width: {$pct['label']}%; }
-            .qt-col2 { width: {$pct['intitu']}%; }
+            .qt-col2 { width: {$pct['intitulé']}%; }
             .qt-col3 { width: {$pct['spe']}%; }
             .qt-col4 { width: {$pct['trans']}%; }
             ";
 
         $vars = [
-                'nom'    => $lastname,
-                'prenom' => $firstname,
-                'serie'  => $pathway,
-                'year'   => date("Y"),
+            'nom'    => $lastname,
+            'prenom' => $firstname,
+            'série'  => $pathway,
+            'year'   => date("Y"),
         ];
 
         foreach ($student->subjects as $i => $subject) {
@@ -114,10 +134,10 @@ class SubjectsTemplateRenderer
 
         $html = $this->resolveConditionals($html, $vars);
 
-         // Simple replacements
+        // Simple replacements
         $replacements = array_combine(
             array_map(fn($k) => "{{{$k}}}", array_keys($vars)),
-            array_values($vars)
+            array_values($vars),
         );
         $html = strtr($html, $replacements);
 

@@ -18,17 +18,21 @@ use Goralys\Core\User\Services\LoginService;
 use Goralys\Core\User\Services\RegisterService;
 use Goralys\Core\User\Services\RegisterValidatorService;
 use Goralys\Platform\DB\Interfaces\DbContainerInterface;
+use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\User\UserNotFoundException;
+use Goralys\Shared\Utils\String\Data\StringCase;
+use Goralys\Shared\Utils\UtilitiesManager;
 
 /**
  * The controller that handles the authentification logic (register, login, and logout).
  */
-class AuthController
+final class AuthController
 {
     private LoggerInterface $logger;
     private DbContainerInterface $db;
     private UserRepositoryInterface $repo;
+    private UtilitiesManager $utils;
     /**
      * The lifetime of the PHP session, the kernel passes this variable when the controller is constructed.
      * @var int
@@ -47,7 +51,7 @@ class AuthController
         LoggerInterface $logger,
         DbContainerInterface $db,
         int $sessionLifetime,
-        float $sessionLifetimeMultiplier
+        float $sessionLifetimeMultiplier,
     ) {
         $this->logger = $logger;
         $this->db = $db;
@@ -55,6 +59,7 @@ class AuthController
         $this->sessionMultiplier = $sessionLifetimeMultiplier;
 
         $this->repo = new UserRepository($this->logger, $this->db);
+        $this->utils = new UtilitiesManager();
     }
 
     /**
@@ -65,9 +70,9 @@ class AuthController
     public function register(UserRegisterDTO $userData): bool
     {
         $userData = new UserRegisterDTO(
-            $userData->username,
+            $this->utils->string->sanitize($userData->username, StringCase::LOWER),
             $userData->fullName,
-            $userData->password
+            $userData->password,
         );
 
         $validator = new RegisterValidatorService($this->repo);
@@ -78,7 +83,7 @@ class AuthController
             $this->logger,
             $validator,
             $roleGetter,
-            $userCreator
+            $userCreator,
         );
         return $service->register($userData);
     }
@@ -99,12 +104,17 @@ class AuthController
 
             session_regenerate_id(true);
             $sessionData = $this->repo->getByUsername($userData->username);
+            $this->logger->debug(LoggerInitiator::APP, "Received user data: " . print_r($sessionData, true));
 
             $_SESSION['current_id'] = $sessionData->id;
             $_SESSION['current_full_name'] = $sessionData->fullName;
             $_SESSION['current_username'] = $sessionData->username;
+            $_SESSION['current_public_id'] = $this->repo->getPublicIdForUsername($sessionData->username);
             $_SESSION['current_role'] = $sessionData->role->toString();
 
+            $_SESSION['ua'] = hash("sha256", $_SERVER['HTTP_USER_AGENT']);
+            $_SESSION['regen_time'] = time();
+            $this->logger->debug(LoggerInitiator::APP, "New session: " . print_r($_SESSION, true));
             return true;
         } catch (UserNotFoundException) {
             return false;

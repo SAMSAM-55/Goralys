@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, useContext, useState, ReactNode} from "react";
+import {createContext, useContext, useState, ReactNode, useCallback, useMemo} from "react";
 import ConfirmElement from "@/app/ui/modals/confirm/confirm-element";
 import {ConfirmOptions} from "@/app/lib/types";
 import {createPortal} from "react-dom";
@@ -18,13 +18,13 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     } | null>(null);
     const [visible, setVisible] = useState(false);
 
-    function showConfirm(options: ConfirmOptions): Promise<boolean> {
+    const showConfirm = useCallback((options: ConfirmOptions): Promise<boolean> => {
         return new Promise((resolve) => {
             setConfirmState({ options, resolve });
             setVisible(false);
             requestAnimationFrame(() => setVisible(true));
         });
-    }
+    }, []);
 
     function handleConfirm() {
         setVisible(false);
@@ -42,8 +42,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
         }, 500);
     }
 
+    const value = useMemo(() => ({ showConfirm }), [showConfirm]);
+
     return (
-        <ConfirmContext.Provider value={{ showConfirm }}>
+        <ConfirmContext.Provider value={value}>
             {children}
 
             {confirmState && typeof document !== "undefined" &&

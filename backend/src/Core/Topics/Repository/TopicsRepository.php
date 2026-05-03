@@ -13,72 +13,76 @@ use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 /**
  * Repository class for handling database operations related to Topics.
  */
-class TopicsRepository implements TopicsRepositoryInterface
+final class TopicsRepository implements TopicsRepositoryInterface
 {
-    /** @var DbContainerInterface The database container. */
     private DbContainerInterface $db;
 
     /**
-     * @param DbContainerInterface $db
+     * @param DbContainerInterface $db The injected DB.
      */
     public function __construct(
-        DbContainerInterface $db
+        DbContainerInterface $db,
     ) {
         $this->db = $db;
     }
 
     /**
      * Inserts a new topic into the 'topics' table.
-     *
      * @param int $topicId The unique ID of the topic.
      * @param string $topicCode The unique code for the topic.
      * @param string $topicName The display name of the topic.
-     * @return void
+     * @return bool If the insertion succeeded.
      */
-    public function insertTopic(int $topicId, string $topicCode, string $topicName): void
+    public function insertTopic(int $topicId, string $topicCode, string $topicName): bool
     {
-        $this->db->run(
+        return $this->db->run(
             "insert into topics (id, topic_code, name) values (?, ?, ?)",
             "iss",
             $topicId,
             $topicCode,
-            $topicName
+            $topicName,
         );
     }
 
     /**
      * Associates a teacher with a topic in the 'topic_teachers' table.
-     *
      * @param int $topicId The ID of the topic.
      * @param string $teacherUsername The username of the teacher.
-     * @return void
+     * @return bool If the insertion succeeded.
      */
-    public function insertTeacher(int $topicId, string $teacherUsername): void
+    public function insertTeacher(int $topicId, string $teacherUsername): bool
     {
-        $this->db->run(
+        return $this->db->run(
             "insert into topic_teachers (topic_id, teacher_id) values (?, ?)",
             "is",
             $topicId,
-            $teacherUsername
+            $teacherUsername,
+        ) && $this->db->run(
+            "insert ignore into public_ids (user_id, public_id) values (?, uuid());",
+            "s",
+            $teacherUsername,
         );
     }
 
     /**
      * Associates a student with a topic in the 'student_topics' table.
-     *
      * @param int $topicId The ID of the topic.
      * @param string $studentUsername The username of the student.
-     * @return void
+     * @return bool If the insertion succeeded.
      */
-    public function insertStudent(int $topicId, string $studentUsername): void
+    public function insertStudent(int $topicId, string $studentUsername): bool
     {
-        $this->db->run(
+        return $this->db->run(
             "insert into student_topics 
                    (student_id, topic_id, subject, last_rejected, teacher_comment, draft_path, subject_status)
                    values (?, ?, null, null, null, null, 0)",
             "si",
             $studentUsername,
-            $topicId
+            $topicId,
+        ) && $this->db->run(
+            "insert ignore into public_ids (user_id, public_id) values (?, uuid());",
+            "s",
+            $studentUsername,
         );
     }
 
@@ -88,12 +92,23 @@ class TopicsRepository implements TopicsRepositoryInterface
      */
     public function clearAll(): bool
     {
+        $tables = [
+            "student_topics",
+            "topic_teachers",
+            "topics",
+        ];
+
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
-        // Nuke the entire db, but this is what we want.
-        $this->db->runNoArgs("delete from student_topics");
-        $this->db->runNoArgs("delete from topic_teachers");
-        $this->db->runNoArgs("delete from topics");
-        $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
+        try {
+            foreach ($tables as $table) {
+                $this->db->runNoArgs(
+                    /** @lang SQL */
+                    "truncate table `$table`",
+                );
+            }
+        } finally {
+            $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 1");
+        }
 
         return true;
     }

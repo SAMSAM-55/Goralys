@@ -10,7 +10,7 @@ namespace Goralys\Core\Topics\Data;
 /**
  * DTO for topic metadata extracted from filenames.
  */
-readonly class TopicDescriptorDTO
+final readonly class TopicDescriptorDTO
 {
     /**
      * @param string $name The name of the topic.
@@ -18,7 +18,6 @@ readonly class TopicDescriptorDTO
      */
     public function __construct(
         public string $name,
-        public string $code
-    ) {
-    }
+        public string $code,
+    ) {}
 }
