@@ -27,6 +27,13 @@ final class UsernameFormatterService
 
             return $lastName . ' ' . $firstInitial . '.';
         }
+        // For admins
+        if (preg_match('/^([a-z])\.([a-z]+).admin\d*$/i', $username, $matches)) {
+            $firstInitial = strtoupper($matches[1]);
+            $lastName     = strtoupper($matches[2]);
+
+            return $lastName . ' ' . $firstInitial . '.';
+        }
 
         // Return the original value if it does not match the expected format.
         return $username;

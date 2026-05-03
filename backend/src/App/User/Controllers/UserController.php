@@ -22,6 +22,7 @@ use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\GoralysRuntimeException;
 use Goralys\Shared\Exception\User\UserNotFoundException;
+use Goralys\Shared\Utils\String\Data\StringCase;
 use Goralys\Shared\Utils\UtilitiesManager;
 
 /**
@@ -33,6 +34,7 @@ final class UserController
     private DbContainerInterface $db;
     private UserRepositoryInterface $repo;
     private UsernameManager $usernames;
+    private UtilitiesManager $utils;
 
     /**
      * Initializes the logger and the database container used by the controller.
@@ -48,6 +50,7 @@ final class UserController
 
         $this->repo = new UserRepository($this->logger, $this->db);
         $this->usernames = new UsernameManager($this->repo);
+        $this->utils = new UtilitiesManager();
     }
 
     /**
@@ -71,7 +74,10 @@ final class UserController
         $collection = new UserCollection();
         foreach ($users as $user) {
             // Let PHP throw because all users should have a public id, even uncreated ones.
-            $collection->addUser($fromDTO($user, $publicIds[$user->username]));
+            $collection->addUser($fromDTO($user, $publicIds[$this->utils->string->sanitize(
+                $user->username,
+                StringCase::LOWER,
+            )]));
         }
         return $collection;
     }

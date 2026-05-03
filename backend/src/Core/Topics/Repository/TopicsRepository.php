@@ -99,7 +99,6 @@ final class TopicsRepository implements TopicsRepositoryInterface
         ];
 
         $this->db->runNoArgs("set FOREIGN_KEY_CHECKS = 0");
-
         try {
             foreach ($tables as $table) {
                 $this->db->runNoArgs(

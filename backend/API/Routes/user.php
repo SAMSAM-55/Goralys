@@ -14,6 +14,7 @@ use Goralys\Core\User\Data\UserLoginDTO;
 use Goralys\Core\User\Data\UserRegisterDTO;
 use Goralys\Kernel\GoralysKernel;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
+use Goralys\Shared\Utils\String\Data\StringCase;
 
 function createUserRoutes(GoralysRouter $router): void
 {
@@ -175,7 +176,8 @@ function createUserRoutes(GoralysRouter $router): void
         }
 
         $result = $kernel->users->addAdmin(
-            trim($request->get("last-name")) . " " . trim($request->get("first-name")),
+            trim($kernel->utils->string->sanitize($request->get("last-name"), StringCase::UPPER))
+            . " " . trim($request->get("first-name")),
         );
 
         if (!$result) {
@@ -298,7 +300,8 @@ function createUserRoutes(GoralysRouter $router): void
 
         $result = $kernel->users->replaceTeacher(
             $request->get("target"),
-            trim($request->get("last-name")) . " " . trim($request->get("first-name")),
+            trim($kernel->utils->string->sanitize($request->get("last-name"), StringCase::UPPER))
+            . " " . trim($request->get("first-name")),
         );
 
         if (!$result) {

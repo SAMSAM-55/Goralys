@@ -8,7 +8,7 @@ import { useSubjects } from "@/app/hooks/useSubjects";
 import AdminCard from "@/app/ui/subjects/admin-card";
 import { Subject } from "@/app/lib/types";
 import { SubjectsSearchBar } from "@/app/ui/subjects/subjects-search-bar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useConfirm } from "@/app/ui/modals/confirm/confirm-provider";
 import Cookies from "universal-cookie";
 
@@ -19,12 +19,6 @@ export default function Page() {
     const { subjects, refetch, syncKey } = useSubjects("admin");
     const [currentSubjects, setCurrentSubjects] = useState<Subject[] | null>(subjects);
     const cookies = new Cookies();
-
-    useEffect(() => {
-        const run = () => setCurrentSubjects(subjects ?? null);
-
-        run();
-    }, [subjects]);
 
     async function sendTopics() {
         const csrfToken = await fetchCsrfClient("import-topics");
@@ -63,6 +57,8 @@ export default function Page() {
             a.click();
             URL.revokeObjectURL(url);
             cookies.set(syncKey, "0", { path: '/' });
+            cookies.set("users-synced", "0", { path: '/' });
+            cookies.set("virtual-users-synced", "0", { path: '/' });
             await refetch();
             setCurrentSubjects(subjects || []);
             return;
@@ -156,7 +152,7 @@ export default function Page() {
                 <div className="w-150">
                     <Button text="Importer les sujets" type="button" onClick={sendTopics} />
                     <Button text="Exporter les sujets en PDF" type="button" onClick={exportSubjects} />
-                    <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} />
+                    <Button text="Supprimer les sujets" type="button" onClick={deleteTopics} color="red" />
                 </div>
             </div>
             <div className="h-auto w-fit p-2 mt-4">

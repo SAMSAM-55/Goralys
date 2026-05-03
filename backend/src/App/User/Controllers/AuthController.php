@@ -21,6 +21,8 @@ use Goralys\Platform\DB\Interfaces\DbContainerInterface;
 use Goralys\Platform\Logger\Data\Enums\LoggerInitiator;
 use Goralys\Platform\Logger\Interfaces\LoggerInterface;
 use Goralys\Shared\Exception\User\UserNotFoundException;
+use Goralys\Shared\Utils\String\Data\StringCase;
+use Goralys\Shared\Utils\UtilitiesManager;
 
 /**
  * The controller that handles the authentification logic (register, login, and logout).
@@ -30,6 +32,7 @@ final class AuthController
     private LoggerInterface $logger;
     private DbContainerInterface $db;
     private UserRepositoryInterface $repo;
+    private UtilitiesManager $utils;
     /**
      * The lifetime of the PHP session, the kernel passes this variable when the controller is constructed.
      * @var int
@@ -56,6 +59,7 @@ final class AuthController
         $this->sessionMultiplier = $sessionLifetimeMultiplier;
 
         $this->repo = new UserRepository($this->logger, $this->db);
+        $this->utils = new UtilitiesManager();
     }
 
     /**
@@ -66,7 +70,7 @@ final class AuthController
     public function register(UserRegisterDTO $userData): bool
     {
         $userData = new UserRegisterDTO(
-            $userData->username,
+            $this->utils->string->sanitize($userData->username, StringCase::LOWER),
             $userData->fullName,
             $userData->password,
         );

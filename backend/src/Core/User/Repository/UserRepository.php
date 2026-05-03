@@ -293,12 +293,15 @@ final class UserRepository implements UserRepositoryInterface
         $this->db->beginTransaction();
         try {
             $this->db->runNoArgs(
-                "delete from public_ids where user_id not in (select user_id from users where role = 'admin')",
+                "delete from public_ids where user_id not in (
+                       select user_id from users where role = 'admin'
+                       union
+                       select user_id from admins_list)",
             );
             $this->db->runNoArgs("delete from users where role <> 'admin'");
             $this->db->commit();
             return true;
-        } catch (Exception) {
+        } catch (Exception $e) {
             $this->db->rollback();
             return false;
         }

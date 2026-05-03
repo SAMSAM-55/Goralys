@@ -71,7 +71,7 @@ export default function CreateAdminElement({ onUpdateAction, syncKey, virtualSyn
                           d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
                     </path>
                 </svg>
-                <span>Créer un admin</span>
+                <span>Créer un administrateur</span>
             </summary>
 
             <div className="flex flex-col gap-2 mt-2">

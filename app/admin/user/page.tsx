@@ -3,20 +3,16 @@
 // import {Button} from "@/app/ui/button";
 import {useUsers, useVirtualUsers} from "@/app/hooks/useUsers";
 import UserCard from "@/app/ui/admin-pannel/user-card";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {User} from "@/app/lib/types";
 import {UsersSearchBar} from "@/app/ui/admin-pannel/users-search-bar";
 
 export default function Page() {
     const {users, refetch, syncKey} = useUsers();
     const [currentUsers, setCurrentUsers] = useState<User[] | null>(null);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    useEffect(() => setCurrentUsers(users), [users]);
 
     const {users: virtualUsers, refetch: virtualRefetch, syncKey: virtualSyncKey} = useVirtualUsers();
     const [currentVirtualUsers, setCurrentVirtualUsers] = useState<User[] | null>(null);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    useEffect(() => setCurrentVirtualUsers(virtualUsers), [virtualUsers]);
 
 
     return (

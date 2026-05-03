@@ -7,6 +7,7 @@
 
 namespace Goralys\App\User\Data;
 
+use Goralys\Shared\Exception\User\GoralysUserException;
 use Goralys\Shared\Utils\String\Data\StringCase;
 use Goralys\Shared\Utils\UtilitiesManager;
 
@@ -19,6 +20,7 @@ final class UsernameTable
 
     /**
      * Returns the username for a full name, generating and caching it if needed.
+     * @throws GoralysUserException If the generattion fails.
      */
     public function resolve(string $fullName): string
     {
@@ -28,12 +30,45 @@ final class UsernameTable
 
         $fullName = trim($fullName);
         $names = explode(" ", $fullName);
-        [$lastName, $firstName] = array_slice($names, -2);
+        $lastNameParts = array_values(array_filter($names, fn($n) => strtoupper($n) === $n));
+        $firstNameParts = array_values(array_filter($names, fn($n) => strtoupper($n) !== $n));
+
+        $firstName = implode("", $firstNameParts);
+        // french "particules" edge case (e.g., DU PONT Jean -> j.dupont1
+        $particles = ['LE', 'LA', 'LES', 'DE', 'DU', 'DES', 'L'];
+        $lastName = "";
+        for ($i = 0; $i < count($lastNameParts); $i++) {
+            $lastName .= $lastNameParts[$i];
+            if (!in_array($lastNameParts[$i], $particles)) {
+                break;
+            }
+        }
+
         $firstName = $this->utils->string->sanitize($firstName, StringCase::LOWER);
-        $lastName = $this->utils->string->sanitize(explode("-", $lastName)[0], StringCase::LOWER);
+        $lastName = str_replace(["'"], [""], $this->utils->string->sanitize(
+            explode("-", $lastName)[0],
+            StringCase::LOWER,
+        ));
+        $base = $this->utils->string->sanitize(
+            substr($firstName, 0, 1) . "." . $lastName,
+            StringCase::LOWER,
+        );
         $number = rand(0, 9);
 
-        return $this->table[$fullName] = substr($firstName, 0, 1) . "." . $lastName . $number;
+        // Test all 10 possibilities.
+        $found = false;
+        for ($i = 0; $i < 10; $i++) {
+            if (!in_array($base . (($number + $i) % 10), array_values($this->table))) {
+                $number = ($number + $i) % 10;
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            throw new GoralysUserException("To many users with username base: $base");
+        }
+
+        return $this->table[$fullName] = $base . $number;
     }
 
     /**

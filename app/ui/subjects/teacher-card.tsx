@@ -140,8 +140,10 @@ export default function TeacherCard({subjectData, onUpdateAction}: {subjectData:
             />
             {subjectData.status === "submitted"
             && <>
-                <Button className="-mb-1! mt-1! shadow-none!" text="Ne pas valider la question" type="button" onClick={rejectSubject} />
-                <Button className="mb-1! mt-1! shadow-none!" text="Valider la question" type="button" onClick={approveSubject} />
+                <Button className="-mb-1! mt-1! shadow-none!" text="Ne pas valider la question" type="button" onClick={rejectSubject}
+                color="red"/>
+                <Button className="mb-1! mt-1! shadow-none!" text="Valider la question" type="button" onClick={approveSubject}
+                color="green"/>
             </>}
         </div>
     );
