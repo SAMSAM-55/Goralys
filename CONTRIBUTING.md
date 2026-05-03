@@ -17,7 +17,7 @@ Thank you for your interest in contributing to Goralys! This document provides g
 
 #### Coding Conventions
 
-- Follow PSR-12 coding style for PHP code
+- Follow PER coding style for PHP code
 - Use four spaces for indentation (no tabs)
 - Use camelCase naming for variable and function
 - Use lowercase SQL queries
@@ -73,7 +73,7 @@ Before submitting a PR:
 
 Recommended setup:
 
-- PHP 8.3+
+- PHP 8.5+
 - MariaDB
 - Composer
 - pnpm

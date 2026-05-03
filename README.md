@@ -13,15 +13,9 @@ Goralys is a lightweight web app to manage "Grand Oral" topics for students and 
 ## Quick start (development)
 
 Prerequisites:
-- PHP 8.1+ with mysqli
-- Composer (for PHPMailer)
+- PHP 8.5+ with mysqli
+- Composer
 - pnpm package manager
-
-To simulate a local PHP server with mysql on Windows, you can use [XAMPP](https://www.apachefriends.org) (also available on Linux and macOS)
-
-(Optional):
-- PHP_CodeSniffer
-- PHP ruleset for PSR-12 convention
 
 Steps:
 1. Run setup script:
